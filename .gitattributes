@@ -1,0 +1,9 @@
+# The dataset files are append-only and line-oriented. A "union" merge keeps
+# BOTH sides' lines instead of raising a conflict, so a local run and the weekly
+# GitHub job committing concurrently merge to the union automatically. Any
+# duplicate rows this leaves are cleaned up by reconcile_dataset() (which also
+# rebuilds state.json). state.json itself is JSON and is NOT union-merged.
+data/trials.csv          merge=union
+data/trials.jsonl        merge=union
+data/screened_out.jsonl  merge=union
+data/exclusions.txt      merge=union

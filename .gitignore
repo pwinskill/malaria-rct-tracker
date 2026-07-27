@@ -1,0 +1,10 @@
+.env
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.tar.gz
+*.Rcheck/
+legacy_python/**/__pycache__/
+legacy_python/**/*.pyc
+.DS_Store

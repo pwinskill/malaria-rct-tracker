@@ -1,0 +1,76 @@
+name: Manual malaria RCT backfill
+
+# Run a deeper, historical scan on demand (e.g. the last 10 years). Trigger it
+# from the Actions tab -> "Manual malaria RCT backfill" -> "Run workflow", set
+# the inputs, and it commits the results back like the weekly job. Safe to run
+# repeatedly: anything already in the dataset is skipped.
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Look back this many days (used only if 'start' is empty). 3650 = ~10 years."
+        required: false
+        default: "3650"
+      start:
+        description: "Start date YYYY-MM-DD (overrides 'days')."
+        required: false
+        default: ""
+      end:
+        description: "End date YYYY-MM-DD (default: today)."
+        required: false
+        default: ""
+      mode:
+        description: "Extraction mode: rules (free) | llm (Anthropic API) | off."
+        required: false
+        default: "rules"
+      max_items:
+        description: "Max LLM calls this run (llm mode only)."
+        required: false
+        default: "300"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: malaria-rct-data     # shared with weekly.yml
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: local::.
+
+      - name: Run backfill
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
+          BF_DAYS: ${{ inputs.days }}
+          BF_START: ${{ inputs.start }}
+          BF_END: ${{ inputs.end }}
+          BF_MODE: ${{ inputs.mode }}
+          BF_MAX: ${{ inputs.max_items }}
+        run: Rscript scripts/backfill.R
+
+      - name: Commit results
+        run: |
+          git config user.name  "malaria-rct-bot"
+          git config user.email "actions@github.com"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+          git add data outputs
+          if git diff --staged --quiet; then
+            echo "No new records from this backfill."
+          else
+            git commit -m "Backfill $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi

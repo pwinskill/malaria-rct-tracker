@@ -1,0 +1,72 @@
+# Malaria RCT Tracker - configuration
+# Everything the pipeline needs is here. Edit this, not the code.
+#
+# Pipeline shape (systematic-review style):
+#   fetch (sensitive search) -> dedupe -> SCREEN (LLM eligibility) -> EXTRACT (LLM) -> store
+# Precision comes from the screen, not the search query.
+
+# ------------------------------------------------------------------ search
+search:
+  topic: "malaria"
+  weekly_lookback_days: 10   # a little overlap; dedupe removes repeats
+  backfill_days: 365         # default backfill window; widen via CLI
+
+# ------------------------------------------------------------------ sources
+# The per-source queries live in the fetchers (R/fetch_*.R). They are tuned to
+# be SENSITIVE (favour recall) because the eligibility screen below supplies
+# precision. PubMed carries recall (Cochrane-style RCT filter); Europe PMC is
+# tighter and adds preprints; ClinicalTrials.gov adds registrations.
+sources:
+  pubmed:
+    enabled: true
+    api_key_env: "NCBI_API_KEY"   # optional free key raises rate limits
+  clinicaltrials:
+    enabled: true
+  europepmc:
+    enabled: true                 # also covers medRxiv preprints
+  ictrp:
+    enabled: false                # placeholder; unreliable public service
+
+# ------------------------------------------------------------------ screening
+# LLM eligibility screen: is each candidate a malaria RCT in scope? Removes
+# non-trials and trials that only mention malaria in passing. Writes a decision
+# + reason for every candidate (audit trail in data/screened_out.jsonl).
+screening:
+  mode: "llm"                      # llm | off   ("off" keeps every candidate)
+  model: "claude-haiku-4-5"        # cheap; high-volume gate
+  api_key_env: "ANTHROPIC_API_KEY"
+  max_items_per_run: 5000          # safety cap on screening calls per run
+  # Phase policy. true (default): exclude early-phase (Phase I / first-in-human /
+  # dose-finding); keep Phase II/III/IV, "not applicable" (vector-control/cluster
+  # trials) and unstated phase. false: keep all phases including Phase I.
+  exclude_early_phase: true
+  # Results-only (default): exclude study protocols and ongoing/registered trials
+  # with no posted results - the dataset holds trials that have reported findings.
+  # Set true to also keep the registry pipeline (ongoing/registered trials).
+  include_ongoing: false
+
+# ------------------------------------------------------------------ extraction
+# Runs only on records the screen INCLUDED. Fills Tier-1 gaps + Tier-2 fields.
+extraction:
+  mode: "llm"                      # llm | rules | off
+  model: "claude-sonnet-5"         # stronger model on the smaller included set
+  api_key_env: "ANTHROPIC_API_KEY"
+  max_items_per_run: 2000          # safety cap on extraction calls per run
+
+# ------------------------------------------------------------------ contact
+contact_email: "p.winskill@imperial.ac.uk"   # NCBI asks API users to identify themselves
+tool_name: "malaria-rct-tracker"
+
+# ------------------------------------------------------------------ output
+output:
+  data_dir: "data"
+  outputs_dir: "outputs"
+  brief_filename: "Malaria_RCT_Brief.md"
+  trials_csv: "trials.csv"
+  trials_jsonl: "trials.jsonl"
+  screened_out_file: "screened_out.jsonl"   # excluded candidates + reasons
+  exclusions_file: "exclusions.txt"          # manual blocklist (see exclude_records())
+  state_file: "state.json"
+  # Interactive HTML explorer (self-contained; open locally or serve via Pages).
+  explorer_dir: "docs"
+  explorer_filename: "index.html"

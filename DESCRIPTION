@@ -1,0 +1,26 @@
+Package: malariarct
+Title: Malaria RCT Tracker
+Version: 0.1.0
+Authors@R:
+    person("P.", "Winskill", email = "p.winskill@imperial.ac.uk",
+           role = c("aut", "cre"))
+Description: Weekly scan for new malaria randomized controlled trials across
+    PubMed, ClinicalTrials.gov and Europe PMC. Deduplicates hits across sources
+    and identifiers, extracts a structured record for each trial (rules- or
+    LLM-based), and maintains a growing dataset plus a human-readable brief.
+    Designed to run unattended in GitHub Actions.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends:
+    R (>= 4.1.0)
+Imports:
+    httr2,
+    jsonlite,
+    xml2,
+    yaml,
+    stats,
+    utils
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+RoxygenNote: 7.3.1

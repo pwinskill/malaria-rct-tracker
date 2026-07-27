@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Malaria RCT Explorer</title>
+<style>
+  /* ---- Okabe-Ito colourblind-safe palette (colour never carries meaning alone) ---- */
+  :root{
+    --bg:#f6f8fa; --panel:#ffffff; --ink:#1a2230; --muted:#5a6675; --border:#dfe4ea;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.10);
+    --accent:#0072B2; --grid:#eef1f5;
+    --c1:#0072B2; --c2:#E69F00; --c3:#009E73; --c4:#CC79A7;
+    --c5:#56B4E9; --c6:#D55E00; --c7:#8c6bae; --c8:#767b84;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0d1117; --panel:#161b22; --ink:#e6edf3; --muted:#9aa4b0; --border:#2b323c;
+      --shadow:none; --grid:#232a33;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d1117; --panel:#161b22; --ink:#e6edf3; --muted:#9aa4b0; --border:#2b323c;
+    --shadow:none; --grid:#232a33;
+  }
+  :root[data-theme="light"]{
+    --bg:#f6f8fa; --panel:#ffffff; --ink:#1a2230; --muted:#5a6675; --border:#dfe4ea;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.10); --grid:#eef1f5;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink); font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{
+    padding:22px 24px 16px; border-bottom:1px solid var(--border); background:var(--panel);
+    display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  header h1{font-size:20px;margin:0 0 3px}
+  header .sub{color:var(--muted);font-size:13px}
+  .theme-btn{
+    border:1px solid var(--border);background:var(--bg);color:var(--ink);border-radius:8px;
+    padding:7px 11px;cursor:pointer;font-size:13px
+  }
+  .theme-btn:hover{border-color:var(--accent)}
+  main{max-width:1180px;margin:0 auto;padding:20px 24px 60px}
+  section{margin-bottom:22px}
+  h2{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 12px}
+
+  /* summary cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card .n{font-size:26px;font-weight:650;letter-spacing:-.02em}
+  .card .l{color:var(--muted);font-size:12.5px;margin-top:2px}
+
+  /* charts */
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:820px){.charts{grid-template-columns:1fr}}
+  .chart-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+  .chart-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .chart-head h2{margin:0}
+  .seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .seg button{border:0;background:var(--panel);color:var(--muted);padding:5px 10px;font-size:12px;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+  .chart-svg{width:100%;height:auto;display:block}
+  .chart-empty{color:var(--muted);font-size:13px;padding:24px 4px;text-align:center}
+  .bar rect:hover{opacity:.82}
+
+  /* controls */
+  .controls{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .controls .row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:4px}
+  .field label{font-size:12px;color:var(--muted)}
+  .field input,.field select{
+    border:1px solid var(--border);background:var(--bg);color:var(--ink);border-radius:8px;
+    padding:8px 10px;font-size:14px;min-width:150px
+  }
+  .field input:focus,.field select:focus{outline:2px solid var(--accent);outline-offset:0}
+  #q{min-width:230px}
+  .reset{align-self:flex-end;border:1px solid var(--border);background:var(--bg);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:13px}
+  .reset:hover{border-color:var(--accent)}
+  .count{margin:10px 2px 0;color:var(--muted);font-size:13px}
+
+  /* table */
+  .table-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  thead th{
+    position:sticky;top:0;background:var(--panel);text-align:left;padding:10px 12px;border-bottom:2px solid var(--border);
+    white-space:nowrap;color:var(--muted);font-weight:600
+  }
+  thead th.sortable{cursor:pointer;user-select:none}
+  thead th.sortable:hover{color:var(--ink)}
+  th .arrow{font-size:10px;margin-left:3px;opacity:.7}
+  tbody td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+  tbody tr:hover{background:var(--grid)}
+  td.title{max-width:340px}
+  td.impact{max-width:360px;color:var(--muted)}
+  .tag{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--border);font-size:11.5px;color:var(--ink);background:var(--bg);white-space:nowrap}
+  .pill-list{display:flex;flex-wrap:wrap;gap:4px}
+  .src{font-size:11px;color:var(--muted)}
+  footer{max-width:1180px;margin:0 auto;padding:0 24px 40px;color:var(--muted);font-size:12px}
+  .note{background:var(--grid);border:1px dashed var(--border);border-radius:8px;padding:8px 12px;color:var(--muted);font-size:12.5px;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Malaria RCT Explorer</h1>
+    <div class="sub" id="subtitle">Loading…</div>
+  </div>
+  <button class="theme-btn" id="themeBtn" title="Toggle light / dark">◐ Theme</button>
+</header>
+
+<main>
+  <section class="cards" id="cards" aria-label="Summary"></section>
+
+  <section class="charts">
+    <div class="chart-card">
+      <div class="chart-head">
+        <h2>Trials over time</h2>
+        <div class="seg" role="group" aria-label="Date field for time chart">
+          <button id="byPub" aria-pressed="true">Publication</button>
+          <button id="byStart" aria-pressed="false">Trial start</button>
+        </div>
+      </div>
+      <div id="chartTime"></div>
+    </div>
+    <div class="chart-card">
+      <h2>By intervention class</h2>
+      <div id="chartClass"></div>
+    </div>
+  </section>
+
+  <section class="controls" aria-label="Filters">
+    <div class="row">
+      <div class="field"><label for="q">Search (title, place, impact)</label><input id="q" type="search" placeholder="e.g. RTS,S, bed net, Uganda…"></div>
+      <div class="field"><label for="fClass">Intervention class</label><select id="fClass"><option value="">All</option></select></div>
+      <div class="field"><label for="fPhase">Phase</label><select id="fPhase"><option value="">All</option></select></div>
+      <div class="field"><label for="fSpecies">Species</label><select id="fSpecies"><option value="">All</option></select></div>
+      <div class="field"><label for="fCountry">Country / place</label><select id="fCountry"><option value="">All</option></select></div>
+      <div class="field"><label for="fType">Record type</label><select id="fType"><option value="">All</option></select></div>
+      <button class="reset" id="reset">Reset</button>
+    </div>
+    <div class="count" id="count"></div>
+  </section>
+
+  <section class="table-wrap">
+    <table>
+      <thead><tr id="thead"></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </section>
+  <div class="note" id="cap-note" hidden></div>
+</main>
+
+<footer id="footer"></footer>
+
+<script>
+"use strict";
+const TRIALS = __DATA__;
+const META = __META__;
+
+/* ------------------------------------------------------------------ helpers */
+const $ = (id) => document.getElementById(id);
+const val = (r, k) => (r && typeof r[k] === "string") ? r[k].trim() : "";
+const yearOf = (s) => { const m = /\b(19|20)\d{2}\b/.exec(s || ""); return m ? +m[0] : null; };
+const splitList = (s, sep) => (s || "").split(sep).map(x => x.trim()).filter(Boolean);
+const uniqSorted = (arr) => Array.from(new Set(arr)).sort((a, b) => a.localeCompare(b));
+
+/* Every renderable row carries derived helper fields, computed once. */
+TRIALS.forEach(r => {
+  r._classes = splitList(val(r, "intervention_class"), ";");
+  r._countries = splitList(val(r, "place"), ",");
+  r._pubYear = yearOf(val(r, "publication_date")) || yearOf(val(r, "first_seen"));
+  r._startYear = yearOf(val(r, "trial_start"));
+  r._n = (() => { const d = val(r, "n_total").replace(/[^0-9]/g, ""); return d ? +d : null; })();
+  r._hay = [val(r,"title"), val(r,"place"), val(r,"impact_summary"),
+            val(r,"interventions_raw"), val(r,"intervention_class"),
+            val(r,"primary_outcome"), val(r,"funder")].join("  ").toLowerCase();
+});
+
+/* ------------------------------------------------------------------ state */
+const state = { q:"", cls:"", phase:"", species:"", country:"", type:"", timeField:"pub",
+                sortKey:"_pubYear", sortDir:-1 };
+
+const COLS = [
+  { key:"_pubYear", label:"Year",   type:"num",  render:r => r._pubYear || "" },
+  { key:"title",    label:"Title",  type:"str",  cls:"title", render:r => titleCell(r) },
+  { key:"place",    label:"Place",  type:"str",  render:r => val(r,"place") },
+  { key:"phase",    label:"Phase",  type:"str",  render:r => val(r,"phase") },
+  { key:"intervention_class", label:"Class", type:"str", render:r => pillList(r._classes) },
+  { key:"_n",       label:"N",      type:"num",  render:r => r._n != null ? r._n.toLocaleString() : "" },
+  { key:"species",  label:"Species",type:"str",  render:r => val(r,"species") },
+  { key:"impact_summary", label:"Impact", type:"str", cls:"impact", render:r => val(r,"impact_summary") },
+];
+const TABLE_CAP = 500;
+
+/* ------------------------------------------------------------------ filtering */
+function applyFilters(){
+  return TRIALS.filter(r => {
+    if (state.q && !r._hay.includes(state.q)) return false;
+    if (state.cls && !r._classes.includes(state.cls)) return false;
+    if (state.phase && val(r,"phase") !== state.phase) return false;
+    if (state.species && val(r,"species") !== state.species) return false;
+    if (state.country && !r._countries.includes(state.country)) return false;
+    if (state.type && val(r,"record_type") !== state.type) return false;
+    return true;
+  });
+}
+function sortRows(rows){
+  const col = COLS.find(c => c.key === state.sortKey) || COLS[0];
+  const dir = state.sortDir;
+  return rows.slice().sort((a,b) => {
+    let av, bv;
+    if (col.type === "num"){ av = a[col.key]; bv = b[col.key];
+      if (av == null && bv == null) return 0; if (av == null) return 1; if (bv == null) return -1;
+      return (av - bv) * dir; }
+    av = (col.key.startsWith("_") ? "" : val(a, col.key)).toString().toLowerCase();
+    bv = (col.key.startsWith("_") ? "" : val(b, col.key)).toString().toLowerCase();
+    return av.localeCompare(bv) * dir;
+  });
+}
+
+/* ------------------------------------------------------------------ cells (DOM, injection-safe) */
+function titleCell(r){
+  const url = val(r,"url");
+  const a = document.createElement(url ? "a" : "span");
+  a.textContent = val(r,"title") || "(untitled)";
+  if (url){ a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer"; }
+  const wrap = document.createElement("div");
+  wrap.appendChild(a);
+  const src = [val(r,"source"), val(r,"source_id")].filter(Boolean).join(" · ");
+  if (src){ const s = document.createElement("div"); s.className = "src"; s.textContent = src; wrap.appendChild(s); }
+  return wrap;
+}
+function pillList(items){
+  const wrap = document.createElement("div"); wrap.className = "pill-list";
+  items.forEach(it => { const t = document.createElement("span"); t.className = "tag"; t.textContent = it; wrap.appendChild(t); });
+  return wrap;
+}
+
+/* ------------------------------------------------------------------ SVG charts */
+const SVGNS = "http://www.w3.org/2000/svg";
+function svgEl(name, attrs){ const e = document.createElementNS(SVGNS, name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+function svgText(x, y, str, attrs){ const t = svgEl("text", Object.assign({x, y}, attrs || {})); t.textContent = str; return t; }
+
+function barChartVertical(container, pairs, opts){
+  container.innerHTML = "";
+  if (!pairs.length){ container.innerHTML = '<div class="chart-empty">No dated records to plot.</div>'; return; }
+  const W = 520, H = 240, padL = 34, padR = 8, padT = 12, padB = 28;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const max = Math.max(1, ...pairs.map(p => p.value));
+  const bw = plotW / pairs.length;
+  const svg = svgEl("svg", {viewBox:`0 0 ${W} ${H}`, class:"chart-svg", role:"img",
+                            "aria-label":opts.aria || "bar chart"});
+  // y gridlines + labels (0, mid, max)
+  [0, Math.round(max/2), max].forEach(v => {
+    const y = padT + plotH - (v/max)*plotH;
+    svg.appendChild(svgEl("line", {x1:padL, y1:y, x2:W-padR, y2:y, stroke:"var(--grid)", "stroke-width":1}));
+    svg.appendChild(svgText(padL-6, y+3.5, String(v), {"text-anchor":"end", fill:"var(--muted)", "font-size":10}));
+  });
+  const everyLabel = Math.ceil(pairs.length / 14); // avoid overcrowding the x-axis
+  pairs.forEach((p, i) => {
+    const h = (p.value/max)*plotH;
+    const x = padL + i*bw, y = padT + plotH - h;
+    const g = svgEl("g", {class:"bar"});
+    g.appendChild(svgEl("rect", {x:x+1.5, y, width:Math.max(1, bw-3), height:h, rx:2, fill:"var(--c1)"}));
+    const tt = svgEl("title"); tt.textContent = `${p.label}: ${p.value}`; g.appendChild(tt);
+    if (i % everyLabel === 0)
+      g.appendChild(svgText(x + bw/2, H-9, p.label, {"text-anchor":"middle", fill:"var(--muted)", "font-size":10}));
+    svg.appendChild(g);
+  });
+  container.appendChild(svg);
+}
+
+function barChartHorizontal(container, pairs, opts){
+  container.innerHTML = "";
+  if (!pairs.length){ container.innerHTML = '<div class="chart-empty">No classified interventions.</div>'; return; }
+  const rowH = 26, padL = 4, padR = 44, W = 520, labelW = 150;
+  const H = pairs.length*rowH + 8;
+  const plotW = W - labelW - padL - padR;
+  const max = Math.max(1, ...pairs.map(p => p.value));
+  const palette = ["var(--c1)","var(--c2)","var(--c3)","var(--c4)","var(--c5)","var(--c6)","var(--c7)","var(--c8)"];
+  const svg = svgEl("svg", {viewBox:`0 0 ${W} ${H}`, class:"chart-svg", role:"img",
+                            "aria-label":opts.aria || "horizontal bar chart"});
+  pairs.forEach((p, i) => {
+    const y = i*rowH + 4;
+    const w = (p.value/max) * plotW;
+    svg.appendChild(svgText(labelW-6, y+rowH/2+3.5, p.label, {"text-anchor":"end", fill:"var(--ink)", "font-size":11.5}));
+    const g = svgEl("g", {class:"bar"});
+    g.appendChild(svgEl("rect", {x:labelW, y:y+3, width:Math.max(1,w), height:rowH-10, rx:3, fill:palette[i % palette.length]}));
+    g.appendChild(svgText(labelW + w + 6, y+rowH/2+3.5, String(p.value), {fill:"var(--muted)", "font-size":11}));
+    const tt = svgEl("title"); tt.textContent = `${p.label}: ${p.value}`; g.appendChild(tt);
+    svg.appendChild(g);
+  });
+  container.appendChild(svg);
+}
+
+/* ------------------------------------------------------------------ renderers */
+function renderCards(rows){
+  const classes = new Set(); rows.forEach(r => r._classes.forEach(c => classes.add(c)));
+  const countries = new Set(); rows.forEach(r => r._countries.forEach(c => countries.add(c)));
+  const withResult = rows.filter(r => val(r,"impact_summary")).length;
+  const cards = [
+    { n: rows.length.toLocaleString(), l: "Trials (filtered)" },
+    { n: classes.size, l: "Intervention classes" },
+    { n: countries.size, l: "Countries / places" },
+    { n: withResult.toLocaleString(), l: "With a stated result" },
+  ];
+  $("cards").innerHTML = "";
+  cards.forEach(c => { const d = document.createElement("div"); d.className = "card";
+    d.innerHTML = `<div class="n"></div><div class="l"></div>`;
+    d.querySelector(".n").textContent = c.n; d.querySelector(".l").textContent = c.l;
+    $("cards").appendChild(d); });
+}
+function renderTimeChart(rows){
+  const key = state.timeField === "pub" ? "_pubYear" : "_startYear";
+  const counts = new Map();
+  rows.forEach(r => { const y = r[key]; if (y) counts.set(y, (counts.get(y)||0)+1); });
+  if (counts.size){
+    const years = Array.from(counts.keys()).sort((a,b)=>a-b);
+    const lo = years[0], hi = years[years.length-1];
+    const pairs = [];
+    for (let y = lo; y <= hi; y++) pairs.push({ label:String(y), value: counts.get(y)||0 });
+    barChartVertical($("chartTime"), pairs, {aria:`Trials per year by ${state.timeField==="pub"?"publication":"trial start"} date`});
+  } else {
+    barChartVertical($("chartTime"), [], {});
+  }
+}
+function renderClassChart(rows){
+  const counts = new Map();
+  rows.forEach(r => r._classes.forEach(c => counts.set(c, (counts.get(c)||0)+1)));
+  const pairs = Array.from(counts, ([label,value]) => ({label,value}))
+                     .sort((a,b)=>b.value-a.value).slice(0, 10);
+  barChartHorizontal($("chartClass"), pairs, {aria:"Trials per intervention class (top 10)"});
+}
+function renderHead(){
+  const tr = $("thead"); tr.innerHTML = "";
+  COLS.forEach(c => {
+    const th = document.createElement("th"); th.className = "sortable"; th.tabIndex = 0;
+    th.setAttribute("role","button");
+    th.textContent = c.label;
+    if (state.sortKey === c.key){ const a = document.createElement("span"); a.className="arrow";
+      a.textContent = state.sortDir === 1 ? "▲" : "▼"; th.appendChild(a); }
+    const doSort = () => {
+      if (state.sortKey === c.key) state.sortDir *= -1;
+      else { state.sortKey = c.key; state.sortDir = (c.type === "num") ? -1 : 1; }
+      render();
+    };
+    th.addEventListener("click", doSort);
+    th.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); doSort(); } });
+    tr.appendChild(th);
+  });
+}
+function renderTable(rows){
+  const tb = $("tbody"); tb.innerHTML = "";
+  const shown = rows.slice(0, TABLE_CAP);
+  const frag = document.createDocumentFragment();
+  shown.forEach(r => {
+    const tr = document.createElement("tr");
+    COLS.forEach(c => {
+      const td = document.createElement("td"); if (c.cls) td.className = c.cls;
+      const out = c.render(r);
+      if (out instanceof Node) td.appendChild(out); else td.textContent = out;
+      tr.appendChild(td);
+    });
+    frag.appendChild(tr);
+  });
+  tb.appendChild(frag);
+  const note = $("cap-note");
+  if (rows.length > TABLE_CAP){ note.hidden = false;
+    note.textContent = `Showing the first ${TABLE_CAP} of ${rows.length.toLocaleString()} matching trials — refine the filters to narrow the list.`; }
+  else note.hidden = true;
+}
+function render(){
+  const rows = sortRows(applyFilters());
+  renderCards(rows);
+  renderTimeChart(rows);
+  renderClassChart(rows);
+  renderHead();
+  renderTable(rows);
+  $("count").textContent = `${rows.length.toLocaleString()} of ${TRIALS.length.toLocaleString()} trials match.`;
+}
+
+/* ------------------------------------------------------------------ setup */
+function fillSelect(id, values){
+  const sel = $(id);
+  values.forEach(v => { const o = document.createElement("option"); o.value = v; o.textContent = v; sel.appendChild(o); });
+}
+function init(){
+  $("subtitle").textContent =
+    `${TRIALS.length.toLocaleString()} trials · generated ${META.generated}`;
+  $("footer").textContent =
+    "Static, self-contained explorer generated by malariarct::render_explorer(). Data derived from PubMed, ClinicalTrials.gov and Europe PMC. Open this file directly in a browser — no server required.";
+
+  if (!TRIALS.length){
+    document.querySelector("main").innerHTML =
+      '<div class="chart-empty" style="padding:60px">No trials in the dataset yet. Run <code>run_backfill()</code> or <code>run_weekly()</code>, then regenerate with <code>render_explorer()</code>.</div>';
+    return;
+  }
+
+  fillSelect("fClass",   uniqSorted([].concat(...TRIALS.map(r => r._classes))));
+  fillSelect("fPhase",   uniqSorted(TRIALS.map(r => val(r,"phase")).filter(Boolean)));
+  fillSelect("fSpecies", uniqSorted(TRIALS.map(r => val(r,"species")).filter(Boolean)));
+  fillSelect("fCountry", uniqSorted([].concat(...TRIALS.map(r => r._countries))));
+  fillSelect("fType",    uniqSorted(TRIALS.map(r => val(r,"record_type")).filter(Boolean)));
+
+  let qt;
+  $("q").addEventListener("input", e => { clearTimeout(qt);
+    qt = setTimeout(() => { state.q = e.target.value.trim().toLowerCase(); render(); }, 120); });
+  $("fClass").addEventListener("change", e => { state.cls = e.target.value; render(); });
+  $("fPhase").addEventListener("change", e => { state.phase = e.target.value; render(); });
+  $("fSpecies").addEventListener("change", e => { state.species = e.target.value; render(); });
+  $("fCountry").addEventListener("change", e => { state.country = e.target.value; render(); });
+  $("fType").addEventListener("change", e => { state.type = e.target.value; render(); });
+  $("reset").addEventListener("click", () => {
+    state.q=""; state.cls=""; state.phase=""; state.species=""; state.country=""; state.type="";
+    ["q","fClass","fPhase","fSpecies","fCountry","fType"].forEach(id => $(id).value = "");
+    render();
+  });
+  $("byPub").addEventListener("click", () => setTimeField("pub"));
+  $("byStart").addEventListener("click", () => setTimeField("start"));
+
+  // theme toggle (respects OS default until the user overrides it)
+  $("themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme");
+    const dark = cur ? cur === "dark"
+                     : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+    render(); // re-draw SVG so var()-based colours refresh
+  });
+
+  render();
+}
+function setTimeField(f){
+  state.timeField = f;
+  $("byPub").setAttribute("aria-pressed", String(f === "pub"));
+  $("byStart").setAttribute("aria-pressed", String(f === "start"));
+  renderTimeChart(sortRows(applyFilters()));
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+^legacy_python$
+^\.github$
+^scripts$
+^data$
+^outputs$
+^config\.yaml$
+^\.env.*
+^README\.md$
+^LICENSE\.md$
+^\.gitignore$
+^.*\.Rproj$
+^\.Rproj\.user$
