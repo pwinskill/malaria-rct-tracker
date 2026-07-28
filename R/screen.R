@@ -12,7 +12,10 @@
 #                     but still exclude published study-protocol papers
 #
 # Modes (config$screening$mode): "llm" (Anthropic API) or "off" (keep all).
-# With mode "llm" but no key, a conservative rule-based screen is used instead.
+# With mode "llm" but NO key, a conservative rule-based screen is used instead.
+# With a key present, a transient LLM failure (timeout, unparseable response)
+# marks the record "deferred" - it is not stored and retries on the next run,
+# rather than being silently downgraded to a lower-quality rules decision.
 
 .SCREEN_SCHEMA <- list(
   type = "object",
@@ -98,9 +101,9 @@ screen_records <- function(records, cfg, max_items = NULL) {
     records[[i]] <- tryCatch(
       .screen_llm(records[[i]], key, model, system_prompt),
       error = function(e) {
-        message(sprintf("[screen] LLM failed for %s: %s; using rules",
+        message(sprintf("[screen] LLM error for %s: %s; deferring (retries next run)",
                         records[[i]]$id, conditionMessage(e)))
-        .screen_rules(records[[i]], include_ongoing, exclude_early)
+        .screen_defer(records[[i]], sprintf("LLM error: %s", conditionMessage(e)))
       })
     records[[i]] <- .apply_scope(records[[i]], include_ongoing)
     if (identical(records[[i]]$screening_decision, "include")) inc <- inc + 1L
@@ -151,11 +154,21 @@ screen_records <- function(records, cfg, max_items = NULL) {
   rec
 }
 
+# Mark a record for retry on a future run: not stored, not added to seen_ids.
+.screen_defer <- function(rec, reason) {
+  rec$screening_decision <- "deferred"
+  rec$screening_reason   <- reason
+  rec$screening_confidence <- "low"
+  rec
+}
+
 .screen_llm <- function(rec, key, model, system_prompt) {
   data <- llm_json(key, model, system_prompt, record_context(rec),
                    .SCREEN_SCHEMA, max_tokens = 400L)
   applied <- .screen_apply(rec, data)
-  if (is.null(applied)) .screen_rules(rec) else applied  # unparseable -> rules
+  # unparseable/truncated response: defer and retry next run rather than commit
+  # a rules decision the user didn't ask for.
+  if (is.null(applied)) .screen_defer(rec, "screen: unparseable LLM response") else applied
 }
 
 # --------------------------------------------------------- rule-based fallback

@@ -2,6 +2,7 @@
 export(exclude_records)
 export(load_config)
 export(reconcile_dataset)
+export(render_brief)
 export(render_explorer)
 export(run_backfill)
 export(run_pipeline)

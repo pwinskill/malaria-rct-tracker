@@ -118,7 +118,21 @@ Rscript scripts/backfill.R --start 2015-01-01 --end 2020-12-31
 
 Do a backfill **once** to seed the dataset locally, commit `data/`, then let the weekly
 GitHub job take over. Re-runs are safe and cheap: already-decided records are never
-re-screened or re-reported (only "deferred" ones — beyond the per-run screening cap — retry).
+re-screened or re-reported.
+
+**Long runs are checkpointed and resumable.** The dataset is written to disk after every
+`checkpoint_every` candidates (default 50, in `config.yaml`), so if a run is interrupted —
+you stop it, the machine sleeps, the network drops, R crashes — all completed work is kept.
+Just run the same command again and it **resumes**, skipping everything already decided and
+processing only the remainder. So a 10-year backfill can be stopped and restarted freely, and
+you never pay twice for the same record. A record is only ever re-processed if it was
+**deferred** — either beyond the per-run screening cap, or because a transient API failure
+(timeout, overloaded) meant it couldn't be screened this time; those retry on the next run
+rather than being silently downgraded to a lower-quality rules decision.
+
+After an interrupted run you *can* (but rarely need to) tidy up with `reconcile_dataset()`,
+which removes any duplicate row a crash-at-the-wrong-instant might have left and rebuilds
+`state.json` from what's actually stored.
 
 ## Models & cost
 

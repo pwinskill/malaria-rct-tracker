@@ -10,23 +10,54 @@
   file.path(cfg$output$data_dir, cfg$output$exclusions_file %||% "exclusions.txt")
 
 # --- dedupe memory ---------------------------------------------------------
-load_state <- function(cfg) {
-  p <- .state_path(cfg)
-  st <- if (file.exists(p)) fromJSON(p, simplifyVector = TRUE) else list(reported = character(0))
+# state.json is the durable memory that makes long runs resumable, so its own
+# read and write must tolerate a crash. save_state() writes atomically and keeps
+# the previous good copy as .bak; load_state() falls back to .bak and, failing
+# that, rebuilds from the stored dataset - so a torn write can never brick every
+# future run (or force a delete-and-re-screen that double-charges the LLM).
+
+.norm_state <- function(st) {
   st$reported <- as.character(st$reported %||% character(0))
-  if (is.null(st$seen_ids)) st$seen_ids <- st$reported   # migrate
+  if (is.null(st$seen_ids)) st$seen_ids <- st$reported   # migrate legacy files
   st$seen_ids <- as.character(st$seen_ids %||% character(0))
   st
 }
 
+# Reconstruct dedupe memory from what is actually on disk. Used as the last-ditch
+# recovery in load_state and as a startup backstop in the pipeline.
+.state_from_store <- function(cfg) {
+  stored <- vapply(.read_store(cfg), function(r) as.character(r$id %||% ""), character(1))
+  stored <- unique(stored[nzchar(stored)])
+  list(reported = stored, seen_ids = unique(c(stored, .screened_ids(cfg))))
+}
+
+load_state <- function(cfg) {
+  p <- .state_path(cfg); bak <- paste0(p, ".bak")
+  if (!file.exists(p) && !file.exists(bak)) return(.norm_state(list()))   # genuine fresh start
+  st <- if (file.exists(p)) tryCatch(fromJSON(p, simplifyVector = TRUE), error = function(e) NULL) else NULL
+  if (is.null(st) && file.exists(bak))
+    st <- tryCatch(fromJSON(bak, simplifyVector = TRUE), error = function(e) NULL)
+  if (is.null(st)) {
+    warning("state.json unreadable; rebuilding dedupe memory from the stored dataset", call. = FALSE)
+    st <- .state_from_store(cfg)
+  }
+  .norm_state(st)
+}
+
 save_state <- function(cfg, state) {
-  p <- .state_path(cfg)
-  ensure_dir(dirname(p))
+  p <- .state_path(cfg); ensure_dir(dirname(p))
+  tmp <- paste0(p, ".tmp"); bak <- paste0(p, ".bak")
   out <- list(
     reported = I(as.character(state$reported %||% character(0))),
     seen_ids = I(as.character(state$seen_ids %||% character(0)))
   )
-  write_json(out, p, pretty = TRUE, auto_unbox = TRUE)
+  write_json(out, tmp, pretty = TRUE, auto_unbox = TRUE)
+  # Rotate: keep the last good file as .bak, then move the freshly-written temp
+  # into place. Every rename targets a non-existent path, so it works on Windows
+  # too (rename-over-existing fails there). A crash between the two renames
+  # leaves .bak holding a complete, loadable state.
+  if (file.exists(p)) { if (file.exists(bak)) unlink(bak); file.rename(p, bak) }
+  if (!file.rename(tmp, p)) { file.copy(tmp, p, overwrite = TRUE); unlink(tmp) }
   invisible(p)
 }
 
@@ -59,14 +90,16 @@ save_state <- function(cfg, state) {
 append_records <- function(cfg, records) {
   if (!length(records)) return(invisible())
   ensure_dir(cfg$output$data_dir)
+  # Write the authoritative JSONL FIRST, then the derived CSV. reconcile treats
+  # JSONL as the source of truth, so a crash between the two must never leave a
+  # record in CSV but not JSONL (reconcile would then erase it). JSONL >= CSV.
+  con <- file(.jsonl_path(cfg), open = "a", encoding = "UTF-8")
+  .write_jsonl(con, records); close(con)
   csv_p <- .csv_path(cfg)
   write_header <- !file.exists(csv_p)
   write.table(.records_df(records), csv_p, append = !write_header, sep = ",",
               row.names = FALSE, col.names = write_header, qmethod = "double",
               fileEncoding = "UTF-8")
-  con <- file(.jsonl_path(cfg), open = "a", encoding = "UTF-8")
-  on.exit(close(con))
-  .write_jsonl(con, records)
   invisible(csv_p)
 }
 

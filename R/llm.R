@@ -33,8 +33,11 @@ llm_json <- function(key, model, system_prompt, user_prompt, schema,
                      `anthropic-version` = "2023-06-01",
                      `content-type` = "application/json")
   req <- req_body_json(req, body, auto_unbox = TRUE)
-  req <- req_timeout(req, 60)
-  req <- req_retry(req, max_tries = 3, is_transient = .http_transient)
+  req <- req_timeout(req, 90)
+  # retry_on_failure: retry timeouts / dropped connections (not just transient
+  # HTTP statuses). Backoff is exponential with jitter by default. This is what
+  # turns a flaky-network blip from an instant failure into a brief retry.
+  req <- req_retry(req, max_tries = 4, is_transient = .http_transient, retry_on_failure = TRUE)
   resp <- req_perform(req)
   js <- resp_body_json(resp, simplifyVector = FALSE)
 

@@ -50,6 +50,11 @@ run_pipeline <- function(cfg, start_date, end_date, run_type, max_items = NULL) 
   merged <- merge_within_batch(raw)
 
   state <- load_state(cfg)
+  # Backstop: treat everything already stored (and screened-out) as seen, even if
+  # state.json lagged the store because a previous run was interrupted between
+  # writing a chunk and saving state. Prevents re-screening / double-charging on
+  # resume, independent of state.json's freshness.
+  state$seen_ids <- unique(c(state$seen_ids, .state_from_store(cfg)$seen_ids))
   new <- split_new(merged, state)
   message(sprintf("%d unique, %d new after dedupe against state", length(merged), length(new)))
 
@@ -63,7 +68,7 @@ run_pipeline <- function(cfg, start_date, end_date, run_type, max_items = NULL) 
   }
 
   if (!length(new)) {
-    prepend_brief(cfg, list(), today)
+    render_brief(cfg)
     tryCatch(render_explorer(cfg),
              error = function(e) message(sprintf("[explorer] skipped: %s", conditionMessage(e))))
     return(invisible(0L))
@@ -71,23 +76,69 @@ run_pipeline <- function(cfg, start_date, end_date, run_type, max_items = NULL) 
 
   new <- lapply(new, function(r) { r$first_seen <- today; r$run_type <- run_type; r })
 
-  # --- eligibility screen ---
-  new <- screen_records(new, cfg)
-  is_dec <- function(r, d) identical(r$screening_decision, d)
-  included <- Filter(function(r) is_dec(r, "include"), new)
-  excluded <- Filter(function(r) is_dec(r, "exclude"), new)
-  deferred <- Filter(function(r) is_dec(r, "deferred"), new)
-  message(sprintf("%d included, %d excluded, %d deferred",
-                  length(included), length(excluded), length(deferred)))
+  # --- screen -> extract -> STORE, in checkpointed chunks --------------------
+  # The dataset is persisted after every chunk, so an interrupted or crashed run
+  # keeps all completed work and a re-run resumes automatically (already-decided
+  # candidates are dropped by split_new above). Per-run caps are enforced across
+  # chunks, not reset per chunk.
+  chunk_n     <- max(1L, as.integer(cfg$checkpoint_every %||% 50L))
+  screen_cap  <- cfg$screening$max_items_per_run %||% 5000
+  extract_cap <- max_items %||% cfg$extraction$max_items_per_run %||% 2000
+  total <- length(new)
+  screened <- 0L; extracted <- 0L
+  n_inc <- 0L; n_exc <- 0L; n_def <- 0L
 
-  # --- extraction on the included set only ---
-  included <- enrich(included, cfg, max_items = max_items)
+  pos <- 0L
+  while (pos < total) {
+    hi <- min(pos + chunk_n, total)
+    chunk <- new[(pos + 1L):hi]
+    pos <- hi
 
-  # --- store ---
+    # screen within the remaining global screening budget. Count ATTEMPTS, not
+    # successes: a record that reaches the LLM but fails/defers still consumed a
+    # (possibly billed) call, so the cap must bound attempts to hold.
+    room <- max(0L, screen_cap - screened)
+    chunk <- screen_records(chunk, cfg, max_items = room)
+    screened <- screened + min(length(chunk), room)
+
+    is_dec <- function(r, d) identical(r$screening_decision, d)
+    inc <- Filter(function(r) is_dec(r, "include"),  chunk)
+    exc <- Filter(function(r) is_dec(r, "exclude"),  chunk)
+    def <- Filter(function(r) is_dec(r, "deferred"), chunk)
+
+    # extract only the included set, within the remaining global extraction budget
+    if (length(inc)) {
+      eroom <- max(0L, extract_cap - extracted)
+      inc <- enrich(inc, cfg, max_items = eroom)
+      extracted <- extracted + min(length(inc), eroom)
+    }
+
+    state <- .checkpoint(cfg, state, inc, exc)   # append store + save state now
+    n_inc <- n_inc + length(inc); n_exc <- n_exc + length(exc); n_def <- n_def + length(def)
+    message(sprintf("[checkpoint] %d/%d processed | run so far: %d included, %d excluded, %d deferred",
+                    pos, total, n_inc, n_exc, n_def))
+  }
+
+  message(sprintf("%d included, %d excluded, %d deferred", n_inc, n_exc, n_def))
+
+  # Brief and explorer are both derived VIEWS rebuilt from the full stored
+  # dataset, so they always reflect everything on disk - including records
+  # persisted by an earlier interrupted run - not just this run's output.
+  brief <- render_brief(cfg)
+  message(sprintf("brief updated: %s", brief))
+  tryCatch(render_explorer(cfg),
+           error = function(e) message(sprintf("[explorer] skipped: %s", conditionMessage(e))))
+
+  invisible(n_inc)
+}
+
+# Persist one processed chunk and fold its decided ids into `state` (returned).
+# Order is deliberate: write the records to the store BEFORE recording their ids
+# as seen, so a crash in between re-adds a duplicate row (cleaned by
+# reconcile_dataset) on the next run rather than losing the record forever.
+.checkpoint <- function(cfg, state, included, excluded) {
   append_records(cfg, included)
   append_excluded(cfg, excluded)
-
-  # --- state: remember everything decided this run (not deferred) ---
   decided <- c(included, excluded)
   if (length(decided)) {
     keys <- unique(unlist(lapply(decided, function(r) r$.all_keys %||% r$id)))
@@ -95,16 +146,7 @@ run_pipeline <- function(cfg, start_date, end_date, run_type, max_items = NULL) 
     state$seen_ids <- unique(c(state$seen_ids, keys))
     save_state(cfg, state)
   }
-
-  brief <- prepend_brief(cfg, included, today)
-  message(sprintf("brief updated: %s", brief))
-
-  # Refresh the interactive HTML explorer from the full stored dataset. Never
-  # let a rendering hiccup fail the data run - the data is already saved.
-  tryCatch(render_explorer(cfg),
-           error = function(e) message(sprintf("[explorer] skipped: %s", conditionMessage(e))))
-
-  invisible(length(included))
+  state
 }
 
 #' Weekly run - looks back `search$weekly_lookback_days` from today.

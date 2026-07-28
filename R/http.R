@@ -1,19 +1,21 @@
 # Small, polite HTTP helper built on httr2, with retries and backoff.
 #
 # httr2's req_retry() honours Retry-After on 429 automatically; we extend the
-# transient set to cover 500/502/503/504 as well.
+# transient set to cover 500/502/503/504 and Anthropic's 529 (overloaded), and
+# turn on retry_on_failure so timeouts / dropped connections are retried too
+# (off by default - a single network blip would otherwise abort immediately).
 
 USER_AGENT <- "malaria-rct-tracker (research; contact via config.yaml)"
 
 .http_transient <- function(resp) {
-  httr2::resp_status(resp) %in% c(429L, 500L, 502L, 503L, 504L)
+  httr2::resp_status(resp) %in% c(429L, 500L, 502L, 503L, 504L, 529L)
 }
 
 .http_request <- function(url, query = list(), headers = list(), timeout = 60) {
   req <- request(url)
   req <- req_user_agent(req, USER_AGENT)
   req <- req_timeout(req, timeout)
-  req <- req_retry(req, max_tries = 4, is_transient = .http_transient)
+  req <- req_retry(req, max_tries = 4, is_transient = .http_transient, retry_on_failure = TRUE)
   if (length(query)) req <- do.call(req_url_query, c(list(req), query))
   if (length(headers)) req <- do.call(req_headers, c(list(req), headers))
   req

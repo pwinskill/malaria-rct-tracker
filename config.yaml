@@ -11,6 +11,12 @@ search:
   weekly_lookback_days: 10   # a little overlap; dedupe removes repeats
   backfill_days: 365         # default backfill window; widen via CLI
 
+# ------------------------------------------------------------------ reliability
+# The dataset is written to disk after every `checkpoint_every` candidates, so an
+# interrupted or crashed run keeps all completed work and a re-run resumes where
+# it left off. Smaller = more crash-safe but more frequent disk writes.
+checkpoint_every: 50
+
 # ------------------------------------------------------------------ sources
 # The per-source queries live in the fetchers (R/fetch_*.R). They are tuned to
 # be SENSITIVE (favour recall) because the eligibility screen below supplies

@@ -5,6 +5,8 @@
 .Ruserdata
 *.tar.gz
 *.Rcheck/
+data/*.tmp
+data/*.bak
 legacy_python/**/__pycache__/
 legacy_python/**/*.pyc
 .DS_Store

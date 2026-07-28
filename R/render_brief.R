@@ -52,36 +52,38 @@
   md
 }
 
-# Insert this run's records as a new dated section directly below the marker
-# (newest on top). Empty runs are a no-op once the brief exists, so quiet weeks
-# don't accumulate "no new trials" filler.
-prepend_brief <- function(cfg, records, week_label) {
+#' (Re)build the markdown brief from the stored dataset
+#'
+#' The brief is a derived VIEW: it is rebuilt in full from the dataset every run,
+#' grouped into dated sections by each record's `first_seen` (newest on top). This
+#' makes it self-healing - records persisted by an earlier interrupted run always
+#' appear, exactly like the HTML explorer - rather than being tied to a single
+#' run's in-memory output.
+#'
+#' @param cfg Config list; defaults to [load_config()].
+#' @param records Optional list of records; defaults to reading `trials.jsonl`.
+#' @return The path written (invisibly).
+#' @export
+render_brief <- function(cfg = load_config(), records = NULL) {
+  if (is.null(records)) records <- .read_store(cfg)
   path <- file.path(cfg$output$outputs_dir, cfg$output$brief_filename)
   ensure_dir(cfg$output$outputs_dir)
 
-  body <- if (file.exists(path)) {
-    paste(readLines(path, warn = FALSE), collapse = "\n")
-  } else {
-    .brief_header()
-  }
-
-  if (!length(records)) {
-    if (!file.exists(path)) writeLines(body, path)
-    return(invisible(path))
-  }
-
-  section <- c(sprintf("## Week of %s\n", week_label),
-               vapply(records, .brief_entry, character(1)))
-  block <- paste(section, collapse = "\n")
-
-  if (grepl(.BRIEF_MARKER, body, fixed = TRUE)) {
-    body <- sub(.BRIEF_MARKER,
-                paste0(.BRIEF_MARKER, "\n\n", block),
+  body <- .brief_header()
+  if (length(records)) {
+    dates <- vapply(records, function(r) {
+      d <- as.character(r$first_seen %||% ""); if (nzchar(d)) d else "undated"
+    }, character(1))
+    # newest first_seen on top; "undated" (no date) sorts last
+    uniq_dates <- unique(dates)
+    uniq_dates <- uniq_dates[order(uniq_dates == "undated", -xtfrm(uniq_dates))]
+    sections <- unlist(lapply(uniq_dates, function(d) {
+      grp <- records[dates == d]
+      c(sprintf("## Week of %s\n", d), vapply(grp, .brief_entry, character(1)))
+    }))
+    body <- sub(.BRIEF_MARKER, paste0(.BRIEF_MARKER, "\n\n", paste(sections, collapse = "\n")),
                 body, fixed = TRUE)
-  } else {
-    body <- paste0(body, "\n\n", block)
   }
-
   writeLines(body, path)
   invisible(path)
 }
