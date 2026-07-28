@@ -9445,4 +9445,442 @@ in data/trials.csv.
 - **Species:** P. falciparum
 - **Link:** https://doi.org/10.1101/2021.04.12.21255334
 
+### Interaction Between Insecticide Resistance-Associated Genes and Malaria Transmission in Anopheles Gambiae S. L. During a Cluster-Randomized Controlled Trial of A “lethal House Lure” in Central Côte D’ivoire
+- **Source / ID:** europepmc (PPR368654)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Côte d'Ivoire
+- **Design:** cluster-randomized controlled trial, two-armed, entomological substudy
+- **Status:** preprint
+- **Published:** 2021-07-12
+- **Trial period:** 2017 to 2019
+- **Class:** ITN/LLIN
+- **Population:** wild Anopheles gambiae s.l. mosquitoes captured by human landing catches
+- **N:** 40
+- **Impact:** Kdr L1014F and Ace-1R G119S resistance mutations were significantly more frequent in An. gambiae than An. coluzzii, but neither mutation was significantly associated with Plasmodium infection status in either species.
+- **Effect:** odds ratio 59.64 (Kdr, An. gambiae vs An. coluzzii); 2.79 (Ace-1R, An. gambiae vs An. coluzzii) (95% CI 30.81-131.63 (Kdr); 2.17-3.60 (Ace-1R))
+- **Species:** Plasmodium sp. (unspecified, likely P. falciparum predominant)
+- **Follow-up:** May 2017 to April 2019
+- **Link:** https://doi.org/10.21203/rs.3.rs-637056/v1
+
+### High efficacy of microbial larvicides for malaria vectors control in the city of Yaounde Cameroon: a cluster randomised study
+- **Source / ID:** europepmc (PPR320062)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Cameroon
+- **Design:** cluster-randomized, two-arm, controlled trial
+- **Status:** preprint
+- **Published:** 2021-04-30
+- **Trial period:** September 2018 to November 2020
+- **Class:** larval source management
+- **Population:** urban residents in clusters within the city of Yaoundé (entomological outcomes)
+- **N:** 26
+- **Impact:** Larviciding with VectoMax G reduced anopheline breeding habitats by over 85%, adult anopheline biting density by 68%, and entomological inoculation rate by 79% compared to non-intervention areas.
+- **Effect:** Odds ratio (entomological inoculation rate) OR 0.21 (79% reduction) (95% CI 0.14–0.30)
+- **Species:** mixed
+- **Follow-up:** 26 months
+- **Link:** https://doi.org/10.21203/rs.3.rs-467883/v1
+
+### LLIN Evaluation in Uganda Project (LLINEUP) – Effect of Long-Lasting Insecticidal Nets with and Without Piperonyl Butoxide on Malaria Indicators in Uganda 25 Months after Distribution: A Cluster-Randomised Trial
+- **Source / ID:** europepmc (PPR603184)
+- **Journal:** SSRN
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Uganda
+- **Design:** cluster-randomised, proportionate randomisation, as-treated analysis
+- **Status:** preprint
+- **Published:** 2022-04-11
+- **Trial period:** 2017 to 2019
+- **Class:** ITN/LLIN
+- **Population:** children aged 2-10 years in surveyed households
+- **N:** 104
+- **Impact:** PBO LLINs reduced malaria parasite prevalence and Anopheles mosquito density more than conventional pyrethroid-only LLINs 25 months after distribution.
+- **Effect:** prevalence ratio (adjusted for baseline) 0.80 (95% CI 0.69-0.93)
+- **Species:** P. falciparum
+- **Follow-up:** 25 months
+- **Link:** https://doi.org/10.2139/ssrn.4081085
+
+### Entomological Effects of Attractive Targeted Sugar Bait Station Deployment in Western Zambia: Vector Surveillance Findings from a Two-arm Cluster Randomized Phase III Trial
+- **Source / ID:** europepmc (PPR861309)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Phase 3
+- **Place:** Zambia
+- **Design:** two-arm cluster-randomized controlled trial, phase 3
+- **Status:** preprint
+- **Published:** 2024-06-03
+- **Trial period:** 2021
+- **Population:** Anopheles funestus mosquito populations in study clusters (entomological surveillance)
+- **N:** 20
+- **Impact:** ATSB deployment was associated with a non-significant 35% reduction in vector light trap density, with no significant effects on parity, HLC rates, sporozoite prevalence, or EIR.
+- **Effect:** rate ratio (light trap abundance) RR = 0.65 (95% CI 95% CI 0.30-1.40)
+- **Species:** P. falciparum
+- **Follow-up:** two 7-month deployments
+- **Link:** https://doi.org/10.21203/rs.3.rs-4450785/v1
+
+### A Cluster Randomized Trial of Delivery of Intermittent Preventive Treatment of Malaria in Pregnancy at the Community Level in Malawi
+- **Source / ID:** europepmc (PPR408798)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Malawi
+- **Design:** cluster randomized controlled trial, difference in differences analysis
+- **Status:** preprint
+- **Published:** 2021-10-18
+- **Trial period:** 2018-11 to 2020-07
+- **Class:** IPTp
+- **Population:** pregnant women; women who delivered in the prior 12 months
+- **N:** 1057
+- **Impact:** Community health worker delivery of IPTp did not significantly increase IPTp3+ coverage compared to health facility delivery, though ANC4+ coverage increased significantly more in the intervention group.
+- **Effect:** difference-in-differences in IPTp3+ coverage 6.9% (95% CI -5.9%, 19.6%)
+- **Follow-up:** 21 months (baseline December 2017 to endline August 2020)
+- **Link:** https://doi.org/10.21203/rs.3.rs-971443/v1
+
+### Effectiveness and safety of reactive focal mass drug administration (rfMDA) using dihydroartemisinin-piperaquine to reduce malaria transmission in very low-endemic setting of Eswatini: a pragmatic cluster randomised controlled trial
+- **Source / ID:** europepmc (PPR296389)
+- **Journal:** medRxiv
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Eswatini
+- **Design:** pragmatic, cluster-randomised controlled trial, intention-to-treat
+- **Status:** preprint
+- **Published:** 2021-03-12
+- **Trial period:** 2015 to 2017
+- **Class:** MDA; treatment/ACT; diagnostic
+- **Population:** individuals residing near confirmed malaria index cases in a very low-endemic setting
+- **N:** 77 clusters
+- **Impact:** rfMDA using dihydroartemisinin-piperaquine was safe and resulted in lower cumulative malaria incidence than RACD, but the trial could not confirm its effectiveness, likely due to insufficient statistical power.
+- **Effect:** adjusted incidence rate ratio (aIRR) 0.93 for all malaria; 0.77 for locally acquired malaria (95% CI 0.54-1.60 (all malaria); 0.38-1.56 (locally acquired malaria))
+- **Species:** P. falciparum
+- **Follow-up:** Sept 2015–Aug 2017 (approximately 2 years)
+- **Link:** https://doi.org/10.1101/2021.03.12.21252721
+
+### Improving malaria preventive practices and pregnancy outcomes through a health education intervention: a randomized controlled trial
+- **Source / ID:** europepmc (PPR267254)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Nigeria
+- **Design:** randomized controlled parallel-group trial
+- **Status:** preprint
+- **Published:** 2021-01-18
+- **Class:** IPTp; ITN/LLIN
+- **Population:** pregnant women attending antenatal care
+- **N:** 372
+- **Impact:** The health education intervention based on the IMB model significantly improved reported ITN use, reported IPTp uptake, and haematocrit levels, but had no significant effect on reported malaria diagnosis or birth weight.
+- **Follow-up:** 4 months post-intervention and at end of pregnancy
+- **Link:** https://doi.org/10.21203/rs.3.rs-16933/v3
+
+### Monitoring of Fabric Integrity and Attrition Rate of Dual-Active Ingredient Long-Lasting Insecticidal Nets in Tanzania: A Prospective Cohort Study Nested in a Cluster Randomized Controlled Trial
+- **Source / ID:** europepmc (PPR758857)
+- **Journal:** Preprints.org
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Tanzania
+- **Design:** prospective cohort study nested in a cluster randomized controlled trial
+- **Status:** preprint
+- **Published:** 2023-11-13
+- **Trial period:** 2019
+- **Class:** ITN/LLIN
+- **Population:** households in villages receiving distributed LLINs
+- **N:** 3072
+- **Impact:** All dual active ingredient LLINs had poor textile durability with median functional survival less than three years, with OlysetTM Plus performing worst and having the shortest survival.
+- **Effect:** median functional survival (years) 1.9 years (Interceptor®, Interceptor® G2, Royal Guard®); 0.9 years (OlysetTM Plus)
+- **Follow-up:** 36 months
+- **Link:** https://doi.org/10.20944/preprints202311.0771.v1
+
+### Effect of biannual azithromycin distribution on antibody responses to malaria, bacterial, and protozoan pathogens among children: A cluster-randomized, placebo-controlled trial in Niger
+- **Source / ID:** europepmc (PPR316443)
+- **Journal:** medRxiv
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Niger
+- **Design:** cluster-randomized, placebo-controlled, double-masked, repeated cross-sectional secondary analysis
+- **Status:** preprint
+- **Published:** 2021-04-26
+- **Class:** monoclonal antibody
+- **Population:** children ages 1-59 months
+- **N:** 3814
+- **Impact:** Biannual azithromycin distribution was associated with lower Campylobacter spp. seroprevalence and seroconversion rate compared to placebo, with no significant differences for other pathogens including P. falciparum.
+- **Effect:** seroconversion hazard ratio (Campylobacter spp.) 0.71 (95% CI 0.56-0.89)
+- **Species:** mixed
+- **Follow-up:** 36 months
+- **Link:** https://doi.org/10.1101/2021.04.23.21255957
+
+### Efficacy and safety of artesunate-amodiaquine and artemether-lumefantrine and prevalence of molecular markers associated with resistance, Guinea: an open-label two-arm randomised controlled trial
+- **Source / ID:** europepmc (PPR175912)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Phase 3
+- **Place:** Guinea
+- **Design:** open-label, two-arm, randomised controlled trial, phase 3
+- **Status:** preprint
+- **Published:** 2020-06-15
+- **Trial period:** 2016 to 2016
+- **Class:** treatment/ACT
+- **Population:** children aged 6-59 months with uncomplicated Plasmodium falciparum malaria
+- **N:** 421
+- **Impact:** Both artesunate-amodiaquine and artemether-lumefantrine showed high (99-100%) corrected efficacy at Day 28 with no evidence of artemisinin resistance-associated pfk13 mutations.
+- **Effect:** Kaplan-Meier corrected efficacy at Day 28 100% (Maferinyah, both arms); 99% (Labé, both arms) (95% CI 97.2-100% (ASAQ, Labé); 97.1-100% (AL, Labé))
+- **Species:** P. falciparum
+- **Follow-up:** 28 days
+- **Link:** https://doi.org/10.21203/rs.2.21808/v3
+
+### Cost-effectiveness of Insecticide-treated wall liner and indoor residual spraying as additions to insecticide-treated bed nets to prevent malaria: findings from cluster randomized trials in Tanzania
+- **Source / ID:** europepmc (PPR304335)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Tanzania
+- **Design:** cluster-randomized, two-arm, controlled trial (44 clusters); cost-effectiveness analysis
+- **Status:** preprint
+- **Published:** 2021-03-29
+- **Trial period:** 2015 to 2016
+- **Class:** ITN/LLIN; IRS
+- **Population:** households in malaria-endemic areas of Muheza and Muleba, Tanzania
+- **N:** 5666
+- **Impact:** The ITWL trial was stopped early because the wall liner lost its insecticidal effect within 90 days, while IRS was found to be effective (57% efficacy) but more cost-effective than ITWL at averting malaria-related DALYs.
+- **Effect:** efficacy (IRS) / incremental cost-effectiveness ratio 57% efficacy; ICER $490 per DALY averted (95% CI 3%-81% (efficacy); 61-1651 DALYs averted (95% CI))
+- **Species:** P. falciparum
+- **Follow-up:** 90 days (ITWL trial before termination)
+- **Link:** https://doi.org/10.21203/rs.3.rs-257460/v1
+
+### A Cluster Randomized Trial of Delivery of Intermittent Preventive Treatment of Malaria in Pregnancy at the Community Level in Burkina Faso
+- **Source / ID:** europepmc (PPR196773)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Burkina Faso
+- **Design:** cluster randomized, controlled trial, difference in differences analysis
+- **Status:** preprint
+- **Published:** 2020-08-05
+- **Trial period:** 2017 to 2018
+- **Class:** IPTp
+- **Population:** pregnant women
+- **N:** 734
+- **Impact:** Community delivery of IPTp by CHWs led to a higher median number of IPTp doses received and higher IPTp3/IPTp4 coverage compared to standard facility-based delivery, though differences were not statistically significant for IPTp3/IPTp4 or ANC attendance.
+- **Effect:** difference in differences (DiD) in coverage IPTp3: 17.6%; IPTp4: 20.0%; ANC4: 12.6% (95% CI IPTp3: 95% CI -16.3 to 51.5; IPTp4: 95% CI -7.2 to 47.3)
+- **Follow-up:** March 2017 to July-August 2018 (approximately 16 months)
+- **Link:** https://doi.org/10.21203/rs.3.rs-20974/v3
+
+### Comparing drug regimens for clearance of malaria parasites in asymptomatic adults using PCR in Kilifi County, Kenya: an open-label randomised controlled clinical trial (MalPaC)
+- **Source / ID:** europepmc (PPR113925)
+- **Journal:** Wellcome Open Res
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Kilifi County, Kenya
+- **Design:** open-label, randomised controlled trial
+- **Status:** preprint
+- **Published:** 2020-02-20
+- **Trial period:** 2013-11 to 2014-02
+- **Class:** vaccine; treatment/ACT
+- **Population:** asymptomatic adults
+- **N:** 90
+- **Impact:** Falciparum DNA remained detectable by PCR post-treatment with incomplete parasite clearance regardless of drug regimen, though the AP+AS regimen may have partially suppressed acquisition of new infections and reduced recrudescence compared to AS and SP+AS+PQ.
+- **Effect:** Odds ratio for qPCR positivity in post-treatment phase (AS and SP+AS+PQ vs AP+AS) OR=7.7 (AS vs AP+AS); OR=4.2 (SP+AS+PQ vs AP+AS) (95% CI 4.6-12.8 (AS); 2.6-6.8 (SP+AS+PQ))
+- **Species:** P. falciparum
+- **Follow-up:** 84 days
+- **Link:** https://doi.org/10.12688/wellcomeopenres.15627.1
+
+### Community case management to accelerate access to healthcare in Mali: a realist process evaluation nested within a cluster randomized trial.
+- **Source / ID:** europepmc (39058651)
+- **Journal:** Health policy and planning
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** Mali
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2024-09-01
+- **Population:** children under 5 and pregnant women; also CHWs, health providers and community participants
+- **N:** 195
+- **Impact:** Both arms saw doubled treatment-seeking and antenatal visits and halved under-5 mortality over 3 years compared with baseline, but proactive CHW home visits had only modest effects on care utilization and no effect on under-5 mortality compared with control.
+- **Follow-up:** 3 years
+- **Link:** https://doi.org/10.1093/heapol/czae066
+
+### Efficacy of a spatial repellent for control of malaria in Indonesia: a cluster-randomized controlled trial
+- **Source / ID:** europepmc (PPR88800)
+- **Journal:** medRxiv
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Indonesia
+- **Design:** cluster-randomized, double-blind, placebo-controlled trial
+- **Status:** preprint
+- **Published:** 2019-08-13
+- **Trial period:** 2015 to 2018
+- **Class:** spatial repellent
+- **Population:** children aged 6 months to 5 years, after radical cure
+- **N:** 1341
+- **Impact:** The spatial repellent (transfluthrin) reduced malaria infection compared to placebo, but the overall effect across 24 clusters was not statistically significant, though subgroup analyses in higher-risk clusters showed significant protective effects.
+- **Effect:** protective efficacy 27.7% (first infection) and 31.3% (overall infections) across 24 clusters; 33.3% and 40.9% in 19 clusters with baseline infection; 60% in 12 moderate-to-high-risk clusters
+- **Species:** P. falciparum
+- **Follow-up:** 24 months
+- **Link:** https://doi.org/10.1101/19003426
+
+### Effect of biological larviciding with Bacillus thuringiensis israelensis for malaria control on non-target vector mosquito species in rural Burkina Faso – A cluster randomized trial
+- **Source / ID:** europepmc (PPR132311)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Burkina Faso
+- **Design:** cluster-randomized trial
+- **Status:** preprint
+- **Published:** 2019-10-15
+- **Class:** ITN/LLIN; larval source management
+- **Population:** residents of rural villages and a semi-urban town in Northwestern Burkina Faso
+- **N:** 127
+- **Impact:** Larviciding against malaria mosquitoes had limited or no impact on Culex mosquitoes but reduced Aedes mosquito abundance by up to 34% when all public breeding sites were treated.
+- **Effect:** percentage reduction in Aedes abundance up to 34%
+- **Follow-up:** one baseline and one intervention rainy season
+- **Link:** https://doi.org/10.21203/rs.2.15770/v1
+
+### Field performance of three mosquito collection methods for assessing the entomological efficacy of dual-active ingredient long-lasting insecticidal nets.
+- **Source / ID:** europepmc (37507478)
+- **Journal:** Scientific reports
+- **Type:** trial
+- **Phase:** Not applicable
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2023-07-28
+- **Class:** ITN/LLIN
+- **Population:** Anopheles mosquitoes collected in households in trial clusters
+- **N:** 60
+- **Impact:** All three mosquito collection methods (HLC, CDC light traps, PSC) detected fewer mosquitoes in the Interceptor G2 dual-active-ingredient LLIN arm compared to other trial arms, with HLC and PSC showing stronger evidence of this effect due to more frequent collection rounds.
+- **Effect:** mean vector density per method per night HLC 15.9, CDC light traps 6.8, PSC 1.1
+- **Follow-up:** 24 months
+- **Link:** https://doi.org/10.1038/s41598-023-39558-9
+
+### Distance to Health Centers and Effectiveness of Azithromycin Mass Administration for Children in Niger: A Secondary Analysis of the MORDOR Cluster Randomized Trial.
+- **Source / ID:** europepmc (38100110)
+- **Journal:** JAMA network open
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** Niger
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2023-12-01
+- **Trial period:** 2014 to 2017
+- **Population:** children aged 1 to 59 months
+- **N:** 76092
+- **Impact:** Mass azithromycin administration reduced child mortality more among children living farther from primary health centers, with mortality reduction ranging from 0% at 0 km to 28% at 10 km distance.
+- **Effect:** mortality reduction (%) with azithromycin vs placebo by distance to health center 0% at 0 km, 4% at 1 km, 16% at 5 km, 28% at 10 km (95% CI -19% to 17% (0 km); -12% to 17% (1 km); 7% to 23% (5 km); 17% to 38% (10 km))
+- **Follow-up:** 2 years
+- **Link:** https://doi.org/10.1001/jamanetworkopen.2023.46840
+
+### Effectiveness of smartphone-based Community Case Management on urgent referral, re-consultation and hospitalization of children under-5 in Malawi: Results of a cluster-randomized, stepped-wedge trial
+- **Source / ID:** europepmc (PPR210254)
+- **Journal:** medRxiv
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Malawi
+- **Design:** cluster-randomized, stepped-wedge trial
+- **Status:** preprint
+- **Published:** 2020-09-04
+- **Trial period:** 2016-11 to 2017-04
+- **Population:** children under-5 presenting with acute illness at village clinics
+- **N:** 6965
+- **Impact:** Children in the eCCM intervention phase were more likely to be urgently referred to higher-level health facilities than those in the control phase, with no significant increase in re-consultation or hospitalization rates after adjusting for time.
+- **Effect:** Odds Ratio for urgent referral 2.02 (95% CI 1.27-3.23)
+- **Link:** https://doi.org/10.1101/2020.09.03.20187328
+
+### Impact of universal home visits on child health in Bauchi State, Nigeria: a stepped wedge cluster randomised controlled trial.
+- **Source / ID:** europepmc (34641865)
+- **Journal:** BMC health services research
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** Nigeria
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2021-10-12
+- **Class:** vaccine
+- **Population:** children 12-18 months old born to mothers visited during pregnancy, and their households
+- **N:** 6905
+- **Impact:** Universal home visits to pregnant women and their spouses reduced childhood diarrhoea prevalence and improved diarrhoea management, hygiene knowledge and practices, with only a slight, non-significant improvement in full immunisation.
+- **Effect:** Odds Ratio 0.40 (diarrhoea in last 15 days) (95% CI 0.30-0.53)
+- **Follow-up:** 12-18 months after birth
+- **Link:** https://doi.org/10.1186/s12913-021-07000-3
+
+### Spatial Effects of Permethrin-Impregnated Bed Nets on Child Mortality: 26 Years on, a Spatial Reanalysis of a Cluster Randomized Trial.
+- **Source / ID:** europepmc (31595867)
+- **Journal:** The American journal of tropical medicine and hygiene
+- **Type:** trial
+- **Phase:** Not applicable
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2019-12-01
+- **Trial period:** 1993
+- **Class:** ITN/LLIN
+- **Population:** children aged 6-59 months
+- **Impact:** Permethrin-impregnated bed nets reduced all-cause child mortality by 17%, with additional evidence of a spatial spillover benefit to nearby non-users.
+- **Effect:** reduction in all-cause mortality 17%
+- **Link:** https://doi.org/10.4269/ajtmh.19-0111
+
+### Antibiotic Review Kit for Hospitals (ARK-Hospital): a stepped wedge cluster randomised controlled trial
+- **Source / ID:** europepmc (PPR506073)
+- **Journal:** medRxiv
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** United Kingdom
+- **Design:** stepped-wedge, cluster-randomised controlled trial, hospital-level
+- **Status:** preprint
+- **Published:** 2022-06-14
+- **Trial period:** 2018 to 2019
+- **Class:** diagnostic
+- **Population:** adult acute/non-elective medical hospital admissions
+- **N:** 39
+- **Impact:** The ARK intervention led to a sustained reduction in hospital antibiotic consumption without evidence of a related increase in mortality, and was concluded to be safe and effective.
+- **Effect:** year-on-year percentage change in antibiotic consumption (DDD per admission) -4.8% (95% CI -9.1% to -0.2%)
+- **Follow-up:** minimum 14 months
+- **Link:** https://doi.org/10.1101/2022.06.13.22275007
+
+### Macrolide and Nonmacrolide Resistance with Mass Azithromycin Distribution.
+- **Source / ID:** europepmc (33176084)
+- **Journal:** The New England journal of medicine
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** Niger
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2020-11-01
+- **Population:** preschool children 1 to 59 months of age in villages receiving mass drug administration
+- **N:** 30
+- **Impact:** Villages receiving twice-yearly mass azithromycin distribution for 4 years had substantially higher levels of macrolide and nonmacrolide (including beta-lactam) antibiotic resistance determinants than villages receiving placebo.
+- **Effect:** ratio of macrolide-resistance determinants (azithromycin vs placebo) 7.5 times as high at 48 months (7.4 times as high at 36 months) (95% CI 3.8 to 23.1 (48 months); 4.0 to 16.7 (36 months))
+- **Follow-up:** 48 months
+- **Link:** https://doi.org/10.1056/nejmoa2002606
+
+### Daily co-trimoxazole prophylaxis to prevent mortality in children with complicated severe acute malnutrition: a multicentre, double-blind, randomised placebo-controlled trial.
+- **Source / ID:** europepmc (27265353)
+- **Journal:** The Lancet. Global health
+- **Type:** trial
+- **Phase:** Phase 3
+- **Place:** Kenya
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2016-06-02
+- **Trial period:** 2009 to 2013
+- **Population:** children aged 60 days to 59 months without HIV admitted to hospital with complicated severe acute malnutrition
+- **N:** 1778
+- **Impact:** Daily co-trimoxazole prophylaxis did not reduce mortality in children with complicated severe acute malnutrition without HIV compared with placebo.
+- **Effect:** hazard ratio 0.90 (95% CI 0.71-1.16)
+- **Follow-up:** 12 months
+- **Link:** https://doi.org/10.1016/s2214-109x(16)30096-1
+
+### The global network antenatal corticosteroids trial: impact on stillbirth.
+- **Source / ID:** europepmc (27255082)
+- **Journal:** Reproductive health
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** India, Pakistan, Zambia, Kenya, Guatemala, Argentina
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2016-06-02
+- **Class:** treatment/ACT
+- **Population:** pregnant women at risk of preterm birth and their newborns
+- **N:** 102
+- **Impact:** The antenatal corticosteroids intervention was associated with a non-significant increased risk of stillbirth overall, with a significant increase among term births and macerated stillbirths.
+- **Effect:** adjusted risk ratio (aRR) 1.08 (overall); 1.20 (term births); 1.18 (macerated stillbirths) (95% CI 0.99-1.17 (overall); 1.06-1.37 (term); 1.04-1.35 (macerated))
+- **Link:** https://doi.org/10.1186/s12978-016-0174-4
+
 
