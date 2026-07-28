@@ -54,3 +54,18 @@ test_that("reconcile_dataset removes duplicate rows and rebuilds state", {
   expect_true(r$id %in% st$seen_ids)                 # state rebuilt from the store
   expect_true(r$id %in% st$reported)
 })
+
+test_that("reclassify_store re-derives intervention_class from the current vocabulary", {
+  cfg <- mk_excl_cfg()
+  cfg$output$explorer_dir <- file.path(cfg$output$data_dir, "docs")   # keep off the real docs/
+  # stored with a stale free-text label, but the text implies SMC
+  r <- normalize_record(new_record(source = "pubmed", source_id = "1",
+         title = "Seasonal malaria chemoprevention trial in children",
+         intervention_class = "Chemoprophylaxis"))
+  append_records(cfg, list(r))
+  expect_equal(.read_store(cfg)[[1]]$intervention_class, "Chemoprophylaxis")   # stale
+
+  n <- reclassify_store(cfg)
+  expect_equal(n, 1L)
+  expect_equal(.read_store(cfg)[[1]]$intervention_class, "SMC")                # re-derived
+})

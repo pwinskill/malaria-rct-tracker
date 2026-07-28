@@ -32,14 +32,34 @@ test_that("non-numeric source ids are not mislabelled as pmids", {
 })
 
 test_that("classify_intervention is multi-label", {
-  cls <- classify_intervention("RTS,S vaccine given alongside SMC chemoprevention")
+  cls <- classify_intervention("RTS,S vaccine given alongside SMC")
   expect_true(grepl("vaccine", cls))
-  expect_true(grepl("chemoprevention", cls))
+  expect_true(grepl("SMC", cls))
 })
 
 test_that("bare 'treatment' no longer over-classifies as ACT", {
   expect_equal(classify_intervention("standard treatment of fever"), "")
   expect_true(grepl("treatment/ACT", classify_intervention("artesunate-amodiaquine")))
+})
+
+test_that("chemoprevention is split into WHO strategy subtypes", {
+  expect_equal(classify_intervention("Seasonal malaria chemoprevention with SP+AQ"), "SMC")
+  expect_equal(classify_intervention("IPTp-SP in pregnant women"), "IPTp")
+  expect_equal(classify_intervention("perennial malaria chemoprevention (PMC) in infants"), "PMC")
+  expect_equal(classify_intervention("intermittent preventive treatment in school children"), "IPTsc")
+  expect_true(grepl("PDMC", classify_intervention("post-discharge malaria chemoprevention")))
+})
+
+test_that("a specific chemoprevention subtype suppresses the generic label", {
+  # 'SMC ... chemoprevention' must read as SMC, not 'SMC; chemoprevention'
+  cls <- classify_intervention("SMC seasonal malaria chemoprevention trial")
+  expect_true(grepl("SMC", cls))
+  expect_false(grepl("chemoprevention", cls))
+})
+
+test_that("classify_intervention output casing is stable (no case-split categories)", {
+  expect_equal(classify_intervention("smc"), classify_intervention("SMC"))
+  expect_equal(classify_intervention("IPTp"), classify_intervention("iptp"))
 })
 
 test_that("guess_species detects single and mixed", {

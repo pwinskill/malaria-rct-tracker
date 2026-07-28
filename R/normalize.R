@@ -10,10 +10,22 @@
 # classes (e.g. a vaccine given alongside chemoprevention), so ALL matches are
 # returned, joined by "; ". Order below only affects the order they appear in.
 .INTERVENTION_RULES <- list(
-  c("vaccine",              "\\b(vaccine|rts,?s|r21|matrix-m|pfspz|immuni[sz])"),
-  c("monoclonal antibody",  "\\b(monoclonal|mab\\b|cis43|l9ls|antibody)"),
-  c("chemoprevention",      paste0("\\b(smc|iptp|ipti|iptc|chemoprevention|",
-                                   "seasonal malaria chemoprevention|intermittent preventive)")),
+  c("vaccine",              "\\b(vaccine|rts,?s|r21|matrix-m|pfspz|circumsporozoite|immuni[sz])"),
+  c("monoclonal antibody",  "\\b(monoclonal|\\bmab\\b|cis43|l9ls|antibody)"),
+  # Chemoprevention split into WHO strategy subtypes. Each is a distinct label;
+  # the generic "chemoprevention" is a catch-all suppressed in
+  # classify_intervention() whenever a specific subtype also matched.
+  c("SMC",                  "\\bsmc\\b|seasonal malaria chemoprevention|seasonal chemoprevention"),
+  c("IPTp",                 paste0("\\biptp\\b|iptp[- ]?sp|intermittent preventive treatment in preg|",
+                                   "intermittent preventive treatment.{0,15}pregnan")),
+  c("PMC",                  paste0("\\b(pmc|ipti)\\b|perennial malaria chemoprevention|",
+                                   "intermittent preventive treatment in infan|",
+                                   "intermittent preventive treatment.{0,15}infan")),
+  c("IPTsc",                paste0("\\biptsc\\b|intermittent preventive treatment.{0,20}school|",
+                                   "school-?age.{0,15}chemoprevention")),
+  c("PDMC",                 "\\bpdmc\\b|post[- ]?discharge.{0,15}malaria chemoprevention|post[- ]?discharge.{0,15}chemoprevention"),
+  c("MDA",                  "\\bmda\\b|mass drug administration"),
+  c("chemoprevention",      "\\b(iptc|chemoprevention|chemoprophylaxis)\\b|intermittent preventive treatment"),
   c("treatment/ACT",        paste0("\\b(artemisinin|artesunate|act\\b|acts\\b|coartem|lumefantrine|",
                                    "amodiaquine|dihydroartemisinin|piperaquine|primaquine|tafenoquine|",
                                    "chloroquine)")),
@@ -80,12 +92,18 @@ canonical_id <- function(rec) {
   paste0("title:", substr(gsub("[^a-z0-9]", "", tolower(rec$title %||% "")), 1, 80))
 }
 
+# Specific chemoprevention subtypes; the generic "chemoprevention" label is
+# dropped when any of these matched, so an SMC trial reads "SMC", not
+# "SMC; chemoprevention".
+.CHEMO_SUBTYPES <- c("SMC", "IPTp", "PMC", "IPTsc", "PDMC")
+
 classify_intervention <- function(text) {
   t <- tolower(text %||% "")
   hits <- character(0)
   for (rule in .INTERVENTION_RULES) {
     if (grepl(rule[2], t, perl = TRUE)) hits <- c(hits, rule[1])
   }
+  if (any(.CHEMO_SUBTYPES %in% hits)) hits <- setdiff(hits, "chemoprevention")
   if (!length(hits)) return("")
   paste(unique(hits), collapse = "; ")
 }

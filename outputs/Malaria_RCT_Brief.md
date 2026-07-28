@@ -39,7 +39,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2025-10-21
 - **Trial period:** 2024 to 2024
-- **Class:** Vector control (structural)
 - **Population:** Households in a riverine Amazonian community
 - **N:** 69
 - **Impact:** Ceiling-mounted mosquito nets significantly reduced indoor Anopheles mosquito counts and biting rates but had no significant effect on peridomestic mosquito indices.
@@ -56,7 +55,7 @@ in data/trials.csv.
 - **Design:** cluster-randomized, placebo-controlled, secondary analysis
 - **Status:** published
 - **Published:** 2025-09-29
-- **Class:** chemoprevention
+- **Class:** SMC; MDA
 - **Population:** children under 5
 - **N:** 341
 - **Impact:** Mass azithromycin distribution was associated with reduced child mortality during SMC season and in areas with lower SMC coverage, but the interaction between AZ effect and SMC season/coverage was not statistically significant.
@@ -73,7 +72,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2025-09-15
-- **Class:** chemoprevention/nutrition
 - **Population:** infants and young children aged 6-36 months consuming semi-solid foods
 - **N:** 432
 - **Impact:** Iron-fortified children carrying the HLA-G 14 bp insertion/deletion polymorphism had an elevated risk of severe malaria, which in turn predisposed them to anaemia.
@@ -212,7 +210,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2024-08-01
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women at gestational ages between 13-24 weeks attending antenatal clinic
 - **Impact:** Monthly IPT-SP significantly reduced placental and peripheral malaria parasitaemia, maternal anaemia, and neonatal parasitaemia/anaemia compared to the standard two-dose regimen, though low birth weight incidence did not differ.
 - **Effect:** relative risk (placental parasitaemia) RR: 0.44 (18% vs 40.6%) (95% CI 0.27 - 0.72)
@@ -333,7 +331,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2024-10-16
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTp; treatment/ACT
 - **Population:** infants born to mothers enrolled in a trial of monthly IPTp for malaria in pregnancy
 - **N:** 633
 - **Impact:** SP increased mean LAZ from birth through 4 months while DP increased mean WLZ from 2 to 8 months compared to each other among infants of multigravidae, with different mediating biological pathways, but no differences were observed among primigravidae.
@@ -405,7 +403,7 @@ in data/trials.csv.
 - **Published:** 2024-10-08
 - **Trial period:** 2017-05-24 to 2018-07-09
 - **Intervention(s):** RTS,S/AS01E; RTS,S/AS01B; Sporozoite-infected mosquitoes challenge.
-- **Class:** vaccine
+- **Class:** vaccine; monoclonal antibody
 - **Population:** Healthy malaria-naive adults
 - **N:** 154
 - **Impact:** Vaccine-induced antibody measures, particularly IgG1 NANP binding magnitude combined with serum NANP and N-junction Ig binding magnitude-avidity composite, were significant predictors of protection against controlled human malaria infection across RTS,S/AS01 trials.
@@ -458,7 +456,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2024-10-01
-- **Class:** chemoprevention (IPTp)
 - **Population:** pregnant women
 - **Impact:** (no result stated yet)
 - **Link:** https://pubmed.ncbi.nlm.nih.gov/39304229/
@@ -472,7 +469,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2024-09-06
-- **Class:** endectocide
+- **Class:** MDA; endectocide
 - **Population:** healthy volunteers
 - **N:** 36
 - **Impact:** Single-dose ivermectin showed superior and more durable mosquitocidal effect at 10 days compared with the three-day regimen, while albendazole had no mosquitocidal effect.
@@ -525,7 +522,7 @@ in data/trials.csv.
 - **Published:** 2024-08-14
 - **Trial period:** 2019-07-03 to 2022-04-05
 - **Intervention(s):** PfSPZ Vaccine; Normal Saline
-- **Class:** vaccine
+- **Class:** vaccine; treatment/ACT
 - **Population:** MLSPZV3: adults aged 18-35 years; MLSPZV4: non-pregnant women aged 18-38 years anticipating conception within a year of enrolment
 - **N:** 324
 - **Impact:** PfSPZ Vaccine was safe and well tolerated, and in MLSPZV4 (with presumptive antimalarial treatment before dose one) showed significant efficacy against P falciparum parasitaemia, clinical malaria, and pregnancy malaria over two transmission seasons, whereas in MLSPZV3 (without presumptive antimalarial pretreatment before dose one) it showed no efficacy.
@@ -562,7 +559,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2024-07-18
 - **Trial period:** 2019 to 2020
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** children under 10 years old receiving seasonal malaria chemoprevention
 - **N:** 2178
 - **Impact:** Children with asymptomatic P. falciparum infection at the time of SMC drug intake had a significantly higher risk of subsequent clinical malaria compared to uninfected children.
@@ -630,7 +627,7 @@ in data/trials.csv.
 - **Design:** cluster-randomized trial
 - **Status:** published
 - **Published:** 2024-07-02
-- **Class:** treatment/ACT; diagnostic
+- **Class:** PMC; treatment/ACT; diagnostic
 - **Population:** clients seeking care for fever/malaria at private medicine retailers, including children with fever
 - **N:** 48
 - **Impact:** The intervention offering free ACTs to test-positive clients and provider incentives did not improve testing rates or targeting of ACTs to test-positive clients compared to the control arm, though overall mRDT testing reduced ACT overconsumption among test-negative clients.
@@ -647,7 +644,7 @@ in data/trials.csv.
 - **Design:** randomized trial, mediation analysis
 - **Status:** published
 - **Published:** 2024-06-10
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTp; treatment/ACT
 - **Population:** infants born to mothers enrolled in a randomized trial of IPTp; stratified by gravidity
 - **N:** 633
 - **Impact:** Among infants of multigravidae, SP increased LAZ from birth through 4 months compared to DP, while DP increased WLZ from 2-8 months compared to SP, with distinct mediating pathways for each regimen; no differences were observed among primigravidae.
@@ -665,7 +662,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2024-06-26
-- **Class:** treatment/ACT; diagnostic
+- **Class:** MDA; treatment/ACT; diagnostic
 - **Population:** residents of low P. vivax transmission areas in southern Thailand
 - **N:** 1536
 - **Impact:** Primaquine mass drug administration was safe, well-tolerated, and highly accepted, but did not show a statistically significant impact on reducing P. vivax transmission compared to control.
@@ -704,7 +701,6 @@ in data/trials.csv.
 - **Published:** 2024-08-01
 - **Trial period:** 2019-01-07 to 2022-12-02
 - **Intervention(s):** Acetaminophen; Ibuprofen; placebo for acetaminophen; placebo for ibuprofen
-- **Class:** Symptomatic treatment (antipyretics)
 - **Population:** children aged 2 to 11 years with CNS malaria
 - **N:** 256
 - **Impact:** Aggressive antipyretic therapy with scheduled acetaminophen and ibuprofen significantly reduced maximum temperature and lowered odds of multiple or prolonged seizures compared with usual care, without affecting parasite clearance.
@@ -723,7 +719,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2024-06-10
 - **Trial period:** 2019 to 2021
-- **Class:** Community case management (chemoprevention/treatment)
 - **Population:** rural community members of all ages, including children under 5 and individuals 6-13 years and older, in Farafangana District
 - **N:** 30
 - **Impact:** Expanding community case management of malaria to all ages improved access to malaria diagnosis and treatment, particularly for individuals over 5 years and those living further from health centers, though significance was mainly seen in health system data.
@@ -741,7 +736,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2024-05-08
 - **Trial period:** 2018 to 2020
-- **Class:** chemoprevention
 - **Population:** pregnant women with HIV at gestational age <28 weeks
 - **N:** 308
 - **Impact:** Adding monthly azithromycin to daily TMP-SMX prophylaxis did not reduce the risk of malaria or bacterial STI at delivery in pregnant women with HIV in Cameroon.
@@ -758,7 +752,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial, secondary analysis, phase 3
 - **Status:** published
 - **Published:** 2024-05-16
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTp; treatment/ACT
 - **Population:** pregnant women
 - **N:** 1319
 - **Impact:** SP, but not DP-based regimens, was associated with a reduced risk of adverse birth outcomes among women with elevated AGP, suggesting SP modifies the relationship between inflammation and pregnancy outcomes.
@@ -862,7 +856,7 @@ in data/trials.csv.
 - **Design:** secondary analysis of a randomized controlled trial
 - **Status:** published
 - **Published:** 2024-03-13
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTp; treatment/ACT
 - **Population:** pregnant women without HIV infection, enrolled between 12 and 20 gestational weeks
 - **N:** 654
 - **Impact:** Monthly IPTp-SP reduced incident nonmalarial febrile illnesses, especially respiratory illnesses, compared to IPTp-DP, and was associated with higher birthweight for gestational age.
@@ -899,7 +893,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2024-04-03
 - **Trial period:** 2021 to 2022
-- **Class:** chemoprevention; treatment/ACT; diagnostic
+- **Class:** SMC; IPTp; treatment/ACT; diagnostic
 - **Population:** children with uncomplicated P. falciparum malaria
 - **N:** 357
 - **Impact:** Both artemether-lumefantrine and dihydroartemisinin-piperaquine were highly effective against uncomplicated P. falciparum malaria in Togo, with high cure rates and no validated artemisinin resistance markers detected.
@@ -974,7 +968,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2024-02-01
 - **Trial period:** 2019 to 2023
-- **Class:** chemoprevention
+- **Class:** SMC
 - **Population:** children aged 1 to 59 months
 - **N:** 68246
 - **Impact:** Mortality in children was lower with biannual mass azithromycin distribution alongside seasonal malaria chemoprevention, but the difference was not statistically significant.
@@ -1236,7 +1230,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2024-01-01
 - **Trial period:** 2021-09 to 2021-12
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** school-aged children
 - **N:** 345
 - **Impact:** Both DHA-PQ and SP-AQ significantly reduced the incidence of clinical malaria compared with control, with DHA-PQ causing fewer adverse events than SP-AQ.
@@ -1273,7 +1267,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2023-08-30
 - **Trial period:** March 2018 to September 2018
-- **Class:** treatment/ACT
+- **Class:** MDA; treatment/ACT
 - **Population:** children aged 6 months to 14 years with uncomplicated Plasmodium falciparum malaria
 - **N:** 352
 - **Impact:** Both artesunate+amodiaquine and artemether+lumefantrine were safe and highly efficacious for treating uncomplicated P. falciparum malaria in children, with ACPR rates of 100% and 96% (97.7% PCR-corrected) respectively.
@@ -1293,7 +1287,7 @@ in data/trials.csv.
 - **Published:** 2023-08-22
 - **Trial period:** 2020-04-01 to 2022-03-31
 - **Intervention(s):** Tetanus/diphtheria toxoids; SMC with SP+AQ; RTS,S/AS01; SMC placebo
-- **Class:** vaccine; chemoprevention
+- **Class:** vaccine; SMC; treatment/ACT
 - **Population:** children enrolled at age 5-17 months, followed to age 5 years
 - **N:** 5098
 - **Impact:** Combining seasonal RTS,S/AS01E vaccination with seasonal malaria chemoprevention sustained substantial protection against clinical malaria over 5 years compared with either intervention alone, with no safety signals detected.
@@ -1417,7 +1411,6 @@ in data/trials.csv.
 - **Design:** cluster randomised controlled trial, superiority
 - **Status:** published
 - **Published:** 2023-06-12
-- **Class:** mHealth intervention supporting integrated community case management
 - **Population:** children 2-59 months of age with malaria, diarrhoea or pneumonia
 - **N:** 5603
 - **Impact:** The inSCALE mHealth intervention increased coverage of appropriate treatment for malaria, diarrhoea and pneumonia by 26% compared to standard iCCM in Mozambique.
@@ -1434,7 +1427,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2023-06-08
-- **Class:** treatment/ACT
+- **Class:** chemoprevention; treatment/ACT
 - **Population:** forest-goers (adults engaged in forest work)
 - **N:** 1480
 - **Impact:** The community engagement strategy resulted in high trial enrolment (92%), completion (84%), and drug compliance, with discontinuation more common in the AL arm, among females, and among those without prior malaria history.
@@ -1517,7 +1510,7 @@ in data/trials.csv.
 - **Design:** cluster randomized implementation trial, prognostic multivariable analysis
 - **Status:** published
 - **Published:** 2023-04-17
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** PDMC; treatment/ACT
 - **Population:** pre-school children recently discharged from hospital following recovery from severe anemia
 - **N:** 357
 - **Impact:** No conclusive set of predictors for adherence to PDMC was identified, though children with four or more malaria infections in the past year had reduced adherence.
@@ -1554,7 +1547,7 @@ in data/trials.csv.
 - **Published:** 2023-04-07
 - **Trial period:** 2019-04-01 to 2021-02-01
 - **Intervention(s):** CPS-immunization; malaria challenge infection, P. falciparum NF135.C10; malaria challenge infection, P. falciparum NF54; CPS-immunization (A/L); Atovaquone / Proguanil Oral Tablet [Malarone]
-- **Class:** vaccine
+- **Class:** vaccine; chemoprevention; treatment/ACT
 - **Population:** healthy, malaria-naïve adults
 - **N:** 43
 - **Impact:** NF135 CPS immunization was poorly tolerated, frequently requiring rescue treatment for breakthrough infections, and induced only modest sterile protection (29%) against homologous controlled human malaria infection challenge.
@@ -1608,7 +1601,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2023-03-17
 - **Trial period:** 2018
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women, 16 to 35 years of age, 12 to 24 weeks of gestation
 - **N:** 992
 - **Impact:** Adding two doses of azithromycin to monthly sulfadoxine-pyrimethamine did not significantly reduce the incidence of low birth weight compared to sulfadoxine-pyrimethamine alone.
@@ -1660,7 +1653,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2023-02-19
 - **Trial period:** 2019 to 2020
-- **Class:** vector control (house screening)
 - **Population:** households (adults and children) in rural and peri-urban Zambia
 - **N:** 800
 - **Impact:** House screening reduced malaria prevalence, sick days, and episodes, and increased labor supply and household income, with private benefits exceeding costs.
@@ -1677,7 +1669,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2023-02-22
-- **Class:** monoclonal antibody; chemoprevention; treatment/ACT
+- **Class:** monoclonal antibody; IPTp; treatment/ACT
 - **Population:** pregnant women and their infants (birth cohort)
 - **N:** 637
 - **Impact:** Malaria prophylaxis with SP or DP in pregnancy did not affect cord blood antibody levels against P. falciparum antigens, and higher cord IgG levels against several antigens were associated with increased, not decreased, risk of malaria in the first year of life.
@@ -1712,7 +1704,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2023-02-13
 - **Trial period:** 2003 to 2006
-- **Class:** chemoprevention (IPTp)
 - **Population:** pregnant women, 14-26 gestation weeks
 - **N:** 1320
 - **Impact:** Monthly SP and monthly SP plus azithromycin both reduced malaria parasitemia during pregnancy compared to two-dose SP, but neither intervention affected fetal biparietal diameter or femur length growth velocity, and azithromycin added no significant additional benefit over monthly SP alone.
@@ -1747,7 +1738,7 @@ in data/trials.csv.
 - **Design:** open-label randomized controlled trial
 - **Status:** published
 - **Published:** 2023-01-02
-- **Class:** chemoprevention
+- **Class:** SMC
 - **Population:** children aged 5-14 years
 - **Impact:** An additional fifth round of seasonal malaria chemoprevention significantly reduced malaria incidence by 51% in children aged 5-14 years compared to control.
 - **Effect:** incidence rate ratio (IRR) 0.49 (51% reduction) (95% CI 0.26-0.94)
@@ -1764,7 +1755,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2022-12-01
-- **Class:** vaccine; chemoprevention
+- **Class:** vaccine; PMC
 - **Population:** infants receiving routine immunizations
 - **N:** 1379
 - **Impact:** SP-IPTi was safe and well tolerated but showed no significant benefit in reducing asymptomatic parasitemia, fever, or hospitalization compared to controls.
@@ -1802,7 +1793,6 @@ in data/trials.csv.
 - **Published:** 2023-01-03
 - **Trial period:** 2018-09-11 to 2019-11-06
 - **Intervention(s):** Artefenomel (OZ439); Ferroquine (SSR97193)
-- **Class:** antimalarial combination therapy
 - **Population:** Patients aged 14-69 years with uncomplicated Plasmodium falciparum malaria (3000-50,000 parasites/µL)
 - **N:** 140
 - **Impact:** The contribution of artefenomel exposure to Day 28 PCR-adjusted ACPR was not demonstrated, though parasite clearance was faster with ferroquine/artefenomel combinations than ferroquine alone.
@@ -1910,7 +1900,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2022-11-17
 - **Trial period:** 2018 to 2019
-- **Class:** treatment/ACT; ITN/LLIN; IRS; endectocide
+- **Class:** MDA; treatment/ACT; ITN/LLIN; IRS; endectocide
 - **Population:** inhabitants of villages in Upper River Region eligible for mass drug administration
 - **N:** 32
 - **Impact:** Mass drug administration with ivermectin and dihydroartemisinin-piperaquine reduced vector density and entomological inoculation rate in intervention villages compared to control villages.
@@ -1962,7 +1952,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2022-11-03
 - **Trial period:** 2019 to 2021
-- **Class:** endectocide
+- **Class:** MDA; endectocide
 - **Population:** children aged 3 to 14 years
 - **Impact:** Ivermectin MDA reduced Strongyloides stercoralis prevalence shortly after administration but had no lasting effect after 2 years and did not reduce scabies prevalence.
 - **Effect:** odds ratio 0.4 (S. stercoralis after MDA) (95% CI 0.16-0.94)
@@ -2046,7 +2036,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2022-10-01
 - **Trial period:** 2016 to 2018
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** PDMC; treatment/ACT
 - **Population:** Preschool children discharged after hospitalisation for severe anaemia
 - **N:** 1424
 - **Impact:** Both community-based and facility-based postdischarge malaria chemoprevention were cost-saving compared to standard of care in Malawi, Kenya, and Uganda, with community-based delivery being the most cost-effective strategy.
@@ -2083,7 +2073,7 @@ in data/trials.csv.
 - **Published:** 2022-10-10
 - **Trial period:** 2018-01-23 to 2020-12-16
 - **Intervention(s):** Proguanil Oral Tablet; Sulfadoxine/Pyrimethanine-Amodiaquine (SP-AQ); Dihydroartemisinin-Piperaquine (DP)
-- **Class:** treatment/ACT
+- **Class:** chemoprevention; treatment/ACT
 - **Population:** children aged 1 to 10 years with homozygous hemoglobin S (sickle cell anemia)
 - **N:** 246
 - **Impact:** Compared to daily Proguanil, monthly SP-AQ and monthly DP chemoprevention did not significantly reduce clinical malaria incidence, though DP was associated with reduced dactylitis and P. falciparum parasitization.
@@ -2212,7 +2202,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2022-08-22
 - **Trial period:** 2007 to 2013
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTsc; treatment/ACT
 - **Population:** schoolchildren aged 6-13 years
 - **N:** 305
 - **Impact:** Intermittent preventive treatment with SP plus artesunate or AQ plus artesunate reduced P. falciparum infection compared with control, with SP plus artesunate improving hemoglobin and AQ plus artesunate improving GPA, and girls given SP plus artesunate showing greater GPA improvement than boys.
@@ -2230,7 +2220,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2022-08-19
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women attending antenatal clinic visits
 - **N:** 248
 - **Impact:** The mobile phone intervention did not significantly increase the proportion of women receiving three or more doses of IPTp-SP, but it did increase the proportion of timely ANC visits.
@@ -2267,7 +2257,7 @@ in data/trials.csv.
 - **Published:** 2022-07-15
 - **Trial period:** 2012-11 to 2018-07-31
 - **Intervention(s):** Standard of Care prophylaxis; Chloroquine (CQ) prophylaxis
-- **Class:** treatment/ACT
+- **Class:** chemoprevention; treatment/ACT
 - **Population:** Adults living with HIV on antiretroviral therapy (ART) with undetectable viral load and ≥250 CD4+ cells/μl
 - **N:** 1499
 - **Impact:** Chemoprophylaxis with daily trimethoprim-sulfamethoxazole or weekly chloroquine reduced malaria infection and clinical malaria incidence by approximately 90% compared to no prophylaxis, but malaria did not affect HIV viral load or CD4+ cell count.
@@ -2353,7 +2343,7 @@ in data/trials.csv.
 - **Design:** randomized, placebo-controlled, controlled human malaria infection (CHMI), phase II
 - **Status:** published
 - **Published:** 2022-05-31
-- **Class:** vaccine; monoclonal antibody
+- **Class:** vaccine; monoclonal antibody; chemoprevention
 - **Population:** malaria-naive volunteers
 - **Impact:** Both the 10-day and 28-day accelerated PfSPZ-CVac vaccination regimens were similarly efficacious against controlled human malaria infection, with the 10-day regimen inducing stronger T cell and antibody responses.
 - **Effect:** vaccine efficacy 67% (28-day regimen), 63% (10-day regimen)
@@ -2427,7 +2417,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2022-02-23
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTp; treatment/ACT
 - **Population:** pregnant women attending antenatal care
 - **N:** 105
 - **Impact:** IPTp-SP was associated with greater maternal gestational weight gain and reduced EAEC prevalence compared to IPTp-DP, and this weight gain mediated SP's positive effect on infant birthweight, though maternal enteric pathogen carriage diminished this benefit.
@@ -2446,7 +2436,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2022-02-14
 - **Trial period:** 2017 to 2017
-- **Class:** monoclonal antibody
+- **Class:** monoclonal antibody; MDA
 - **Population:** residents of study clusters in a low-transmission region tested via reactive case detection
 - **Impact:** Reactive focal mass drug administration and reactive vector control, alone and combined, significantly reduced Etramp5.Ag1 sero-prevalence, with serological endpoints providing improved precision and statistical power compared to qPCR prevalence.
 - **Effect:** adjusted prevalence ratio (aPR) for Etramp5.Ag1 sero-prevalence 0.78 (rfMDA), 0.79 (RAVC), 0.59 (combined rfMDA plus RAVC) (95% CI 0.65-0.91 (rfMDA); 0.67-0.92 (RAVC); 0.46-0.76 (combined))
@@ -2464,7 +2454,7 @@ in data/trials.csv.
 - **Published:** 2022-02-22
 - **Trial period:** 2017-04-17 to 2020-03-31
 - **Intervention(s):** RABIPUR®; RTS,S/AS01; SMC with SP+AQ; SMC placebo
-- **Class:** vaccine; chemoprevention
+- **Class:** vaccine; SMC
 - **Population:** young children
 - **N:** 5920
 - **Impact:** Combining seasonal RTS,S/AS01E vaccination with seasonal malaria chemoprevention substantially reduced malaria incidence and modestly reduced wasting prevalence compared to either intervention alone, but had little effect on other nutritional indicators like stunting.
@@ -2607,7 +2597,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2021-11-18
-- **Class:** treatment/ACT
+- **Class:** chemoprevention; treatment/ACT
 - **Population:** healthy adults
 - **N:** 600
 - **Impact:** 52-week tafenoquine prophylaxis was well tolerated with no significant difference in serious ophthalmic events or overall adverse events compared to placebo, supporting its long-term safety.
@@ -2624,7 +2614,7 @@ in data/trials.csv.
 - **Design:** cluster-randomized, pilot implementation study, before-and-after comparison
 - **Status:** published
 - **Published:** 2021-11-18
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** young children
 - **N:** 1439
 - **Impact:** SMC implementation in Northern Ghana was associated with reduced malaria parasitaemia and anaemia and reduced severe malaria incidence compared to the non-intervention area, demonstrating feasibility and effectiveness.
@@ -2662,7 +2652,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2021-10-19
 - **Trial period:** 2018 to 2019
-- **Class:** Vector control (environmental management)
 - **Population:** underground water storage tanks (tankas) and village community, adult mosquito density assessments
 - **N:** 262
 - **Impact:** Replacement of damaged tanka lids with mosquito-proof PVC lids led to complete prevention of Anopheles stephensi breeding and a significant reduction in adult mosquito density in the intervention village compared to no reduction in the control village.
@@ -2746,7 +2735,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2021-09-14
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** healthy adult males and females of Black sub-Saharan African origin
 - **N:** 44
 - **Impact:** Co-administration of atovaquone-proguanil and amodiaquine showed no clinically relevant pharmacokinetic interactions but caused an unexpectedly high incidence of extrapyramidal adverse effects, leading to a recommendation against further development of the combination for malaria prophylaxis in African children.
@@ -2814,7 +2803,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2021-09-07
 - **Trial period:** 2013 to 2017
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** HIV-infected pregnant women with CD4+ count ≥350 cells/mm3
 - **N:** 193
 - **Impact:** Cotrimoxazole was not shown to be significantly more effective than sulfadoxine-pyrimethamine IPTp in preventing placental malaria infection, but had good compliance and safety.
@@ -2831,7 +2820,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2021-07-27
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** children receiving seasonal malaria chemoprevention and untreated children from the same area
 - **N:** 636
 - **Impact:** SMC (SPAQ with or without azithromycin) reduced P. falciparum gametocyte prevalence and mosquito infection rates compared to untreated controls, but adding azithromycin unexpectedly increased gametocyte infectivity to mosquitoes.
@@ -2866,7 +2855,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2021-06-30
-- **Class:** vaccine; monoclonal antibody; treatment/ACT
+- **Class:** vaccine; monoclonal antibody; chemoprevention; treatment/ACT
 - **Population:** healthy adult volunteers
 - **N:** 32
 - **Impact:** Higher-dose PfSPZ-CVac(PYR) and PfSPZ-CVac(CQ) regimens induced high-level, durable sterile protective efficacy against both homologous and heterologous controlled human malaria infection three months after immunization, whereas low-dose PfSPZ-CVac(PYR) gave minimal protection.
@@ -3025,7 +3014,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2021-05-04
-- **Class:** vaccine; monoclonal antibody; treatment/ACT
+- **Class:** vaccine; monoclonal antibody; chemoprevention; treatment/ACT
 - **Population:** malaria-naive volunteers
 - **N:** 18
 - **Impact:** 10 of 13 vaccinated participants were sterilely protected against heterologous malaria challenge while all 5 placebo recipients developed parasitemia.
@@ -3058,7 +3047,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2021-06-17
-- **Class:** chemoprevention; treatment/ACT; diagnostic
+- **Class:** IPTp; treatment/ACT; diagnostic
 - **Population:** malaria-free pregnant women from moderate malaria transmission areas
 - **N:** 956
 - **Impact:** Monthly IPTp with dihydroartemisinin-piperaquine significantly reduced placental malaria and low birth weight compared with IPTp-SP.
@@ -3077,7 +3066,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2021-04-01
 - **Trial period:** 2016 to 2017
-- **Class:** chemoprevention; ITN/LLIN; IRS
+- **Class:** SMC; ITN/LLIN; IRS
 - **Population:** children aged 6 months to 13 years living in households with insecticide-treated nets, indoor residual spraying, and seasonal malaria chemoprevention for under-5s
 - **N:** 805
 - **Impact:** Improved housing (metal roofs and screened doors/windows) did not reduce clinical malaria incidence and was in fact associated with higher incidence compared with unmodified traditional houses in an area with high coverage of insecticide-treated nets, indoor residual spraying, and seasonal malaria chemoprevention.
@@ -3199,7 +3188,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2021-01-21
-- **Class:** chemoprevention; ITN/LLIN
+- **Class:** IPTp; ITN/LLIN
 - **Population:** pregnant women attending antenatal care
 - **N:** 372
 - **Impact:** The health education intervention significantly improved reported ITN use, IPTp uptake, and haematocrit levels, but had no significant effect on reported malaria diagnosis or birth weight.
@@ -3251,7 +3240,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2021-10-01
 - **Trial period:** 2014 to 2016
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; MDA; treatment/ACT
 - **Population:** children aged 3-59 months receiving seasonal malaria chemoprevention
 - **N:** 30977
 - **Impact:** Azithromycin added to seasonal malaria chemoprevention provided broad but short-lived protection against malaria, gastroenteritis, pneumonia, and nonmalaria fevers with skin conditions, mostly within the first 2 weeks post-administration, with no evidence of protection against hospital admissions or deaths.
@@ -3270,7 +3259,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2021-01-26
 - **Trial period:** 2019 to 2019
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant individuals receiving intermittent preventive treatment for malaria
 - **Impact:** Intermittent preventive treatment with mefloquine (split dose with meal) significantly reduced placental malaria, maternal peripheral parasitaemia, and low birth weight compared to sulfadoxine-pyrimethamine, with similar tolerability.
 - **Effect:** risk ratio (placental malaria) 0.4315 (95% CI 0.2201-0.8460)
@@ -3337,7 +3326,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2021-01-01
-- **Class:** vaccine; monoclonal antibody; treatment/ACT
+- **Class:** vaccine; monoclonal antibody; chemoprevention; treatment/ACT
 - **Population:** Equatoguinean adults
 - **Impact:** PfSPZ-CVac showed higher vaccine efficacy (55%) than PfSPZ Vaccine (27%) against homologous controlled human malaria infection despite a 27-fold lower dose.
 - **Effect:** vaccine efficacy 55% (PfSPZ-CVac); 27% (PfSPZ Vaccine)
@@ -3407,7 +3396,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-09-17
 - **Trial period:** September 2007 to January 2010
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTsc; treatment/ACT
 - **Population:** schoolchildren aged 6-13 years
 - **N:** 296
 - **Impact:** Three years of intermittent preventive treatment with sulphadoxine-pyrimethamine+artesunate reduced all-cause clinic visits, asymptomatic parasitemia, and anemia in schoolchildren, but had no impact on clinical malaria incidence.
@@ -3425,7 +3414,6 @@ in data/trials.csv.
 - **Design:** cluster-randomized, controlled trial with permuted block randomization
 - **Status:** published
 - **Published:** 2020-09-19
-- **Class:** vector control (house screening)
 - **Population:** residents of study households in a high malaria transmission area
 - **N:** 160
 - **Impact:** House eave screening significantly reduced indoor vector densities and malaria parasite prevalence compared to unscreened control houses.
@@ -3481,7 +3469,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-08-05
 - **Trial period:** 2017 to 2018
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women
 - **N:** 734
 - **Impact:** Community delivery of IPTp by community health workers increased the number of IPTp doses received and IPTp3/IPTp4 coverage compared to standard health facility delivery, without decreasing ANC coverage, though most differences were not statistically significant.
@@ -3498,7 +3486,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2021-10-01
-- **Class:** chemoprevention
 - **Population:** residents 5-65 years of age in malaria-endemic villages
 - **N:** 631
 - **Impact:** Monthly single-dose naphthoquine-azithromycin coformulation was well tolerated and provided over 93% protective efficacy against Plasmodium infections compared with placebo.
@@ -3516,7 +3503,7 @@ in data/trials.csv.
 - **Design:** cluster-randomized
 - **Status:** published
 - **Published:** 2020-07-01
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** children aged 3-59 months
 - **N:** 399
 - **Impact:** SMC significantly reduced malaria prevalence and anaemia prevalence among children under five in Borno State, Nigeria.
@@ -3534,7 +3521,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2020-08-01
-- **Class:** treatment/ACT; diagnostic
+- **Class:** MDA; treatment/ACT; diagnostic
 - **Population:** General population in households targeted for mass drug administration
 - **N:** 336821
 - **Impact:** High adherence to the 3-day DHAp regimen (84.4% completion) was observed, and DHAp effectively cleared P. falciparum asexual-stage infections, with none of 45 followed participants positive at days 3/7 post-treatment.
@@ -3553,7 +3540,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-08-01
 - **Trial period:** December 2014 to February 2016
-- **Class:** treatment/ACT; IRS; diagnostic
+- **Class:** MDA; treatment/ACT; IRS; diagnostic
 - **Population:** households/residents in health facility catchment areas along Lake Kariba
 - **N:** 60
 - **Impact:** This introductory article describes a cluster RCT evaluating mass drug administration and focal mass drug administration with DHAP for malaria elimination in Southern Province, Zambia, and introduces a collection of related articles on the intervention's impact.
@@ -3569,7 +3556,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2020-08-01
-- **Class:** ITN/LLIN; diagnostic
+- **Class:** MDA; ITN/LLIN; diagnostic
 - **Population:** individuals enrolled in a mass drug administration trial cohort
 - **Impact:** PCR testing showed Plasmodium falciparum as the dominant species (98.3% of positives), RDTs had high specificity but low sensitivity compared to PCR, and MDA/fMDA appeared to reduce P. malariae prevalence while P. ovale prevalence remained unchanged.
 - **Effect:** sensitivity/specificity of RDT vs PCR sensitivity 53.0%, specificity 98.5%
@@ -3587,7 +3574,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-08-01
 - **Trial period:** 2014 to 2016
-- **Class:** treatment/ACT; diagnostic
+- **Class:** MDA; treatment/ACT; diagnostic
 - **Population:** general population in Southern Province, Zambia
 - **N:** 300000
 - **Impact:** Household visit coverage ranged from 62.9% to 77.4% across four MDA rounds, with treatment coverage of 58.8% in MDA arm and 13.3% in fMDA arm based on capture-recapture estimates.
@@ -3603,7 +3590,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2020-08-01
-- **Class:** treatment/ACT; diagnostic
+- **Class:** MDA; treatment/ACT; diagnostic
 - **Population:** community residents in malaria-endemic areas of Southern Province, Zambia
 - **Impact:** Mass drug administration (MDA) with dihydroartemisinin-piperaquine was more cost-effective than focal MDA and standard of care in reducing malaria in Southern Province, Zambia, and met WHO cost-effectiveness thresholds in 90% of simulations compared to about 50% for fMDA.
 - **Effect:** cost per person targeted and reached (USD) fMDA US$9.01 vs MDA US$8.49
@@ -3620,7 +3607,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-08-01
 - **Trial period:** 2014 to 2016
-- **Class:** treatment/ACT
+- **Class:** MDA; treatment/ACT
 - **Population:** community members including children, in areas of varying malaria transmission
 - **Impact:** Four rounds of mass drug administration with dihydroartemisinin-piperaquine significantly reduced malaria parasite prevalence, especially in lower transmission areas.
 - **Effect:** reduction in malaria parasite prevalence 72% (95% CI 12-91%)
@@ -3637,7 +3624,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2020-08-01
-- **Class:** chemoprevention (MDA)
+- **Class:** MDA
 - **Population:** community residents in households in Southern Province, Zambia
 - **N:** 2026
 - **Impact:** MDA was associated with reduced risk of first infection and reduced cumulative infection incidence during the first rainy season, but no significant effect was found for fMDA or for either arm over the full 18-month study period.
@@ -3656,7 +3643,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-08-01
 - **Trial period:** 2014 to 2016
-- **Class:** Mass drug administration (MDA)
+- **Class:** MDA
 - **Population:** households and community members (adults and children) in health catchments
 - **Impact:** The mass drug administration campaign was highly accepted, with acceptability of prophylactic treatment for malaria-negative individuals increasing markedly from baseline to follow-up.
 - **Effect:** percentage acceptability increase from 62% to 96%
@@ -3710,7 +3697,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2020-06-24
-- **Class:** chemoprevention
 - **Population:** pregnant women receiving intermittent preventive therapy during pregnancy
 - **N:** 228
 - **Impact:** Primigravidity, higher number of malaria episodes, and timing of infection (varying by gravidity) were significantly associated with increased odds of placental malaria.
@@ -3798,7 +3784,6 @@ in data/trials.csv.
 - **Published:** 2020-04-25
 - **Trial period:** 2009-12-15 to 2013-07
 - **Intervention(s):** Lopinavir/ritonavir; Efavirenz; Zidovudine; Lamivudine
-- **Class:** Antiretroviral therapy (protease inhibitor vs non-PI based)
 - **Population:** pregnant women living with HIV, 12-28 weeks gestation
 - **N:** 389
 - **Impact:** Anemia during pregnancy was associated with greater risk of small for gestational age, and higher vitamin D concentrations predicted lower risk of infant wasting, among pregnant WLHIV on cART.
@@ -3833,7 +3818,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2020-05-13
-- **Class:** Chemotherapy timing (iron supplementation schedule)
 - **Population:** children with cerebral malaria, severe malarial anemia, or community children, with iron deficiency
 - **N:** 239
 - **Impact:** Delaying iron therapy by 28 days after severe malaria did not worsen cognitive or behavioral outcomes compared to immediate iron therapy at 12-month follow-up.
@@ -3903,7 +3887,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2020-09-01
-- **Class:** Chemoprevention (MDA)
+- **Class:** MDA
 - **Population:** children aged 1-59 months
 - **N:** 1200
 - **Impact:** Biannual azithromycin mass drug administration did not reduce malaria parasitemia, gametocytemia, or anemia compared to placebo at either the community or individual level.
@@ -3955,7 +3939,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2020-07-01
-- **Class:** chemoprevention; diagnostic
+- **Class:** IPTp; diagnostic
 - **Population:** pregnant women with placental Plasmodium falciparum infections
 - **N:** 125
 - **Impact:** The effectiveness of IPTp-SP in improving birth weight is compromised in women with A581G-bearing dhps resistance mutant parasites, without evidence that antenatal SP worsens the adverse effects of these parasites.
@@ -4010,7 +3994,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-04-16
 - **Trial period:** 2014 to 2016
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** young children receiving seasonal malaria chemoprevention
 - **N:** 19578
 - **Impact:** Adding azithromycin to seasonal malaria chemoprevention did not improve nutritional outcomes compared to placebo in children in Burkina Faso and Mali.
@@ -4043,7 +4027,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-02-14
 - **Trial period:** 2016 to 2017
-- **Class:** vector control (ATSB)
 - **Population:** village populations/mosquito vector populations in villages using LLINs
 - **N:** 14
 - **Impact:** ATSB deployment combined with LLINs drastically reduced mosquito density, proportion of older females, sporozoite infection rates, and EIR compared to control villages, indicating a significant reduction in malaria transmission.
@@ -4096,7 +4079,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-02-05
 - **Trial period:** 2013 to 2017
-- **Class:** treatment/ACT
+- **Class:** MDA; treatment/ACT
 - **Population:** residents of villages with high prevalence of P. falciparum infections
 - **N:** 3790
 - **Impact:** Mass drug administration with dihydroartemisinin-piperaquine and single low-dose primaquine had only a transient reduction in P. vivax prevalence, with no significant reduction in cumulative incidence or recurrence.
@@ -4115,7 +4098,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-01-29
 - **Trial period:** 2017
-- **Class:** chemoprevention; ITN/LLIN
+- **Class:** IPTp; ITN/LLIN
 - **Population:** pregnant women attending antenatal care
 - **N:** 1494
 - **Impact:** Group antenatal care was associated with higher mean number of IPTp-SP doses received compared to individual antenatal care in both Nigeria and Kenya, and higher infant ITN use in Nigeria.
@@ -4235,7 +4218,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2020-01-02
-- **Class:** endectocide
+- **Class:** MDA; endectocide
 - **Population:** healthy volunteers
 - **N:** 12
 - **Impact:** Ivermectin at 0.4 mg/kg had no significant effect on time to parasitaemia, indicating no clinically relevant prophylactic activity against pre-erythrocytic stages of P. falciparum.
@@ -4328,7 +4311,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2019-11-12
 - **Trial period:** 2018 to 2018
-- **Class:** health education
 - **Population:** people living in malaria endemic villages
 - **N:** 270
 - **Impact:** Loudspeaker health education announcements significantly improved malaria prevention and care-seeking practice scores and were associated with a declining trend in malaria morbidity compared to control villages.
@@ -4346,7 +4328,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2020-01-01
 - **Trial period:** 2010 to 2013
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women, HIV-uninfected and HIV-infected
 - **N:** 914
 - **Impact:** IPTp-mefloquine selected for lower prevalence of the pfmdr1 86Y polymorphism compared with IPTp-SP in HIV-uninfected women, while other resistance markers were similar between groups and no effect was seen in HIV-infected women, with no association between resistance markers and pregnancy outcomes.
@@ -4398,7 +4380,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2019-11-13
 - **Trial period:** 2014 to 2018
-- **Class:** chemoprevention
+- **Class:** SMC
 - **Population:** children under seasonal malaria chemoprevention
 - **N:** 5482
 - **Impact:** Addition of azithromycin to seasonal malaria chemoprevention antimalarials was associated with a marked increase in pneumococcal resistance to azithromycin and erythromycin that persisted one year after the last dose.
@@ -4470,7 +4452,7 @@ in data/trials.csv.
 - **Design:** large-scale intervention trial, regression model, cluster-based comparison of two larviciding strategies
 - **Status:** published
 - **Published:** 2019-09-14
-- **Class:** chemoprevention; IRS; larval source management
+- **Class:** IPTp; IRS; larval source management
 - **Population:** rural villages with malaria vector mosquito populations (female Anopheles spp.)
 - **Impact:** Larval source management with Bti substantially reduced female Anopheles mosquito abundance, with greater reductions achieved when all breeding sites were treated compared to selective treatment of the most productive sites.
 - **Effect:** percentage reduction in female Anopheles spp. abundance 61% (selective treatment), 70% (comprehensive treatment) (95% CI 54-66% (selective); 64-74% (comprehensive))
@@ -4505,7 +4487,7 @@ in data/trials.csv.
 - **Design:** open-label, randomized, parallel-group, phase 3
 - **Status:** published
 - **Published:** 2019-09-23
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTp; treatment/ACT
 - **Population:** pregnant women
 - **N:** 122
 - **Impact:** AZ-PQ showed no significant difference from SP in preventing malaria parasitemia up to day 42 or at delivery, was well tolerated (though with more gastrointestinal side effects and dizziness), and was associated with higher live birth weight.
@@ -4655,7 +4637,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2019-08-01
-- **Class:** chemoprevention
 - **Population:** HIV-positive pregnant women
 - **N:** 140
 - **Impact:** Azithromycin was comparable to sulphadoxine-pyrimethamine in preventing malaria parasitaemia at delivery among HIV-positive pregnant women, with no significant difference between groups.
@@ -4673,7 +4654,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2019-05-27
 - **Trial period:** 2011
-- **Class:** monoclonal antibody; chemoprevention; treatment/ACT
+- **Class:** monoclonal antibody; treatment/ACT
 - **Population:** pregnant women
 - **N:** 681
 - **Impact:** IST-DP and IPT-SP had similar effects on the development and maintenance of malaria antibody immunity in pregnant Malawian women, with minimal impact of treatment arm overall.
@@ -4744,7 +4725,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2019-05-07
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women and their children followed from birth to 5 years of age
 - **N:** 1320
 - **Impact:** IPTp with azithromycin and monthly sulfadoxine-pyrimethamine had a modest, 3-5-year positive impact on child weight, mid-upper arm circumference and head circumference, but not on weight-for-height Z-score, compared to control.
@@ -4884,7 +4865,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2019-03-21
-- **Class:** ITN/LLIN
 - **Population:** HIV-infected individuals on antiretroviral treatment
 - **Impact:** Discontinuing cotrimoxazole prophylaxis was associated with significantly higher prevalence of SP-resistance associated mutant haplotypes in P. falciparum compared to continuing cotrimoxazole, suggesting cotrimoxazole selects against SP-resistant parasites.
 - **Effect:** prevalence of quintuple mutant haplotype (51I/59R/108N/437G/540E) 51.8% in STOP-CTX vs. 6.3% in CTX arm
@@ -4940,7 +4920,7 @@ in data/trials.csv.
 - **Published:** 2019-03-14
 - **Trial period:** 2015-06 to 2015-11
 - **Intervention(s):** Ivermectin; Albendazole
-- **Class:** endectocide
+- **Class:** MDA; endectocide
 - **Population:** village residents at least 90 cm in height; active case detection cohort of children aged 5 years or younger
 - **N:** 2712
 - **Impact:** Repeated mass administrations of ivermectin reduced cumulative malaria incidence among young children compared with a single dose, without significantly increasing harms.
@@ -4958,7 +4938,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2019-03-13
 - **Trial period:** 2011 to 2011
-- **Class:** chemoprevention; treatment/ACT; diagnostic
+- **Class:** SMC; treatment/ACT; diagnostic
 - **Population:** children under 10 years of age (3 months to 9 years)
 - **N:** 4546
 - **Impact:** Seasonal malaria chemoprevention with community case management for children under 10 years given over 5 months substantially reduced malaria episodes, parasitaemia prevalence, and improved haemoglobin concentration compared to community case management alone.
@@ -4976,7 +4956,6 @@ in data/trials.csv.
 - **Design:** randomized, placebo-controlled, mother-infant dyad field trial
 - **Status:** published
 - **Published:** 2019-03-01
-- **Class:** chemoprevention
 - **Population:** pregnant women (at least 6 months gestation) and their infants up to 12 months old
 - **N:** 152
 - **Impact:** Maternal vitamin A supplementation delayed the time to first parasitaemia episode and reduced malaria parasite densities in infants compared to placebo.
@@ -4993,7 +4972,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2019-02-20
-- **Class:** chemoprevention; treatment/ACT; ITN/LLIN
+- **Class:** IPTp; treatment/ACT; ITN/LLIN
 - **Population:** pregnant women attending antenatal care
 - **N:** 372
 - **Impact:** The health educational intervention significantly increased knowledge, motivation, and behavioural skills scores related to malaria prevention among pregnant women compared to the control group.
@@ -5010,7 +4989,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2019-02-20
 - **Trial period:** 2016 to 2016
-- **Class:** health education / behavior change
 - **Population:** housewives in suburbs of Bandar-Abbas City
 - **N:** 172
 - **Impact:** The PRECEDE model-based health education significantly improved knowledge, attitude, enabling and reinforcing factors, and malaria preventive behaviors among housewives compared to controls.
@@ -5057,7 +5035,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2019-02-06
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** PMC; treatment/ACT
 - **Population:** infants receiving intermittent preventive treatment for malaria during first year of life
 - **N:** 206
 - **Impact:** Pharmacokinetic analysis showed that only 39-50% of children in the SP-AQ arm received all three scheduled doses of amodiaquine as prescribed, indicating low medication adherence for the self-administered doses given by parents at home.
@@ -5073,7 +5051,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2019-01-29
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** young children aged 2.33-58.1 months
 - **N:** 179
 - **Impact:** Population-based simulations suggest that increasing dihydroartemisinin-piperaquine dosage and extending to four monthly doses could reduce malaria incidence by up to 58% during the high transmission season, especially benefiting small children who have lower drug exposures at standard dosing.
@@ -5091,7 +5069,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2019-01-25
 - **Trial period:** 2014 to 2014
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** children aged 6-24 months
 - **N:** 7000
 - **Impact:** Coverage of SMC was high regardless of LNS integration; LNS did not improve nutritional outcomes but SP-AQ (with or without LNS) reduced the odds of clinical malaria compared to no intervention.
@@ -5185,7 +5163,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2018-01-01
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women with gestational ages of 16-24 weeks
 - **N:** 210
 - **Impact:** Three-dose SP for IPTp reduced peripheral and placental parasitaemia and low birth weight compared to two-dose SP, though maternal anaemia, preterm birth, clinical malaria and adverse effects were similar between groups.
@@ -5307,7 +5285,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial, population pharmacokinetic analysis
 - **Status:** published
 - **Published:** 2019-01-29
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women
 - **N:** 264
 - **Impact:** Mefloquine IPTp given as single or split-dose regimens showed adequate exposure but concentrations at delivery were below previously suggested prophylactic threshold levels, and split-dosing significantly increased bioavailability by 5%.
@@ -5342,7 +5320,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2019-08-01
-- **Class:** treatment/ACT
+- **Class:** chemoprevention; treatment/ACT
 - **Population:** young African children/infants followed from birth to 4 years
 - **Impact:** Higher proinflammatory and regulatory cytokine concentrations during the second year of life were associated with reduced clinical malaria incidence up to age 4, and chemoprophylaxis altering early malaria exposure significantly affected later T-helper cytokine production.
 - **Effect:** association with incidence of clinical malaria
@@ -5394,7 +5372,6 @@ in data/trials.csv.
 - **Design:** randomized, controlled, pilot study
 - **Status:** published
 - **Published:** 2018-12-01
-- **Class:** vector control (housing modification)
 - **Population:** household units in a rural Gambian village
 - **Impact:** Prototype screened doors reduced house-entering mosquitoes by 59-77% compared to control houses, with the perforated concertinaed screening door performing best.
 - **Effect:** percentage reduction in house-entering mosquitoes 59-77%
@@ -5462,7 +5439,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2018-09-01
-- **Class:** treatment adherence intervention
 - **Population:** malaria patients receiving antimalarial treatment
 - **Impact:** Stickers with short, targeted messages on packaging increased adherence by 9% and reduced untaken pills by 29%, while specialized pictorial packaging had no significant effect compared to standard packaging.
 - **Effect:** increase in adherence 9% increase in adherence; 29% reduction in untaken pills
@@ -5598,7 +5574,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2018-02-07
 - **Trial period:** 2013 to 2014
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** school-aged pupils
 - **N:** 200
 - **Impact:** Monthly artesunate-amodiaquine given as seasonal malaria chemoprevention to school-aged children reduced clinical malaria cases substantially compared to no intervention, with only 3 cases in the ASAQ arm versus 20 in the control arm.
@@ -5615,7 +5591,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2018-08-27
-- **Class:** chemoprevention
 - **Population:** healthy volunteers and villagers in a low-endemicity area
 - **N:** 480
 - **Impact:** Monthly single doses of 400 mg or 800 mg naphthoquine-azithromycin were well tolerated and provided over 90% prophylactic efficacy against malaria infections, including 100% efficacy against P. vivax and P. ovale.
@@ -5634,7 +5609,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2018-07-06
 - **Trial period:** 2013 to 2014
-- **Class:** chemoprevention; treatment/ACT; ITN/LLIN; diagnostic
+- **Class:** IPTp; treatment/ACT; ITN/LLIN; diagnostic
 - **Population:** pregnant women attending antenatal clinic
 - **N:** 459
 - **Impact:** ISTp-AL was associated with significantly lower third-trimester maternal parasitaemia and lower risk of low birthweight compared to IPTp-SP, with no significant difference in severe anaemia risk, though ISTp-AL was associated with more frequent fever complaints.
@@ -5777,7 +5752,7 @@ in data/trials.csv.
 - **Published:** 2018-04-13
 - **Trial period:** 2011-11-17 to 2013-01-09
 - **Intervention(s):** GlaxoSmithKline (GSK) Biologicals' candidate Plasmodium falciparum malaria vaccine 257049; Engerix-B™ vaccine; Infanrix/Hib™ vaccine; Polio Sabin™ vaccine; Rotarix™ vaccine; Synflorix™ vaccine; Measles vaccine; Yellow fever vaccine
-- **Class:** vaccine
+- **Class:** vaccine; monoclonal antibody
 - **Population:** healthy infants aged 8-12 weeks
 - **N:** 705
 - **Impact:** Co-administration of RTS,S/AS01 with routine pediatric vaccines (PHiD-CV, HRV, DTaP/Hib) demonstrated non-inferior immune responses and an acceptable safety profile compared to hepatitis B vaccine co-administration.
@@ -5865,7 +5840,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2018-03-01
-- **Class:** Chemoprevention (IPTp)
 - **Population:** pregnant women and their children
 - **N:** 1320
 - **Impact:** Provision of monthly sulfadoxine-pyrimethamine plus azithromycin during pregnancy reduced childhood stunting, improved child development scores, and may have reduced postneonatal mortality compared with standard 2-dose SP.
@@ -5900,7 +5874,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2018-02-15
-- **Class:** treatment/ACT
 - **Population:** children aged 1-10 years with severe malaria
 - **Impact:** Elevated plasma CHI3L1 levels were associated with acute kidney injury and were an independent risk factor for in-hospital and 6-month mortality in children with severe malaria.
 - **Effect:** relative risk (in-hospital death, per log CHI3L1) 4.10 (95% CI 1.32-12.75)
@@ -5919,7 +5892,7 @@ in data/trials.csv.
 - **Published:** 2018-05-01
 - **Trial period:** 2011-01-13 to 2014-04-30
 - **Intervention(s):** GSK Biological's Investigational Malaria Vaccine 257049; Engerix-B; Tritanrix HepB Hib; BCG; OPV; Rouvax
-- **Class:** vaccine
+- **Class:** vaccine; monoclonal antibody
 - **Population:** neonates and infants aged 1 to 7 days at enrollment, followed to 18 months
 - **N:** 480
 - **Impact:** Initiating RTS,S/AS01E vaccination after 6 weeks of age (e.g., 10-, 14- and 26-week schedule) improved anti-CS antibody responses compared with the standard 6-, 10-, 14-week schedule, while neonatal vaccination was well tolerated but produced a lower immune response.
@@ -5951,7 +5924,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2018-01-01
-- **Class:** antimalarial drug
 - **Population:** Patients with Plasmodium falciparum malaria
 - **N:** 100
 - **Impact:** Malarina, a polyherbal formulation, was as effective as Quinine Bisulphate in treating malaria symptoms and was safe and well tolerated.
@@ -6100,7 +6072,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2018-02-01
-- **Class:** chemoprevention
 - **Population:** healthy adult volunteers undergoing controlled human malarial infection
 - **N:** 24
 - **Impact:** DSM265 given 3 or 7 days before controlled human malarial infection was safe and well tolerated, delayed time to parasitemia compared with placebo, but sterilely protected only one third of participants.
@@ -6221,7 +6192,7 @@ in data/trials.csv.
 - **Design:** pilot trial, non-randomized, controlled (two intervention villages received MDA, two control villages followed pre-MDA)
 - **Status:** published
 - **Published:** 2017-09-06
-- **Class:** treatment/ACT; ITN/LLIN
+- **Class:** MDA; treatment/ACT; ITN/LLIN
 - **Population:** residents of villages with ≥30% malaria prevalence
 - **Impact:** MDA with dihydroartemisinin-piperaquine and single low-dose primaquine was safe and reduced asymptomatic P. falciparum prevalence and anopheline vector positivity, though the effect on prevalence was not sustained beyond three months and symptomatic incidence was unchanged.
 - **Effect:** malaria prevalence (%) intervention vs control 0.4% vs 2.7% at 3 months post-MDA (95% CI 0.04-1.3 vs 1.7-4.1)
@@ -6380,7 +6351,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2017-07-19
-- **Class:** Chemoprevention
 - **Population:** children in trachoma trial communities
 - **N:** 24
 - **Impact:** Additional mass azithromycin distributions during the low-transmission season did not significantly reduce malaria parasitemia prevalence or parasite density compared with annual mass azithromycin alone after 3 years.
@@ -6483,7 +6453,7 @@ in data/trials.csv.
 - **Design:** randomized, phase 3
 - **Status:** published
 - **Published:** 2017-05-26
-- **Class:** monoclonal antibody; chemoprevention
+- **Class:** monoclonal antibody; IPTp
 - **Population:** pregnant women and their infants
 - **N:** 320
 - **Impact:** IPTp-SP was associated with a decline in antibody levels from enrolment to delivery and may have reduced malaria exposure, but this did not affect antibody transfer to the fetus or protection of infants from clinical malaria at 6 months.
@@ -6671,7 +6641,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2017-01-23
-- **Class:** chemoprevention (micronutrient supplementation)
 - **Population:** HIV-negative primigravid or secundigravid pregnant women in first trimester
 - **N:** 2500
 - **Impact:** Zinc supplementation reduced the risk of histopathology-positive placental malaria, but neither vitamin A nor zinc affected PCR-positive malaria, small for gestational age births, or prematurity.
@@ -6688,7 +6657,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2017-01-17
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTsc; treatment/ACT
 - **Population:** schoolchildren
 - **N:** 616
 - **Impact:** SP plus piperaquine (SP/PQ) significantly increased haemoglobin and reduced anaemia, malaria parasitaemia and clinical malaria compared to control, while SP alone showed smaller and mostly non-significant effects.
@@ -6776,7 +6745,6 @@ in data/trials.csv.
 - **Design:** observational cohort/reactive case detection study
 - **Status:** published
 - **Published:** 2016-12-12
-- **Class:** diagnosis/case detection strategy
 - **Population:** residents of farming settlements including household and neighbor contacts of malaria index cases
 - **N:** 1882
 - **Impact:** Household and neighboring household members of index cases were significantly more likely to be parasitemic than control household members, but microscopy-based RCD missed about half of qPCR-detected infections and over a quarter of infections occurred in distant control households, mostly asymptomatic carriers.
@@ -6812,7 +6780,7 @@ in data/trials.csv.
 - **Design:** stepped-wedge cluster randomized trial
 - **Status:** published
 - **Published:** 2016-12-08
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** children under 10 years of age
 - **Impact:** (no result stated yet)
 - **Link:** https://pubmed.ncbi.nlm.nih.gov/27930741/
@@ -6878,7 +6846,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2016-11-22
 - **Trial period:** 2008 to 2010
-- **Class:** chemoprevention; treatment/ACT; ITN/LLIN; diagnostic
+- **Class:** SMC; treatment/ACT; ITN/LLIN; diagnostic
 - **Population:** children under ten years of age (initially 3-59 months, extended to up to 10 years)
 - **N:** 54
 - **Impact:** SMC substantially reduced malaria incidence and severe malaria cases in children but showed no significant difference in all-cause mortality; it also reduced malaria incidence among untreated older age groups.
@@ -7017,7 +6985,7 @@ in data/trials.csv.
 - **Design:** multi-centre, non-inferiority trial; cost-effectiveness analysis and modelling, phase 3
 - **Status:** published
 - **Published:** 2016-09-23
-- **Class:** chemoprevention; treatment/ACT; ITN/LLIN
+- **Class:** IPTp; treatment/ACT; ITN/LLIN
 - **Population:** pregnant women
 - **N:** 1000
 - **Impact:** At current SP efficacy levels observed in trial settings, switching from IPTp-SP to ISTp-AL would not be cost-effective due to higher costs and limited difference in outcomes, though ISTp-AL becomes more cost-effective as SP efficacy declines.
@@ -7052,7 +7020,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2016-09-13
-- **Class:** antimalarial drug (ferroquine)
 - **Population:** Male and non-pregnant female volunteers aged 18-50 years
 - **N:** 8
 - **Impact:** A single 800 mg dose of ferroquine was rapidly absorbed and effectively cleared induced P. falciparum parasitaemia, and was generally well tolerated apart from transient elevated transaminases in three subjects.
@@ -7070,7 +7037,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2016-09-13
 - **Trial period:** 2011 to 2013
-- **Class:** chemoprevention; treatment/ACT; diagnostic
+- **Class:** IPTp; treatment/ACT; diagnostic
 - **Population:** HIV-seronegative pregnant women (paucigravidae and multigravidae)
 - **N:** 1873
 - **Impact:** Scheduled intermittent screening with RDTs and treatment with dihydroartemisinin-piperaquine was not superior to IPTp-SP and was associated with higher fetal loss and more malaria at delivery.
@@ -7231,7 +7198,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2016-01-01
-- **Class:** Chemoprevention (antimalarial prophylaxis in pregnancy)
+- **Class:** chemoprevention
 - **Population:** antenatal clinic attendees (pregnant women)
 - **N:** 200
 - **Impact:** Azithromycin was comparable to sulphadoxine-pyrimethamine in preventing malaria in pregnancy, with similar rates of parasitaemia and tolerability between groups.
@@ -7249,7 +7216,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2016-07-15
-- **Class:** chemoprevention
 - **Population:** HIV-infected adults on antiretroviral therapy with CD4 counts ≥250 cells/µl
 - **N:** 2180
 - **Impact:** CD4 count during follow-up, at enrolment, or at ART initiation was not associated with clinical malaria incidence and did not modify the effect of stopping cotrimoxazole on malaria risk.
@@ -7267,7 +7233,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2016-09-23
 - **Trial period:** 2011 to 2012
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTsc; treatment/ACT
 - **Population:** schoolchildren
 - **Impact:** Monthly dihydroartemisinin-piperaquine reduced malaria incidence by 96% compared to placebo but selected for pfmdr1 N86Y and pfcrt K76T polymorphisms associated with decreased drug sensitivity.
 - **Effect:** reduction in malaria incidence 96%
@@ -7397,7 +7363,7 @@ in data/trials.csv.
 - **Published:** 2016-06-21
 - **Trial period:** 2010-10 to 2013-10
 - **Intervention(s):** Azithromycin plus chloroquine; sulfadoxine-pyrimethamine
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTp; treatment/ACT; ITN/LLIN
 - **Population:** pregnant women in second and third trimester
 - **N:** 2891
 - **Impact:** IPTp with azithromycin-chloroquine was not superior to IPTp with sulfadoxine-pyrimethamine in reducing sub-optimal pregnancy outcomes, and the study was terminated early for futility.
@@ -7507,7 +7473,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2016-02-26
 - **Trial period:** 2011 to 2013
-- **Class:** inhaled nitric oxide
 - **Population:** children aged 1 to 10 years with severe malaria
 - **N:** 180
 - **Impact:** AKI was common (45.5%) in pediatric severe malaria and was associated with increased mortality, longer hospitalization, and neurodisability, particularly in children receiving placebo, while children receiving inhaled nitric oxide had higher rates of AKI but no significant association between AKI and mortality or neurodisability.
@@ -7524,7 +7489,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2016-05-04
-- **Class:** Chemoprevention (malaria treatment) + nutrition
 - **Population:** infants aged 9 to 18 months
 - **Impact:** The intervention (lipid-based nutrient supplements plus malaria and diarrhoea treatment) had independent positive effects on both linear growth and neurodevelopment, suggesting different underlying mechanisms rather than mediation through growth alone.
 - **Effect:** standardized mean difference (SD units) ~0.3 SD on LAZ and ~0.3 SD on motor, language and personal-social scores; effects decreased to 0.21, 0.27, and 0.29 respectively after adjusting for LAZ change
@@ -7559,7 +7523,6 @@ in data/trials.csv.
 - **Published:** 2016-04-01
 - **Trial period:** 2014-03 to 2014-12
 - **Intervention(s):** Mirasol-treated Whole Blood; Untreated Whole Blood
-- **Class:** blood pathogen reduction technology
 - **Population:** adult patients (aged ≥18 years) with blood group O+ requiring whole blood transfusion
 - **N:** 227
 - **Impact:** Treatment of whole blood with the Mirasol pathogen reduction system significantly reduced the incidence of transfusion-transmitted malaria compared with untreated whole blood.
@@ -7632,7 +7595,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2016-04-12
 - **Trial period:** 2011 to 2012
-- **Class:** ITN/LLIN; IRS; larval source management; diagnostic
+- **Class:** MDA; ITN/LLIN; IRS; larval source management; diagnostic
 - **Population:** individuals residing in serologically defined malaria hotspots and surrounding communities
 - **N:** 4550
 - **Impact:** Hotspot-targeted interventions modestly and transiently reduced parasite prevalence inside hotspots but had no significant effect on transmission in the surrounding evaluation zones.
@@ -7965,7 +7928,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-12-28
-- **Class:** vaccine; monoclonal antibody; treatment/ACT
+- **Class:** vaccine; monoclonal antibody; chemoprevention; treatment/ACT
 - **Population:** healthy adult volunteers under chloroquine prophylaxis
 - **N:** 30
 - **Impact:** Intradermal immunization with cryopreserved PfSPZ under chloroquine prophylaxis was safe but induced only minimal immune responses and did not protect against controlled human malaria infection.
@@ -8038,7 +8001,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-11-23
-- **Class:** chemoprevention
+- **Class:** PMC
 - **Population:** infants (asymptomatic, some with G6PD deficiency)
 - **Impact:** Chlorproguanil-dapsone caused greater reductions in hemoglobin than sulfadoxine-pyrimethamine or mefloquine, and G6PD deficient infants had higher hemolysis risk overall, but G6PD deficiency did not specifically worsen chlorproguanil-dapsone-associated hemoglobin declines.
 - **Effect:** adjusted odds ratio for Hb <8 g/dL in homo-/hemizygous G6PD genotype 6.7 (95% CI 1.7 to 27.0)
@@ -8073,7 +8036,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-12-16
-- **Class:** chemoprevention; treatment/ACT; diagnostic
+- **Class:** SMC; treatment/ACT; diagnostic
 - **Population:** children aged 3-59 months
 - **N:** 2400
 - **Impact:** Seasonal malaria chemoprevention reduced the incidence of malaria in children during the rainy season compared to placebo.
@@ -8106,7 +8069,7 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2015-11-16
 - **Trial period:** 2011 to 2012
-- **Class:** ITN/LLIN; IRS
+- **Class:** vaccine; ITN/LLIN; IRS
 - **Population:** households in study clusters (general population)
 - **N:** 40
 - **Impact:** Combining IRS with bendiocarb and ITNs reduced Anopheles gambiae s.l. density by 84% and EIR compared to ITNs alone in northern Tanzania.
@@ -8124,7 +8087,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2016-02-01
-- **Class:** chemoprevention
 - **Population:** HIV-infected adults stable on ART and CTX with CD4 cell count at least 250 cells/μl
 - **N:** 2180
 - **Impact:** Stopping cotrimoxazole prophylaxis in HIV-infected adults on ART was associated with a higher incidence of malaria compared with continuing cotrimoxazole, though the difference was smaller than previously reported and severe malaria was rare.
@@ -8247,7 +8209,7 @@ in data/trials.csv.
 - **Published:** 2015-09-24
 - **Trial period:** 2010-06 to 2014-04
 - **Intervention(s):** trimethoprim-sulfamethoxazole (TS; TMP/SMX); sulfadoxine-pyrimethamine (SP); dihydroartemisinin-piperaquine (DP)
-- **Class:** treatment/ACT
+- **Class:** chemoprevention; treatment/ACT
 - **Population:** children randomized at 6 months of age, followed to 24 months of age
 - **N:** 600
 - **Impact:** Monthly dihydroartemisinin-piperaquine chemoprevention reduced malaria incidence overall, with protective efficacy strongly dependent on piperaquine drug exposure, reaching nearly 100% protection in children with the highest exposure.
@@ -8282,7 +8244,6 @@ in data/trials.csv.
 - **Status:** published
 - **Published:** 2015-09-09
 - **Trial period:** 2010 to 2011
-- **Class:** Educational outreach/training
 - **Population:** outpatients at health facilities receiving infectious disease care (emergency triage, malaria, pneumonia services)
 - **N:** 36
 - **Impact:** Delayed educational outreach combined with training improved several facility performance indicators similarly to immediate outreach, and extended less-frequent outreach maintained most gains with mixed effects on individual indicators.
@@ -8369,7 +8330,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-08-24
-- **Class:** treatment (artemether)
 - **Population:** children weighing 5-15 kg with severe/complicated or uncomplicated malaria unable to tolerate oral medication
 - **N:** 182
 - **Impact:** Sublingual artemether resulted in significantly higher parasitological success rates and faster parasite clearance than intravenous quinine in African children with P. falciparum malaria.
@@ -8406,7 +8366,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-08-10
-- **Class:** chemoprevention; treatment/ACT; diagnostic
+- **Class:** IPTp; treatment/ACT; diagnostic
 - **Population:** primi- or secundigravidae (pregnant women)
 - **N:** 5354
 - **Impact:** Intermittent screening and treatment with RDT and artemether-lumefantrine (ISTp-AL) was non-inferior to intermittent preventive treatment with sulfadoxine-pyrimethamine (IPTp-SP) in preventing low birth weight, anemia, and placental malaria.
@@ -8460,7 +8420,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-06-22
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** HIV-infected pregnant women
 - **N:** 200
 - **Impact:** In HIV-infected pregnant women, circulating IL-10 was associated with P. falciparum infection while IFN-γ appeared to mark anti-malarial protection, with cytokine levels changing between inclusion and delivery.
@@ -8477,7 +8437,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-06-08
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women
 - **N:** 1601
 - **Impact:** Mefloquine was found to be overall superior to sulfadoxine-pyrimethamine for intermittent preventive treatment in pregnancy when jointly assessing efficacy and tolerability.
@@ -8545,7 +8505,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-05-20
-- **Class:** treatment/ACT; diagnostic
+- **Class:** MDA; treatment/ACT; diagnostic
 - **Population:** community members in moderate malaria transmission area
 - **Impact:** Dry-season MTAT did not sufficiently reduce malaria transmission to enable transition to case-investigation elimination strategy, but it substantially reduced malaria illness and was highly cost-effective for malaria burden reduction.
 - **Effect:** incremental cost-effectiveness ratio (cost per DALY averted) USD804
@@ -8595,7 +8555,6 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-03-02
-- **Class:** antimalarial treatment
 - **Population:** children with severe malaria
 - **N:** 212
 - **Impact:** Artemether and quinine showed similar efficacy and safety in treating severe malaria in children, with high rates of clinical and parasitological improvement and low mortality.
@@ -8612,7 +8571,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-04-27
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** children 3 to 59 months old
 - **N:** 1499
 - **Impact:** Both DHAPQ and SPAQ were highly efficacious for seasonal malaria chemoprevention, though DHAPQ showed slightly higher risk of malaria attack than SPAQ, with an odds ratio of 1.33.
@@ -8734,7 +8693,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-03-23
-- **Class:** treatment/ACT; diagnostic
+- **Class:** MDA; treatment/ACT; diagnostic
 - **Population:** community residents including children
 - **Impact:** Mass test and treatment reduced malaria prevalence and outpatient case incidence but not enough to approach elimination levels.
 - **Effect:** adjusted odds ratio (prevalence); incidence rate ratio (outpatient cases) 0.47 (prevalence); 0.83 (incidence, 17% decrease) (95% CI 0.24-0.90 (OR); 0.68-1.01 (IRR))
@@ -8784,7 +8743,7 @@ in data/trials.csv.
 - **Design:** randomized controlled clinical trial, nested analysis
 - **Status:** published
 - **Published:** 2015-02-25
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women
 - **N:** 549
 - **Impact:** Sulfadoxine/pyrimethamine-IPTp did not significantly reduce group B Streptococcus colonization prevalence compared with mefloquine-IPTp.
@@ -8819,7 +8778,7 @@ in data/trials.csv.
 - **Design:** randomized controlled trial
 - **Status:** published
 - **Published:** 2015-02-11
-- **Class:** vaccine; chemoprevention; treatment/ACT
+- **Class:** vaccine; IPTp; treatment/ACT
 - **Population:** pregnant women
 - **N:** 854
 - **Impact:** Monthly SPAZ-IPTp significantly reduced maternal nasopharyngeal carriage of S. pneumoniae and H. influenzae at delivery compared to SPCQ, but was associated with an increased proportion of macrolide-resistant pneumococcal isolates.
@@ -8922,7 +8881,7 @@ in data/trials.csv.
 - **Status:** results posted
 - **Trial period:** 2008-02 to 2008-06
 - **Intervention(s):** sulfadoxine-pyrimethamine; amodiaquine + sulfadoxine-pyrimethamine; dihydroartemisinin-piperaquine; Placebo
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** IPTsc; treatment/ACT
 - **Population:** schoolchildren
 - **N:** 780
 - **Impact:** Intermittent preventive treatment with antimalarial drug regimens reduced the risk of parasitaemia in schoolchildren compared to placebo.
@@ -9158,7 +9117,7 @@ in data/trials.csv.
 - **Status:** preprint
 - **Published:** 2024-02-28
 - **Trial period:** 2021 to 2021
-- **Class:** chemoprevention; treatment/ACT
+- **Class:** SMC; treatment/ACT
 - **Population:** asymptomatic individuals aged 10-50 years with P. falciparum gametocytaemia
 - **N:** 80
 - **Impact:** Artemether-lumefantrine alone nearly completely prevented mosquito infections, whereas sulfadoxine-pyrimethamine plus amodiaquine left considerable post-treatment transmission that was reduced by adding tafenoquine.
@@ -9176,7 +9135,7 @@ in data/trials.csv.
 - **Design:** cross-sectional survey and randomized controlled open-label trial
 - **Status:** preprint
 - **Published:** 2024-01-04
-- **Class:** chemoprevention
+- **Class:** IPTsc
 - **Population:** school-age children (≤10 years)
 - **Impact:** Intermittent preventive therapy with DP or ASAQ did not significantly affect change in weight, height, or BMI over time compared to the control group, though malaria at baseline was associated with higher odds of stunting.
 - **Effect:** adjusted odds ratio (stunting associated with malaria) AOR=1.78 (95% CI 1.36-2.33)
@@ -9247,7 +9206,7 @@ in data/trials.csv.
 - **Status:** preprint
 - **Published:** 2024-11-12
 - **Trial period:** 2021 to 2023
-- **Class:** chemoprevention
+- **Class:** IPTp
 - **Population:** pregnant women attending antenatal care
 - **N:** 2539
 - **Impact:** G-ANC did not significantly improve population-level ANC4 or IPTp3 coverage compared to individual ANC, but among women who actually participated in G-ANC, both ANC4 and IPTp3 uptake were significantly higher.
@@ -9265,7 +9224,7 @@ in data/trials.csv.
 - **Status:** preprint
 - **Published:** 2023-09-12
 - **Trial period:** 2022 to 2022
-- **Class:** chemoprevention
+- **Class:** SMC; MDA
 - **Population:** children aged 1-14 years
 - **N:** 627
 - **Impact:** Integrating MDA for schistosomiasis and STH with SMC was safe and feasible among Senegalese children, though vomiting was more common in the intervention groups than the control group.
@@ -9468,7 +9427,6 @@ in data/trials.csv.
 - **Place:** Uganda, Mozambique
 - **Status:** preprint
 - **Published:** 2022-07-26
-- **Class:** mHealth/iCCM strengthening
 - **Impact:** Population surveys were conducted at baseline and after 18 months in all districts to assess the impact of the intervention on the coverage of appropriate treatment for malaria, diarrhoea and pneumonia in children 2-59months of age, on prevalence of cases of these conditions, and on a range of secon
 - **Effect:** (95% CI 0.78-0.87)
 - **Link:** https://doi.org/10.1101/2022.07.25.22278035
@@ -9481,7 +9439,7 @@ in data/trials.csv.
 - **Place:** Namibia
 - **Status:** preprint
 - **Published:** 2021-04-19
-- **Class:** monoclonal antibody
+- **Class:** monoclonal antibody; MDA
 - **Impact:** Reductions in sero-prevalence to antigens Etramp.Ag1, Pf MSP1 19 , Rh2.2030, and Pf AMA1 were observed in study arms combining rfMDA and RAVC, but only effects for Etramp5.Ag1 were statistically significant.
 - **Effect:** (95% CI 0.65-0.90)
 - **Species:** P. falciparum

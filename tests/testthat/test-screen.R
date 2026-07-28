@@ -39,13 +39,14 @@ test_that("ClinicalTrials.gov phase codes normalise", {
   expect_equal(.ct_phase(list()), "")
 })
 
-test_that("screen mapping: eligible -> include; fills phase/class only when empty", {
+test_that("screen mapping: eligible -> include; fills phase only when empty", {
   rec <- new_record(source = "pubmed", source_id = "1", title = "x")
   out <- .screen_apply(rec, list(eligible = TRUE, record_type = "trial", phase = "Phase 3",
-                                 intervention_class = "vaccine", reason = "malaria RCT", confidence = "high"))
+                                 reason = "malaria RCT", confidence = "high"))
   expect_equal(out$screening_decision, "include")
   expect_equal(out$phase, "Phase 3")
-  expect_equal(out$intervention_class, "vaccine")
+  # the screen no longer supplies intervention_class (owned by classify_intervention)
+  expect_equal(out$intervention_class, "")
 })
 
 test_that("screen mapping preserves a fetcher's structural record_type", {

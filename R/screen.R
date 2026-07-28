@@ -25,7 +25,6 @@
                              enum = c("trial", "preprint", "registration",
                                       "protocol", "review", "other")),
     phase             = list(type = "string"),
-    intervention_class = list(type = "string"),
     reason            = list(type = "string"),
     confidence        = list(type = "string", enum = c("low", "medium", "high"))
   ),
@@ -69,7 +68,7 @@
     "trial that merely mentions malaria or measures it only as a minor secondary outcome).\n",
     excl_phase,
     "Return: eligible (bool); record_type (trial | preprint | registration | protocol | review | other); ",
-    "phase ('Phase 3' / 'Not applicable' / '' if unstated); intervention_class (short category, or ''); ",
+    "phase ('Phase 3' / 'Not applicable' / '' if unstated); ",
     "reason (one concise sentence naming the decisive factor); confidence (low|medium|high)."
   )
 }
@@ -147,7 +146,8 @@ screen_records <- function(records, cfg, max_items = NULL) {
   rec$screening_reason     <- llm_str(data$reason)
   rec$screening_confidence <- llm_str(data$confidence)
   if (!has_text(rec$phase))              rec$phase <- llm_str(data$phase)
-  if (!has_text(rec$intervention_class)) rec$intervention_class <- llm_str(data$intervention_class)
+  # intervention_class is a controlled vocabulary owned by classify_intervention()
+  # (normalize.R); the screen no longer sets it, to keep the categories consistent.
   # keep a structural record_type from the fetcher; only refine a blank/generic one
   rt <- llm_str(data$record_type)
   if (nzchar(rt) && (rec$record_type %||% "") %in% c("", "trial")) rec$record_type <- rt
