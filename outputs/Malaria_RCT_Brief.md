@@ -9,6 +9,43 @@ in data/trials.csv.
 
 <!-- New weekly entries are inserted directly below this line -->
 
+## Week of 2026-08-03
+
+### Pharmacometric evaluation of pre-referral rectal artesunate in children with severe malaria.
+- **Source / ID:** pubmed (42522584)
+- **Journal:** British journal of clinical pharmacology
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** Democratic Republic of Congo
+- **Design:** randomized crossover, pharmacometric study
+- **Status:** published
+- **Published:** 2026-07-29
+- **Class:** treatment/ACT
+- **Population:** children with severe malaria
+- **N:** 82
+- **Impact:** Rectal artesunate produced similar dihydroartemisinin exposure and predicted parasite clearance over the first 12 hours compared to intravenous artesunate, supporting its use as a pre-referral intervention.
+- **Effect:** rectal bioavailability of artesunate 21% (95% CI IQR: 8%-35%)
+- **Link:** https://pubmed.ncbi.nlm.nih.gov/42522584/
+
+### Duration and association with protection of NANP-repeat-specific and C-terminus-specific anti-circumsporozoite protein IgG responses following RTS,S/AS01E vaccination: an observational ancillary immunological study of a phase 3 clinical trial.
+- **Source / ID:** pubmed (42030969)
+- **Journal:** The Lancet. Infectious diseases
+- **Type:** trial
+- **Phase:** Phase 3
+- **Place:** six African countries
+- **Design:** observational ancillary immunological study of a phase 3 clinical trial
+- **Status:** published
+- **Published:** 2026-04-21
+- **Trial period:** 2009 to 2011
+- **Class:** vaccine; monoclonal antibody
+- **Population:** children aged 5-17 months
+- **N:** 1292
+- **Impact:** C-terminus-specific IgG responses to circumsporozoite protein were more durable than NANP-repeat-specific responses and were independently associated with reduced malaria risk, with antibody maintenance being a stronger predictor of protection than peak responses.
+- **Effect:** hazard ratio 0.60 (95% CI 0.43-0.83)
+- **Species:** P. falciparum
+- **Follow-up:** 17 months after primary vaccination; 1 year malaria risk follow-up
+- **Link:** https://pubmed.ncbi.nlm.nih.gov/42030969/
+
 ## Week of 2026-07-28
 
 ### Efficacy of a volatile pyrethroid spatial emanator (SE) in reducing Anopheles host-seeking in outdoor kitchens in Southern Zambia.
