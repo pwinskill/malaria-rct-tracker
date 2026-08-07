@@ -185,10 +185,8 @@ What's in it:
   hatched blanks rather than white space. Click any cell to filter the table to it. Counts are
   trials, not evidence quality, and a trial with several classes or outcomes appears in each of
   its cells, so cells don't sum to the total.
-- **Where trials happen** — countries ranked by trial count, with an optional
-  **per-million-estimated-cases** view (see [Burden denominators](#burden-denominators)). Raw
-  counts largely restate where research infrastructure is; the normalised view shows where the
-  evidence base is thin relative to where malaria actually is.
+- **Where trials happen** — countries ranked by trial count. An optional per-burden view exists
+  but is **off by default**; see [Burden denominators](#burden-denominators-optional-off-by-default).
 - **Trial start to publication** — the lag distribution, with a median. Covers the ~40% of
   records carrying both dates.
 - **Filters**: free-text search (multi-word narrows, it doesn't match the raw phrase), plus
@@ -215,28 +213,35 @@ Because it's a plain static file, it works offline and could later be served wit
 GitHub Pages is **public** unless you're on a paid plan — so publishing it would expose the
 embedded dataset. It's left unpublished by default; keep it local, or enable Pages deliberately.
 
-## Burden denominators
+## Burden denominators (optional, off by default)
 
-**`data/burden.csv` ships deliberately incomplete and you should complete it before citing
-anything derived from it.** It holds estimated malaria cases per country, used only to
-normalise the geography view ("trials per million estimated cases"). It arrives with the four
-countries whose share of global cases WHO reports explicitly each year — Nigeria, DR Congo,
-Uganda, Mozambique — because those are the figures that can be stated without guessing. Fill in
-the rest from the **WHO World Malaria Report** country annex.
+The geography chart can show **trials per unit of malaria burden** instead of raw trial counts.
+Raw counts largely restate where research infrastructure is; the normalised view shows where the
+evidence base is thin *relative to where malaria actually is*, and it recomputes under whatever
+filter is active — so "per-burden coverage of vaccine trials" is answerable, not just the global
+picture.
+
+**It ships off.** There is no `data/burden.csv` in the repo, so the toggle is hidden and the chart
+shows plain counts. Nothing to maintain unless you want the view. To turn it on, create the file:
 
 ```
-country,cases,year,source,note
-Nigeria,66800000,2022,WHO World Malaria Report 2023,26.8% of 249M global cases
+country,cases,year,source
+Nigeria,66800000,2022,WHO World Malaria Report 2023
+Uganda,12700000,2022,WHO World Malaria Report 2023
 ```
 
-`country` must match the controlled names in the `countries` column (see [Geography](#geography)).
-Countries **absent from the file are omitted** from the normalised view — never treated as zero
-burden — and the chart says how many of the selection it could cover. Delete the file and the
-toggle simply disappears. Re-run `render_explorer()` after editing; no re-screening, no
-extraction, no cost.
+Then `render_explorer()`. No re-screening, no extraction, no cost.
 
-Even at four countries the point is visible: **Uganda has 68 trials against 12.7M estimated
-cases; Nigeria has 30 against 66.8M.**
+Notes if you do populate it:
+
+- `country` must match the controlled names in the `countries` column (see [Geography](#geography)).
+- Countries **absent from the file are omitted** from the normalised view — never treated as zero
+  burden — and the chart states how much of the current selection it could cover.
+- Only *relative* burden matters to the ranking, so **share-of-global-cases works as well as
+  absolute counts and ages far more slowly** — WHO's per-country shares move by a fraction of a
+  percentage point a year, while absolute estimates move with global totals and methodology
+  revisions. Record the `year` either way so staleness is visible.
+- Half-populating it is worse than leaving it off: the chart looks complete unless the note is read.
 
 ## Geography
 
