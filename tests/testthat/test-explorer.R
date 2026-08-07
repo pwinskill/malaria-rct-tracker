@@ -104,6 +104,27 @@ test_that("the written file is LF on every platform", {
   expect_false(any(raw == as.raw(13)))
 })
 
+test_that("every CSV field is surfaced somewhere in the explorer", {
+  # The page embeds all 39 fields; the table shows 8 and the drawer the rest. This
+  # is the guard that adding a schema column doesn't silently leave it unreachable
+  # (payload paid for, never displayed) - add it to COLS or FIELD_GROUPS.
+  tmpl <- paste(readLines(.explorer_template(), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  missing <- CSV_FIELDS[!vapply(CSV_FIELDS,
+    function(f) grepl(paste0('"', f, '"'), tmpl, fixed = TRUE), logical(1))]
+  expect_equal(unname(missing), character(0))
+})
+
+test_that("the interactive scaffolding is present in the rendered page", {
+  cfg <- mk_expl_cfg()
+  p <- render_explorer(cfg, records = list(derive_fields(normalize_record(
+    new_record(source = "pubmed", source_id = "1", title = "T", place = "Kenya")))))
+  html <- paste(readLines(p, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  expect_true(grepl('<dialog id="drawer"', html, fixed = TRUE))   # detail drawer
+  expect_true(grepl('id="covGrid"', html, fixed = TRUE))          # coverage panel
+  expect_true(grepl('id="expBib"', html, fixed = TRUE))           # exports
+  expect_true(grepl('id="expRis"', html, fixed = TRUE))
+})
+
 test_that("the geography fields reach the page (the country facet reads them)", {
   cfg <- mk_expl_cfg()
   rec <- derive_fields(normalize_record(new_record(

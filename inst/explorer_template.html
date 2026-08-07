@@ -122,6 +122,52 @@
   .src{font-size:11px;color:var(--muted)}
   footer{max-width:1180px;margin:0 auto;padding:0 24px 40px;color:var(--muted);font-size:12px}
   .note{background:var(--grid);border:1px dashed var(--border);border-radius:8px;padding:8px 12px;color:var(--muted);font-size:12.5px;margin-top:10px}
+
+  /* extraction-coverage panel */
+  .cov{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+  .cov summary{cursor:pointer;font-size:12.5px;color:var(--muted);user-select:none}
+  .cov summary:hover{color:var(--ink)}
+  .cov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:3px 22px;margin-top:12px}
+  .cov-row{display:grid;grid-template-columns:132px 1fr 42px;align-items:center;gap:8px;font-size:12px}
+  .cov-k{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cov-bar{height:7px;border-radius:4px;background:var(--grid);overflow:hidden}
+  .cov-bar span{display:block;height:100%;background:var(--accent);border-radius:4px}
+  .cov-pct{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+  .flags{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .flags .lbl{font-size:12px;color:var(--muted);margin-right:2px}
+  .flag{border:1px solid var(--border);background:var(--bg);color:var(--ink);border-radius:999px;
+        padding:4px 11px;font-size:12px;cursor:pointer}
+  .flag:hover{border-color:var(--accent)}
+  .flag[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+  /* per-trial detail drawer */
+  tbody tr{cursor:pointer}
+  dialog#drawer{
+    border:0;padding:0;margin:0 0 0 auto;top:0;height:100%;max-height:100%;
+    width:min(580px,100%);max-width:100%;overflow:auto;
+    background:var(--panel);color:var(--ink);box-shadow:-8px 0 24px rgba(0,0,0,.20)
+  }
+  dialog#drawer::backdrop{background:rgba(8,12,18,.48)}
+  .dw-head{
+    position:sticky;top:0;z-index:1;background:var(--panel);border-bottom:1px solid var(--border);
+    padding:16px 20px;display:flex;gap:12px;align-items:flex-start;justify-content:space-between
+  }
+  .dw-head h3{margin:0;font-size:15.5px;line-height:1.35;font-weight:650}
+  .dw-close{border:1px solid var(--border);background:var(--bg);color:var(--ink);border-radius:8px;
+            padding:6px 10px;cursor:pointer;font-size:13px;flex:0 0 auto}
+  .dw-close:hover{border-color:var(--accent)}
+  .dw-body{padding:2px 20px 32px}
+  .dw-links{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 2px}
+  .dw-links a{border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:12.5px}
+  .dw-links a:hover{border-color:var(--accent);text-decoration:none}
+  .dw-group{margin-top:20px}
+  .dw-group h4{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .dw-grid{display:grid;grid-template-columns:148px 1fr;gap:0 14px;font-size:13.5px}
+  .dw-k{color:var(--muted);padding:6px 0;border-top:1px solid var(--border)}
+  .dw-v{padding:6px 0;border-top:1px solid var(--border);overflow-wrap:anywhere}
+  .dw-v.empty{color:var(--muted);font-style:italic}
+  @media (max-width:620px){ .dw-grid{grid-template-columns:1fr;gap:0}
+    .dw-k{padding-bottom:0;border-bottom:0} .dw-v{padding-top:2px;border-top:0} }
 </style>
 <script>
   // Apply a stored theme choice BEFORE first paint, so overriding the OS
@@ -170,8 +216,20 @@
       <div class="field"><label for="fCountry">Country / place</label><select id="fCountry"><option value="">All</option></select></div>
       <div class="field"><label for="fType">Record type</label><select id="fType"><option value="">All</option></select></div>
       <button class="reset" id="reset">Reset</button>
+      <button class="reset" id="expBib" title="Download the filtered set as BibTeX">↓ BibTeX</button>
+      <button class="reset" id="expRis" title="Download the filtered set as RIS">↓ RIS</button>
     </div>
     <div class="count" id="count" role="status" aria-live="polite"></div>
+
+    <details class="cov" id="cov">
+      <summary>Extraction coverage &amp; data quality (for the current selection)</summary>
+      <div class="cov-grid" id="covGrid"></div>
+      <div class="flags" id="covFlags"></div>
+      <div class="note">
+        Fill rates describe what the extractor found in the abstract, not what the trial
+        reported. A blank field means “not extracted”, which is not the same as “not measured”.
+      </div>
+    </details>
   </section>
 
   <section class="table-wrap">
@@ -182,6 +240,14 @@
   </section>
   <div class="note" id="cap-note" hidden></div>
 </main>
+
+<dialog id="drawer" aria-label="Trial detail">
+  <div class="dw-head">
+    <h3 id="dwTitle"></h3>
+    <button class="dw-close" id="dwClose" aria-label="Close (Esc)">✕</button>
+  </div>
+  <div class="dw-body" id="dwBody"></div>
+</dialog>
 
 <footer id="footer"></footer>
 
@@ -283,7 +349,58 @@ function textOn(hex) {   // black or white, whichever actually contrasts better
 
 /* ------------------------------------------------------------------ state */
 const state = { q:"", qTokens:[], cls:"", phase:"", species:"", country:"", type:"",
-                timeField:"pub", sortKey:"_pubYear", sortDir:-1 };
+                flag:"", timeField:"pub", sortKey:"_pubYear", sortDir:-1, openId:"" };
+
+// Data-quality predicates. Each is both a counted diagnostic in the coverage
+// panel and a one-click filter, so "which of these did the extractor struggle
+// with?" is answerable rather than merely visible.
+const FLAGS = [
+  { key:"no_ci",      label:"estimate without a CI",   test:r => !!val(r,"effect_estimate") && !val(r,"effect_ci") },
+  { key:"cluster_n",  label:"N is a cluster count",    test:r => !!r._nUnit },
+  { key:"no_pubdate", label:"no publication date",     test:r => !r._pubYear },
+  { key:"no_place",   label:"no country identified",   test:r => !r._countries.length && !r._regions.length },
+  { key:"no_class",   label:"no intervention class",   test:r => !r._classes.length },
+  { key:"rules",      label:"extracted by rules",      test:r => val(r,"extracted_by") === "rules" },
+];
+const FLAG_BY_KEY = new Map(FLAGS.map(f => [f.key, f]));
+
+// Fields worth a fill-rate bar: the ones you would actually use as an analysis
+// variable. Order is the order they appear.
+const COVERAGE_FIELDS = [
+  ["countries","country"], ["phase","phase"], ["intervention_class","class"],
+  ["species","species"], ["population","population"], ["age_range","age range"],
+  ["n_total","N"], ["design","design"], ["comparator","comparator"],
+  ["follow_up","follow-up"], ["transmission_setting","transmission"],
+  ["primary_outcome","primary outcome"], ["impact_summary","impact summary"],
+  ["effect_metric","effect metric"], ["effect_estimate","effect estimate"],
+  ["effect_ci","effect CI"], ["p_value","p-value"], ["safety_summary","safety"],
+  ["funder","funder"], ["trial_start","trial start"],
+];
+
+// Drawer layout. The record carries 39 fields and the table shows 8; these are
+// the other 31, grouped the way record.R groups them.
+const FIELD_GROUPS = [
+  ["Design", [["design","Design"], ["phase","Phase"], ["comparator","Comparator"],
+              ["n_total","Enrolled (verbatim)"], ["follow_up","Follow-up"],
+              ["trial_start","Trial start"], ["trial_completion","Primary completion"]]],
+  ["Population & setting",
+             [["population","Population"], ["age_range","Age range"], ["place","Place (verbatim)"],
+              ["countries","Countries"], ["region","Region"], ["species","Species"],
+              ["transmission_setting","Transmission setting"]]],
+  ["Result", [["primary_outcome","Primary outcome"], ["impact_summary","Impact"],
+              ["effect_metric","Effect metric"], ["effect_estimate","Estimate"],
+              ["effect_ci","95% CI"], ["p_value","p-value"]]],
+  ["Safety & funding", [["safety_summary","Safety"], ["funder","Funder"]]],
+  ["Intervention", [["intervention_class","Class"], ["interventions_raw","Interventions (verbatim)"],
+                    ["conditions","Conditions"]]],
+  ["Provenance",
+             [["id","Record id"], ["source","Source"], ["source_id","Source id"],
+              ["journal","Journal"], ["publication_date","Publication date"],
+              ["registry_updated","Registry last updated"], ["record_type","Record type"],
+              ["status","Status"], ["screening_decision","Screening decision"],
+              ["screening_reason","Screening reason"], ["screening_confidence","Screening confidence"],
+              ["extracted_by","Extracted by"], ["first_seen","First seen"], ["run_type","Run type"]]],
+];
 
 // Region-level records ("Africa", "Southeast Asia") name no country. They get a
 // suffixed entry in the same dropdown rather than being silently unfilterable.
@@ -302,9 +419,10 @@ const COLS = [
 const TABLE_CAP = 500;
 
 /* ------------------------------------------------------------------ filtering */
-function applyFilters(){
+function applyFilters(ignoreFlag){
   const isRegion = state.country.endsWith(REGION_SUFFIX);
   const wantPlace = isRegion ? state.country.slice(0, -REGION_SUFFIX.length) : state.country;
+  const flag = ignoreFlag ? null : FLAG_BY_KEY.get(state.flag);
   return TRIALS.filter(r => {
     // Every token must match, so "uganda ivermectin" narrows instead of - as it
     // used to - matching the raw phrase and silently returning nothing.
@@ -314,6 +432,7 @@ function applyFilters(){
     if (state.species && val(r,"species") !== state.species) return false;
     if (state.country && !(isRegion ? r._regions : r._countries).includes(wantPlace)) return false;
     if (state.type && val(r,"record_type") !== state.type) return false;
+    if (flag && !flag.test(r)) return false;
     return true;
   });
 }
@@ -498,7 +617,7 @@ function buildHead(){
     btn.addEventListener("click", () => {
       if (state.sortKey === c.key) state.sortDir *= -1;
       else { state.sortKey = c.key; state.sortDir = (c.type === "num") ? -1 : 1; }
-      render();
+      writeHash(false); render();
     });
     th.appendChild(btn);
     th._col = c; th._arrow = arrow;
@@ -518,6 +637,14 @@ function renderTable(rows){
   const frag = document.createDocumentFragment();
   shown.forEach(r => {
     const tr = document.createElement("tr");
+    // The row opens the full record. tabIndex keeps it reachable by keyboard
+    // without a role override that would strip the row semantics.
+    tr.tabIndex = 0;
+    const open = (e) => { if (e.target.closest("a")) return; openTrial(val(r,"id")); };
+    tr.addEventListener("click", open);
+    tr.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " "){ e.preventDefault(); open(e); }
+    });
     COLS.forEach(c => {
       const td = document.createElement("td"); if (c.cls) td.className = c.cls;
       const out = c.render(r);
@@ -542,20 +669,232 @@ function renderTable(rows){
     note.textContent = `Showing the first ${TABLE_CAP} of ${rows.length.toLocaleString()} matching trials — refine the filters to narrow the list.`; }
   else note.hidden = true;
 }
+/* ------------------------------------------------------------------ coverage panel */
+function renderCoverage(rows, preFlag){
+  const n = rows.length;
+  const grid = $("covGrid"); grid.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  COVERAGE_FIELDS.forEach(([key, label]) => {
+    let filled = 0;
+    for (const r of rows) if (val(r, key)) filled++;
+    const pct = n ? Math.round(100 * filled / n) : 0;
+    const row = document.createElement("div"); row.className = "cov-row";
+    row.title = `${filled.toLocaleString()} of ${n.toLocaleString()} records carry ${label}`;
+    const k = document.createElement("div"); k.className = "cov-k"; k.textContent = label;
+    const bar = document.createElement("div"); bar.className = "cov-bar";
+    const fill = document.createElement("span"); fill.style.width = pct + "%"; bar.appendChild(fill);
+    const p = document.createElement("div"); p.className = "cov-pct"; p.textContent = pct + "%";
+    row.appendChild(k); row.appendChild(bar); row.appendChild(p);
+    frag.appendChild(row);
+  });
+  grid.appendChild(frag);
+
+  const fl = $("covFlags"); fl.innerHTML = "";
+  const lbl = document.createElement("span"); lbl.className = "lbl"; lbl.textContent = "Flagged:";
+  fl.appendChild(lbl);
+  FLAGS.forEach(f => {
+    // Counted against the selection with the flag filter REMOVED, so clicking one
+    // doesn't collapse every other count to itself.
+    let c = 0;
+    for (const r of preFlag) if (f.test(r)) c++;
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "flag";
+    b.setAttribute("aria-pressed", String(state.flag === f.key));
+    b.textContent = `${f.label} · ${c.toLocaleString()}`;
+    b.addEventListener("click", () => {
+      state.flag = state.flag === f.key ? "" : f.key;
+      writeHash(false); render();
+    });
+    fl.appendChild(b);
+  });
+}
+
+/* ------------------------------------------------------------------ export */
+function download(name, text, mime){
+  const blob = new Blob([text], {type: mime + ";charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+const doiOf = (r) => val(r,"id").startsWith("doi:") ? val(r,"id").slice(4) : "";
+const httpUrl = (r) => /^https?:\/\//i.test(val(r,"url")) ? val(r,"url") : "";
+function citeKey(r, i){
+  const stem = val(r,"id").replace(/^[a-z]+:/, "").replace(/[^A-Za-z0-9]/g, "");
+  return `${stem || "trial"}${r._pubYear || ""}_${i + 1}`;
+}
+function toBibtex(rows){
+  const esc = (s) => String(s).replace(/[\\{}]/g, "");
+  return rows.map((r, i) => {
+    const fields = [["title", val(r,"title")], ["journal", val(r,"journal")],
+                    ["year", r._pubYear ? String(r._pubYear) : ""],
+                    ["doi", doiOf(r)], ["url", httpUrl(r)],
+                    ["keywords", val(r,"intervention_class")],
+                    ["note", val(r,"impact_summary")]]
+      .filter(([, v]) => v)
+      .map(([k, v]) => `  ${k} = {${esc(v)}}`).join(",\n");
+    return `@article{${citeKey(r, i)},\n${fields}\n}`;
+  }).join("\n\n") + "\n";
+}
+function toRis(rows){
+  const oneLine = (s) => String(s).replace(/[\r\n]+/g, " ");
+  return rows.map(r => {
+    const lines = [["TY","JOUR"], ["TI", val(r,"title")], ["JO", val(r,"journal")],
+                   ["PY", r._pubYear ? String(r._pubYear) : ""],
+                   ["DO", doiOf(r)], ["UR", httpUrl(r)],
+                   ["AB", val(r,"impact_summary")],
+                   ["KW", val(r,"intervention_class")], ["N1", val(r,"place")]]
+      .filter(([, v]) => v)
+      .map(([tag, v]) => `${tag}  - ${oneLine(v)}`);
+    lines.push("ER  - ");
+    return lines.join("\r\n");
+  }).join("\r\n\r\n") + "\r\n";
+}
+
+/* ------------------------------------------------------------------ detail drawer */
+const BY_ID = new Map(TRIALS.map(r => [val(r,"id"), r]));
+
+// Outbound links rebuilt from the canonical id prefix - `id` is already
+// doi:/pmid:/nct:-prefixed, so it is a ready-made link key the UI never used.
+function externalLinks(r){
+  const out = [], seen = new Set();
+  const add = (label, href) => { if (href && !seen.has(href)){ seen.add(href); out.push([label, href]); } };
+  const id = val(r,"id");
+  if (id.startsWith("doi:"))  add("DOI", "https://doi.org/" + id.slice(4));
+  if (id.startsWith("pmid:")) add("PubMed", "https://pubmed.ncbi.nlm.nih.gov/" + id.slice(5) + "/");
+  if (id.startsWith("nct:"))  add("ClinicalTrials.gov",
+                                  "https://clinicaltrials.gov/study/" + id.slice(4).toUpperCase());
+  add("Source record", httpUrl(r));
+  return out;
+}
+function renderDrawer(r){
+  $("dwTitle").textContent = val(r,"title") || "(untitled)";
+  const body = $("dwBody"); body.innerHTML = "";
+
+  const links = externalLinks(r);
+  if (links.length){
+    const wrap = document.createElement("div"); wrap.className = "dw-links";
+    links.forEach(([label, href]) => {
+      const a = document.createElement("a");
+      a.href = href; a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.textContent = label + " ↗";
+      wrap.appendChild(a);
+    });
+    body.appendChild(wrap);
+  }
+  FIELD_GROUPS.forEach(([heading, fields]) => {
+    const sec = document.createElement("div"); sec.className = "dw-group";
+    const h = document.createElement("h4"); h.textContent = heading; sec.appendChild(h);
+    const grid = document.createElement("div"); grid.className = "dw-grid";
+    fields.forEach(([key, label]) => {
+      const k = document.createElement("div"); k.className = "dw-k"; k.textContent = label;
+      const v = document.createElement("div"); v.className = "dw-v";
+      const raw = val(r, key);
+      // Empty fields are SHOWN, not hidden: with effect_ci at 52% and funder at
+      // 17%, "not reported" is itself information.
+      if (raw) v.textContent = raw;
+      else { v.textContent = "not reported"; v.classList.add("empty"); }
+      grid.appendChild(k); grid.appendChild(v);
+    });
+    sec.appendChild(grid); body.appendChild(sec);
+  });
+}
+function openTrial(id){
+  if (!BY_ID.has(id)) return;
+  state.openId = id;
+  renderDrawer(BY_ID.get(id));
+  if (!$("drawer").open) $("drawer").showModal();
+  writeHash(true);            // pushes an entry, so Back closes the drawer
+}
+// Closing is driven explicitly rather than off the dialog's `close` event: that
+// event is not reliably delivered everywhere, and a drawer that stays in the URL
+// after it has visibly closed produces a bad share link. Idempotent, so the
+// native event firing as well is harmless.
+function closeTrial(){
+  const d = $("drawer");
+  if (!state.openId && !d.open) return;
+  state.openId = "";
+  if (d.open) d.close();
+  writeHash(false);
+}
+function syncDrawer(){
+  const d = $("drawer");
+  const want = BY_ID.has(state.openId) ? state.openId : "";
+  state.openId = want;
+  if (want){ renderDrawer(BY_ID.get(want)); if (!d.open) d.showModal(); }
+  else if (d.open) d.close();
+}
+
+/* ------------------------------------------------------------------ shareable URL state */
+// Every filter, the sort, and the open trial live in the location hash, so any
+// view can be pasted into an email and reopened exactly. Filter changes REPLACE
+// the history entry (typing must not flood it); opening a trial PUSHES one.
+const HASH_KEYS = [["q","q"], ["cls","cls"], ["phase","phase"], ["species","species"],
+                   ["country","country"], ["type","type"], ["flag","flag"],
+                   ["time","timeField"], ["sort","sortKey"], ["dir","sortDir"], ["id","openId"]];
+const HASH_DEFAULTS = { timeField:"pub", sortKey:"_pubYear", sortDir:-1 };
+let suppressHash = false;
+function writeHash(push){
+  const p = new URLSearchParams();
+  HASH_KEYS.forEach(([param, key]) => {
+    const v = state[key];
+    if (v === "" || v == null) return;
+    if (HASH_DEFAULTS[key] !== undefined && v === HASH_DEFAULTS[key]) return;  // defaults stay out
+    p.set(param, String(v));
+  });
+  const base = location.href.split("#")[0];
+  const target = p.toString() ? base + "#" + p.toString() : base;
+  suppressHash = true;
+  if (push) history.pushState(null, "", target); else history.replaceState(null, "", target);
+  setTimeout(() => { suppressHash = false; }, 0);
+}
+function readHash(){
+  const p = new URLSearchParams(location.hash.slice(1));
+  HASH_KEYS.forEach(([param, key]) => {
+    if (key === "sortDir"){ state.sortDir = p.get("dir") === "1" ? 1 : -1; return; }
+    state[key] = p.get(param) || "";
+  });
+  // Anything unrecognised falls back to the default rather than filtering to zero.
+  if (state.timeField !== "start") state.timeField = "pub";
+  if (!COLS.some(c => c.key === state.sortKey)) state.sortKey = "_pubYear";
+  if (state.flag && !FLAG_BY_KEY.has(state.flag)) state.flag = "";
+  state.q = state.q.toLowerCase();
+  state.qTokens = state.q.split(/\s+/).filter(Boolean);
+}
+function syncControls(){
+  $("q").value = state.q;
+  // Assigning then reading back drops a stale value that is no longer an option,
+  // so an old link degrades to "All" instead of silently matching nothing.
+  const setSel = (id, key) => { $(id).value = state[key]; state[key] = $(id).value; };
+  setSel("fClass","cls"); setSel("fPhase","phase"); setSel("fSpecies","species");
+  setSel("fCountry","country"); setSel("fType","type");
+  $("byPub").setAttribute("aria-pressed", String(state.timeField === "pub"));
+  $("byStart").setAttribute("aria-pressed", String(state.timeField === "start"));
+}
+
+let lastRows = [];
 function render(){
-  // Cards and charts are order-independent, so only the table pays for the sort.
-  const rows = applyFilters();
+  // preFlag = the selection ignoring the data-quality flag, so the flag chips can
+  // show honest counts. Cards and charts are order-independent; only the table
+  // pays for the sort.
+  const preFlag = applyFilters(true);
+  const active = FLAG_BY_KEY.get(state.flag);
+  const rows = active ? preFlag.filter(active.test) : preFlag;
+  lastRows = sortRows(rows);
   renderCards(rows);
   renderTimeChart(rows);
   renderClassChart(rows);
+  renderCoverage(rows, preFlag);
   updateHead();
-  renderTable(sortRows(rows));
+  renderTable(lastRows);
   $("count").textContent = `${rows.length.toLocaleString()} of ${TRIALS.length.toLocaleString()} trials match.`;
 }
 function resetFilters(){
   state.q=""; state.qTokens=[]; state.cls=""; state.phase="";
-  state.species=""; state.country=""; state.type="";
+  state.species=""; state.country=""; state.type=""; state.flag="";
   ["q","fClass","fPhase","fSpecies","fCountry","fType"].forEach(id => $(id).value = "");
+  writeHash(false);
   render();
 }
 
@@ -568,7 +907,7 @@ function init(){
   $("subtitle").textContent =
     `${TRIALS.length.toLocaleString()} trials · generated ${META.generated}`;
   $("footer").textContent =
-    "Static, self-contained explorer generated by malariarct::render_explorer(). Data derived from PubMed, ClinicalTrials.gov and Europe PMC. Open this file directly in a browser — no server required.";
+    "Static, self-contained explorer generated by malariarct::render_explorer(). Data derived from PubMed, ClinicalTrials.gov and Europe PMC. Click any row for the full record; the address bar always holds the current view, so it can be copied and shared. Abstracts are not included in this page. Open this file directly in a browser — no server required.";
 
   if (!TRIALS.length){
     document.querySelector("main").innerHTML =
@@ -591,14 +930,34 @@ function init(){
     qt = setTimeout(() => {
       state.q = e.target.value.trim().toLowerCase();
       state.qTokens = state.q.split(/\s+/).filter(Boolean);
-      render();
+      writeHash(false); render();
     }, 120); });
-  $("fClass").addEventListener("change", e => { state.cls = e.target.value; render(); });
-  $("fPhase").addEventListener("change", e => { state.phase = e.target.value; render(); });
-  $("fSpecies").addEventListener("change", e => { state.species = e.target.value; render(); });
-  $("fCountry").addEventListener("change", e => { state.country = e.target.value; render(); });
-  $("fType").addEventListener("change", e => { state.type = e.target.value; render(); });
+  const onSelect = (id, key) =>
+    $(id).addEventListener("change", e => { state[key] = e.target.value; writeHash(false); render(); });
+  onSelect("fClass","cls"); onSelect("fPhase","phase"); onSelect("fSpecies","species");
+  onSelect("fCountry","country"); onSelect("fType","type");
   $("reset").addEventListener("click", resetFilters);
+
+  $("expBib").addEventListener("click", () => download("malaria-rcts.bib", toBibtex(lastRows), "application/x-bibtex"));
+  $("expRis").addEventListener("click", () => download("malaria-rcts.ris", toRis(lastRows), "application/x-research-info-systems"));
+
+  $("dwClose").addEventListener("click", closeTrial);
+  // Click on the backdrop (i.e. outside the panel) closes too.
+  $("drawer").addEventListener("click", e => { if (e.target === $("drawer")) closeTrial(); });
+  // Handle Esc ourselves so there is exactly one close path; `cancel` and `close`
+  // are kept as a backstop and are no-ops when closeTrial already ran.
+  $("drawer").addEventListener("keydown", e => {
+    if (e.key === "Escape"){ e.preventDefault(); closeTrial(); }
+  });
+  $("drawer").addEventListener("cancel", e => { e.preventDefault(); closeTrial(); });
+  $("drawer").addEventListener("close", closeTrial);
+
+  // The hash is the single source of truth, so Back/Forward and a hand-edited
+  // URL both just re-read it.
+  window.addEventListener("hashchange", () => {
+    if (suppressHash) return;
+    readHash(); syncControls(); render(); syncDrawer();
+  });
   $("byPub").addEventListener("click", () => setTimeField("pub"));
   $("byStart").addEventListener("click", () => setTimeField("start"));
 
@@ -617,12 +976,16 @@ function init(){
   });
 
   buildHead();
+  // Restore a shared/bookmarked view before the first paint of the table.
+  readHash(); syncControls();
   render();
+  syncDrawer();
 }
 function setTimeField(f){
   state.timeField = f;
   $("byPub").setAttribute("aria-pressed", String(f === "pub"));
   $("byStart").setAttribute("aria-pressed", String(f === "start"));
+  writeHash(false);
   renderTimeChart(applyFilters());   // chart is order-independent; no sort needed
 }
 

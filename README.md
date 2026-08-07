@@ -166,20 +166,70 @@ and pick **65001: Unicode (UTF-8)**, or read in R and export with `writexl::writ
 ## Interactive explorer
 
 Every run also writes a self-contained **`docs/index.html`** — an interactive explorer for
-the whole dataset: summary cards, a *trials-over-time* chart (toggle publication vs. trial-start
-date), a *by-intervention-class* chart, free-text search, and filters (class / phase / species /
-country / record type) over a sortable table. It's a single file with the data embedded inline —
-no server, no build step, no external assets — so you just open it:
+the whole dataset. It's a single file with the data embedded inline — no server, no build
+step, no external assets — so you just open it:
 
 ```r
 render_explorer()                 # rebuild it any time from the stored dataset
 browseURL("docs/index.html")      # open it in your browser
 ```
 
+What's in it:
+
+- **Summary cards**, a *trials-over-time* chart (toggle publication vs. trial-start date) and a
+  *by-intervention-class* chart. Each chart states how much of the current selection it actually
+  plots — the trial-start view covers well under half the dataset, and that should be visible
+  rather than read as a real decline.
+- **Filters**: free-text search (multi-word narrows, it doesn't match the raw phrase), plus
+  intervention class / phase / species / country / record type, over a sortable table.
+  The country facet is built from the normalised `countries` column, not from splitting the
+  free-text `place` — see [Geography](#geography).
+- **Click any row for the full record.** The table shows 8 columns; the drawer shows all 39
+  fields grouped as the schema groups them, with links rebuilt from the record `id`
+  (DOI / PubMed / ClinicalTrials.gov). Fields the extractor didn't fill are shown as
+  *not reported* rather than hidden — with `effect_ci` at 52% and `funder` at 17%, an absent
+  value is itself information.
+- **Shareable URLs.** Every filter, the sort, and the open trial live in the address bar, so a
+  view can be pasted into an email or a protocol and reopens exactly. Back closes the drawer.
+- **Extraction coverage panel** (under the filters): per-field fill rates *for the current
+  selection*, plus one-click flags for records the extractor struggled with — estimate without
+  a CI, N that is really a cluster count, no publication date, no country, no class, rules-only
+  extraction. Check this before you use any field as an analysis variable.
+- **Export** the filtered set as **BibTeX** or **RIS**. (For CSV, just use `data/trials.csv`
+  directly — you have R.)
+
 Because it's a plain static file, it works offline and could later be served with **GitHub Pages**
 (Settings → Pages → Deploy from branch → `main` → `/docs`). Note that on a **private** repo,
 GitHub Pages is **public** unless you're on a paid plan — so publishing it would expose the
 embedded dataset. It's left unpublished by default; keep it local, or enable Pages deliberately.
+
+## Geography
+
+`place` is whatever the extractor read off the abstract — `"Uganda"`, but also
+`"India (Gujarat: Kheda, Vadodara, Panchmahal districts)"` and `"Africa (five African
+countries)"`. It's kept verbatim for display, and two **derived** columns are stored
+alongside it for slicing:
+
+- **`countries`** — controlled country names, `"; "`-joined (`"Burkina Faso; Mali"`).
+- **`region`** — a multi-country region (`"Africa"`, `"Southeast Asia"`) when no country is
+  named, so region-level records stay visible instead of vanishing from a country facet.
+
+Both come from an ordered gazetteer in `R/normalize.R`. Rules are applied in order and each
+match is **consumed** before the next rule is tried, which is what keeps the containment cases
+right: *Papua New Guinea* is claimed and removed before the bare *Guinea* rule sees the string,
+likewise *South Sudan* before *Sudan* and *South Africa* before the *Africa* region. Spelling
+variants collapse (both DRC forms, both apostrophes in *Côte d'Ivoire*, *The Gambia*/*Gambia*).
+
+This is regex over text you already have — **no LLM, no API calls, no cost** — so it's always
+safe to re-run. After editing the rules:
+
+```r
+reclassify_store()   # re-derive intervention_class + countries/region for every stored record
+```
+
+which rewrites `trials.csv` / `trials.jsonl` and regenerates the brief and explorer. Run it
+after **any** schema change that adds a derived column, too — a plain append can't rewrite the
+CSV header.
 
 ## Deleting a record after manual review
 
