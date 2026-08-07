@@ -35,7 +35,9 @@ SCREENING <- c(
 
 # --- Tier 1: core, from source metadata + abstract -------------------------
 TIER1 <- c(
-  "place",              # country / site(s) / region
+  "place",              # country / site(s) / region, free text (display only)
+  "countries",          # controlled country names, "; "-joined (see normalize.R)
+  "region",             # controlled multi-country region, when no country named
   "design",             # e.g. cluster-randomized, double-blind, phase 3
   "status",             # ongoing | completed | results posted | published | preprint
   "interventions_raw",  # free-text intervention description

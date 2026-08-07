@@ -3,6 +3,7 @@
 ^scripts$
 ^data$
 ^outputs$
+^docs$
 ^config\.yaml$
 ^\.env.*
 ^README\.md$

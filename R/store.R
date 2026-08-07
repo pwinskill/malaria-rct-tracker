@@ -200,13 +200,15 @@ exclude_records <- function(ids, reason = NULL, cfg = load_config()) {
   unique(ids[nzchar(ids)])
 }
 
-#' Re-derive intervention_class for every stored record
+#' Re-derive the controlled-vocabulary fields for every stored record
 #'
-#' Recomputes `intervention_class` for all stored records using the current
-#' controlled vocabulary ([classify_intervention]), then rewrites the CSV/JSONL
-#' and regenerates the brief and explorer. Purely local and free — no API calls,
-#' no re-screening. Run this after changing the intervention rules in
-#' `normalize.R` so existing rows pick up the new categories.
+#' Recomputes every locally-derived field — `intervention_class` (via
+#' [classify_intervention]) and `countries` / `region` (via [normalize_place]) —
+#' for all stored records, then rewrites the CSV/JSONL and regenerates the brief
+#' and explorer. Purely local and free: no API calls, no re-screening, no
+#' re-extraction. Run this after changing the rules in `normalize.R` so existing
+#' rows pick up the new vocabulary, and after any schema change that adds a
+#' derived column (it rewrites the CSV header, which a plain append cannot do).
 #'
 #' @param cfg Config list; defaults to [load_config()].
 #' @return Number of records re-classified (invisibly).
@@ -214,12 +216,7 @@ exclude_records <- function(ids, reason = NULL, cfg = load_config()) {
 reclassify_store <- function(cfg = load_config()) {
   recs <- .read_store(cfg)
   if (!length(recs)) { message("[reclassify] store is empty; nothing to do"); return(invisible(0L)) }
-  recs <- lapply(recs, function(r) {
-    blob <- paste(r$title %||% "", r$interventions_raw %||% "",
-                  r$abstract %||% "", r$conditions %||% "", collapse = " ")
-    r$intervention_class <- classify_intervention(blob)
-    r
-  })
+  recs <- lapply(recs, derive_fields)
   .rewrite_store(cfg, recs)
   message(sprintf("[reclassify] re-classified %d record(s)", length(recs)))
   tryCatch(render_brief(cfg),    error = function(e) message(sprintf("[brief] skipped: %s", conditionMessage(e))))

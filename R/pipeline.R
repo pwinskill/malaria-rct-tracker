@@ -111,6 +111,10 @@ run_pipeline <- function(cfg, start_date, end_date, run_type, max_items = NULL) 
       eroom <- max(0L, extract_cap - extracted)
       inc <- enrich(inc, cfg, max_items = eroom)
       extracted <- extracted + min(length(inc), eroom)
+      # Derived fields (intervention_class, countries/region) read `place`, which
+      # the extractor fills - so they are computed here, after extraction and
+      # before the record is stored, not back at normalize_record().
+      inc <- lapply(inc, derive_fields)
     }
 
     state <- .checkpoint(cfg, state, inc, exc)   # append store + save state now

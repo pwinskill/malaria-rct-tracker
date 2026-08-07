@@ -6,33 +6,63 @@
 # dropped (CSV-level fields only) to keep the file small. Regenerated on every
 # pipeline run, and runnable by hand via render_explorer().
 
-# Locate the HTML template, whether loaded via pkgload (inst/) or installed.
+# Locate the HTML template. system.file() is checked first because it is
+# correct both for an installed package AND under pkgload (which shims it to
+# resolve inst/); the bare "inst/" path is only a fallback for being run from a
+# source checkout with no package loaded.
 .explorer_template <- function() {
-  candidates <- c(
-    file.path("inst", "explorer_template.html"),
-    system.file("explorer_template.html", package = "malariarct")
-  )
-  candidates <- candidates[nzchar(candidates)]
-  hit <- candidates[file.exists(candidates)]
-  if (!length(hit))
-    stop("explorer_template.html not found (looked in inst/ and the installed package).",
+  hit <- system.file("explorer_template.html", package = "malariarct")
+  if (!nzchar(hit) || !file.exists(hit)) hit <- file.path("inst", "explorer_template.html")
+  if (!file.exists(hit))
+    stop("explorer_template.html not found (looked in the installed package and inst/).",
          call. = FALSE)
-  hit[1]
+  hit
 }
 
-# Replace a literal token with a literal value, WITHOUT the backreference
-# processing that sub()/gsub() apply to their replacement string - JSON data
-# routinely contains backslashes (\", \uXXXX) that sub() would corrupt.
-.inject <- function(s, token, value) {
-  parts <- strsplit(s, token, fixed = TRUE)[[1]]
-  if (length(parts) < 2L) return(s)
-  paste0(parts[1], value, paste(parts[-1], collapse = token))
+# Substitute every __TOKEN__ in one pass over the ORIGINAL template.
+#
+# Two properties matter and neither is free:
+#   * single pass - an injected value is never rescanned, so a trial whose text
+#     happens to contain the literal "__META__" cannot swallow the real token.
+#   * fail loud - a token declared here but absent from the template (or a
+#     __LIKE_THIS__ token in the template that nothing fills) is an error, not a
+#     silently half-rendered page.
+# Token names must be regex-safe; "__[A-Z0-9_]+__" is the enforced shape.
+.assemble <- function(tmpl, tokens) {
+  toks <- names(tokens)
+  stopifnot(all(grepl("^__[A-Z0-9_]+__$", toks)))
+
+  present <- vapply(toks, function(t) grepl(t, tmpl, fixed = TRUE), logical(1))
+  if (!all(present))
+    stop("explorer template is missing token(s): ", paste(toks[!present], collapse = ", "),
+         call. = FALSE)
+
+  in_tmpl <- unique(regmatches(tmpl, gregexpr("__[A-Z0-9_]+__", tmpl))[[1]])
+  unknown <- setdiff(in_tmpl, toks)
+  if (length(unknown))
+    stop("explorer template has unfilled token(s): ", paste(unknown, collapse = ", "),
+         call. = FALSE)
+
+  m <- gregexpr(paste(toks, collapse = "|"), tmpl)
+  regmatches(tmpl, m) <- list(unlist(tokens[regmatches(tmpl, m)[[1]]], use.names = FALSE))
+  tmpl
 }
 
-# Neutralise any "</" so a stray "</script>" inside the data can't close the
-# embedding <script> tag. "<\/" is an equivalent, valid escape inside a JS
-# string literal, so the parsed data is unchanged.
-.script_safe <- function(x) gsub("</", "<\\/", x, fixed = TRUE)
+# Make a JSON payload safe to embed inside a <script> element.
+#
+# jsonlite escapes "</" but leaves "<!--", "<script" and the JS line terminators
+# U+2028/U+2029 raw. A bare "<!--" inside script data flips the HTML tokenizer
+# into script-data-escaped state; a following "<script" escalates it to
+# double-escaped, and from there the template's real </script> no longer closes
+# the element - the rest of the document is swallowed and the page renders blank
+# with no console error. Escaping EVERY "<" is lossless: in JSON a "<" can only
+# occur inside a string literal, where < is an exactly equivalent escape.
+.js_safe <- function(x) {
+  x <- gsub("<",      "\\u003c", x, fixed = TRUE)
+  x <- gsub("\u2028", "\\u2028", x, fixed = TRUE)   # LINE SEPARATOR
+  x <- gsub("\u2029", "\\u2029", x, fixed = TRUE)   # PARAGRAPH SEPARATOR
+  x
+}
 
 #' Build the interactive HTML explorer
 #'
@@ -45,9 +75,11 @@
 #' @param cfg Config list; defaults to [load_config()].
 #' @param records Optional list of records to render; defaults to reading the
 #'   stored dataset (`trials.jsonl`).
+#' @param generated Date stamp shown in the page header. Defaults to today;
+#'   pass a fixed value to make the output reproducible (used by the tests).
 #' @return The path written (invisibly).
 #' @export
-render_explorer <- function(cfg = load_config(), records = NULL) {
+render_explorer <- function(cfg = load_config(), records = NULL, generated = Sys.Date()) {
   if (is.null(records)) records <- .read_store(cfg)
 
   # Embed CSV-level fields only (abstract omitted for size); all values as strings.
@@ -55,17 +87,20 @@ render_explorer <- function(cfg = load_config(), records = NULL) {
     stats::setNames(lapply(CSV_FIELDS, function(k) as.character(r[[k]] %||% "")), CSV_FIELDS))
   data_json <- if (length(rows)) as.character(toJSON(rows, auto_unbox = TRUE)) else "[]"
   meta_json <- as.character(toJSON(
-    list(generated = as.character(Sys.Date()), count = length(rows)), auto_unbox = TRUE))
+    list(generated = as.character(generated), count = length(rows)), auto_unbox = TRUE))
 
   tmpl <- paste(readLines(.explorer_template(), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
-  html <- .inject(tmpl, "__DATA__", .script_safe(data_json))
-  html <- .inject(html, "__META__", .script_safe(meta_json))
+  html <- .assemble(tmpl, list("__DATA__" = .js_safe(data_json),
+                               "__META__" = .js_safe(meta_json)))
 
   dir   <- cfg$output$explorer_dir %||% "docs"
   fname <- cfg$output$explorer_filename %||% "index.html"
   ensure_dir(dir)
   out_path <- file.path(dir, fname)
-  con <- file(out_path, open = "w", encoding = "UTF-8")
+  # Binary mode so the file is byte-identical on every platform: in text mode
+  # Windows would emit CRLF and the ubuntu runner LF, and git would then store a
+  # whole new ~230 KB blob on every alternation instead of a small delta.
+  con <- file(out_path, open = "wb")
   on.exit(close(con))
   writeLines(enc2utf8(html), con, useBytes = TRUE)
 

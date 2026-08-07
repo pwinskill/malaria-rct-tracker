@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "R/**"
+      - "inst/**"          # the explorer template is code; changes here must run the tests
       - "tests/**"
       - "DESCRIPTION"
       - "NAMESPACE"

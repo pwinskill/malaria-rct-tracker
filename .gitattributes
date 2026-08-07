@@ -7,3 +7,12 @@ data/trials.csv          merge=union
 data/trials.jsonl        merge=union
 data/screened_out.jsonl  merge=union
 data/exclusions.txt      merge=union
+
+# The explorer is a generated artefact, rewritten in full on every run.
+#   -text  never CRLF-normalise it. render_explorer() writes LF on every
+#          platform (connection opened "wb"), so the blob stays byte-identical
+#          whether it was built on Windows or on the ubuntu runner. Without
+#          this, alternating platforms rewrite all ~470 lines each commit and
+#          git stores a whole new ~230 KB blob instead of a small delta.
+#   -diff  don't try to render a textual diff of a 1 MB single-line-JSON file.
+docs/index.html          -text -diff linguist-generated=true

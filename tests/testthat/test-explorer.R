@@ -53,7 +53,66 @@ test_that("embedded JSON cannot break out of the <script> tag", {
     title = "Nasty </script><script>alert(1)</script> title"))
   p <- render_explorer(cfg, records = list(rec))
   html <- paste(readLines(p, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
-  # the injected data must not contain a raw closing tag; "<\/script>" is the safe form
   expect_false(grepl("</script><script>alert", html, fixed = TRUE))
-  expect_true(grepl("<\\/script>", html, fixed = TRUE))
+  # jsonlite escapes "</" to "<\/" first, then .js_safe escapes the "<" itself
+  expect_true(grepl("\\u003c\\/script>", html, fixed = TRUE))
+  expect_true(grepl("\\u003cscript>alert(1)", html, fixed = TRUE))
+})
+
+test_that("a comment opener in the data cannot swallow the rest of the document", {
+  # "<!--" inside script data flips the HTML tokenizer into script-data-escaped
+  # state; a following "<script" escalates it, and from there the template's own
+  # </script> stops closing the element and the page renders blank. jsonlite
+  # escapes "</" but not this, which is why .js_safe() escapes every "<".
+  cfg <- mk_expl_cfg()
+  rec <- normalize_record(new_record(source = "pubmed", source_id = "1",
+    title = "Trial <!-- <script> of doom"))
+  p <- render_explorer(cfg, records = list(rec))
+  html <- paste(readLines(p, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  expect_false(grepl("<!--", html, fixed = TRUE))
+  expect_true(grepl("\\u003c!-- \\u003cscript>", html, fixed = TRUE))
+  # exactly one script element still closes where the template says it does
+  expect_true(endsWith(trimws(html), "</html>"))
+})
+
+test_that("a record containing a template token cannot eat the real one", {
+  # __DATA__ is injected first; a single-pass assemble is what stops the value
+  # it injects from being rescanned when __META__ goes in.
+  cfg <- mk_expl_cfg()
+  rec <- normalize_record(new_record(source = "pubmed", source_id = "1",
+                                     title = "Sneaky __META__ __DATA__ title"))
+  p <- render_explorer(cfg, records = list(rec), generated = "2026-01-01")
+  html <- paste(readLines(p, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  expect_true(grepl("Sneaky __META__ __DATA__ title", html, fixed = TRUE))
+  expect_true(grepl('"generated":"2026-01-01"', html, fixed = TRUE))   # real token still filled
+})
+
+test_that(".assemble fails loudly rather than half-rendering", {
+  expect_error(.assemble("no tokens here", list("__DATA__" = "x")), "missing token")
+  expect_error(.assemble("__DATA__ and __EXTRA__", list("__DATA__" = "x")), "unfilled token")
+  # replaces EVERY occurrence, not just the first
+  expect_equal(.assemble("__DATA__/__DATA__", list("__DATA__" = "v")), "v/v")
+})
+
+test_that("the written file is LF on every platform", {
+  # Text-mode output emits CRLF on Windows and LF on the ubuntu runner; git then
+  # stores a whole new ~230 KB blob each time the generating platform alternates.
+  cfg <- mk_expl_cfg()
+  p <- render_explorer(cfg, records = list(normalize_record(
+    new_record(source = "pubmed", source_id = "1", title = "T"))))
+  raw <- readBin(p, "raw", file.size(p))
+  expect_false(any(raw == as.raw(13)))
+})
+
+test_that("the geography fields reach the page (the country facet reads them)", {
+  cfg <- mk_expl_cfg()
+  rec <- derive_fields(normalize_record(new_record(
+    source = "pubmed", source_id = "1", title = "T",
+    place = "Burkina Faso (Niangoloko, Gourcy)")))
+  p <- render_explorer(cfg, records = list(rec))
+  html <- paste(readLines(p, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  # place stays verbatim for display; countries is what the facet is built from
+  expect_true(grepl('"place":"Burkina Faso (Niangoloko, Gourcy)"', html, fixed = TRUE))
+  expect_true(grepl('"countries":"Burkina Faso"', html, fixed = TRUE))
+  expect_true(grepl('"region":""', html, fixed = TRUE))
 })

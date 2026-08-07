@@ -6,26 +6,30 @@
 <title>Malaria RCT Explorer</title>
 <style>
   /* ---- Okabe-Ito colourblind-safe palette (colour never carries meaning alone) ---- */
+  /* --accent, --on-accent and --grid are redefined per theme: #0072B2 on the
+     dark background is only 3.65:1 (every table link failed AA), and the old
+     dark --grid was 1.19:1 against the panel, which made row-hover invisible. */
   :root{
     --bg:#f6f8fa; --panel:#ffffff; --ink:#1a2230; --muted:#5a6675; --border:#dfe4ea;
     --shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.10);
-    --accent:#0072B2; --grid:#eef1f5;
+    --accent:#0072B2; --on-accent:#ffffff; --grid:#eef1f5;
     --c1:#0072B2; --c2:#E69F00; --c3:#009E73; --c4:#CC79A7;
     --c5:#56B4E9; --c6:#D55E00; --c7:#8c6bae; --c8:#767b84;
   }
   @media (prefers-color-scheme: dark){
     :root{
       --bg:#0d1117; --panel:#161b22; --ink:#e6edf3; --muted:#9aa4b0; --border:#2b323c;
-      --shadow:none; --grid:#232a33;
+      --shadow:none; --grid:#30363d; --accent:#56B4E9; --on-accent:#0d1117;
     }
   }
   :root[data-theme="dark"]{
     --bg:#0d1117; --panel:#161b22; --ink:#e6edf3; --muted:#9aa4b0; --border:#2b323c;
-    --shadow:none; --grid:#232a33;
+    --shadow:none; --grid:#30363d; --accent:#56B4E9; --on-accent:#0d1117;
   }
   :root[data-theme="light"]{
     --bg:#f6f8fa; --panel:#ffffff; --ink:#1a2230; --muted:#5a6675; --border:#dfe4ea;
     --shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.10); --grid:#eef1f5;
+    --accent:#0072B2; --on-accent:#ffffff;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -64,10 +68,14 @@
   .chart-head h2{margin:0}
   .seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
   .seg button{border:0;background:var(--panel);color:var(--muted);padding:5px 10px;font-size:12px;cursor:pointer}
-  .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+  .seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
   .chart-svg{width:100%;height:auto;display:block}
   .chart-empty{color:var(--muted);font-size:13px;padding:24px 4px;text-align:center}
+  .chart-note{color:var(--muted);font-size:11.5px;margin-top:6px}
   .bar rect:hover{opacity:.82}
+  /* One visible focus ring for every interactive control; the UA default is
+     nearly invisible against the dark panel. */
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 
   /* controls */
   .controls{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
@@ -91,9 +99,20 @@
     position:sticky;top:0;background:var(--panel);text-align:left;padding:10px 12px;border-bottom:2px solid var(--border);
     white-space:nowrap;color:var(--muted);font-weight:600
   }
-  thead th.sortable{cursor:pointer;user-select:none}
-  thead th.sortable:hover{color:var(--ink)}
-  th .arrow{font-size:10px;margin-left:3px;opacity:.7}
+  /* The sort control is a real <button> INSIDE the <th>, so the cell keeps its
+     implicit columnheader role (a role="button" on the th destroyed it) and the
+     header nodes survive a re-render, so keyboard focus is not thrown to body. */
+  thead th .th-btn{
+    all:unset;cursor:pointer;user-select:none;font:inherit;color:inherit;
+    display:inline-flex;align-items:center;gap:3px;white-space:nowrap
+  }
+  thead th .th-btn:hover{color:var(--ink)}
+  th .arrow{font-size:10px;opacity:.7}
+  td.empty-cell{padding:28px 12px;text-align:center;color:var(--muted)}
+  td.empty-cell button{
+    margin-left:8px;border:1px solid var(--border);background:var(--bg);color:var(--ink);
+    border-radius:8px;padding:4px 10px;cursor:pointer;font-size:12.5px
+  }
   tbody td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
   tbody tr:hover{background:var(--grid)}
   td.title{max-width:340px}
@@ -104,6 +123,12 @@
   footer{max-width:1180px;margin:0 auto;padding:0 24px 40px;color:var(--muted);font-size:12px}
   .note{background:var(--grid);border:1px dashed var(--border);border-radius:8px;padding:8px 12px;color:var(--muted);font-size:12.5px;margin-top:10px}
 </style>
+<script>
+  // Apply a stored theme choice BEFORE first paint, so overriding the OS
+  // preference doesn't flash the wrong palette on every load.
+  try { var t = localStorage.getItem("mrct-theme");
+        if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
 </head>
 <body>
 <header>
@@ -127,16 +152,18 @@
         </div>
       </div>
       <div id="chartTime"></div>
+      <div class="chart-note" id="noteTime"></div>
     </div>
     <div class="chart-card">
       <h2>By intervention class</h2>
       <div id="chartClass"></div>
+      <div class="chart-note" id="noteClass"></div>
     </div>
   </section>
 
   <section class="controls" aria-label="Filters">
     <div class="row">
-      <div class="field"><label for="q">Search (title, place, impact)</label><input id="q" type="search" placeholder="e.g. RTS,S, bed net, Uganda…"></div>
+      <div class="field"><label for="q">Search (title, place, impact, outcome, funder)</label><input id="q" type="search" placeholder="e.g. RTS,S, bed net, Uganda…"></div>
       <div class="field"><label for="fClass">Intervention class</label><select id="fClass"><option value="">All</option></select></div>
       <div class="field"><label for="fPhase">Phase</label><select id="fPhase"><option value="">All</option></select></div>
       <div class="field"><label for="fSpecies">Species</label><select id="fSpecies"><option value="">All</option></select></div>
@@ -144,7 +171,7 @@
       <div class="field"><label for="fType">Record type</label><select id="fType"><option value="">All</option></select></div>
       <button class="reset" id="reset">Reset</button>
     </div>
-    <div class="count" id="count"></div>
+    <div class="count" id="count" role="status" aria-live="polite"></div>
   </section>
 
   <section class="table-wrap">
@@ -170,36 +197,97 @@ const yearOf = (s) => { const m = /\b(19|20)\d{2}\b/.exec(s || ""); return m ? +
 const splitList = (s, sep) => (s || "").split(sep).map(x => x.trim()).filter(Boolean);
 const uniqSorted = (arr) => Array.from(new Set(arr)).sort((a, b) => a.localeCompare(b));
 
+/* n_total is free text: "326", but also "104 clusters" and "70 clusters; 4494
+   children in cohort; 2536 individuals in cross-sectional surveys". Stripping
+   every non-digit - which is what this used to do - concatenated that last one
+   into 7,044,942,536, and it sorted to the top of the N column. Take the first
+   number that counts people; failing that take the first number of any kind and
+   keep its unit, so a cluster count is never silently presented as N. */
+const CLUSTER_UNIT = /^(cluster|village|compound|household|school|facilit|communit|ward|hamlet|site)/i;
+function parseN(raw){
+  const re = /(\d[\d,]*)\s*([A-Za-z]+)?/g;
+  let m, first = null, people = null;
+  while ((m = re.exec(raw)) !== null){
+    const v = +m[1].replace(/,/g, "");
+    if (!Number.isFinite(v)) continue;
+    const unit = m[2] || "";
+    if (CLUSTER_UNIT.test(unit)){ if (first === null) first = {value:v, unit:unit.toLowerCase()}; }
+    else { if (first === null) first = {value:v, unit:""}; if (people === null) people = {value:v, unit:""}; }
+  }
+  return people || first || {value:null, unit:""};
+}
+
+/* Columns that sort as text. Their lowercase keys are precomputed below because
+   sortRows() runs over the whole filtered set on every keystroke, and building
+   them inside the comparator allocated four strings per comparison. */
+const SORT_STR_COLS = ["title","place","phase","intervention_class","species","impact_summary"];
+const COLL = new Intl.Collator(undefined, {sensitivity:"base", numeric:true});
+
 /* Every renderable row carries derived helper fields, computed once. */
 TRIALS.forEach(r => {
   r._classes = splitList(val(r, "intervention_class"), ";");
-  r._countries = splitList(val(r, "place"), ",");
-  r._pubYear = yearOf(val(r, "publication_date")) || yearOf(val(r, "first_seen"));
+  // Controlled geography from normalize.R. `place` stays free text for display:
+  // splitting IT on commas yielded fragments ("Gourcy)", "Kano State)") and 144
+  // filter options for ~55 real countries.
+  r._countries = splitList(val(r, "countries"), ";");
+  r._regions   = splitList(val(r, "region"), ";");
+  // No fall back to first_seen: that dated 8 undated records to the year they
+  // were scraped, inflating the current-year bar with fabricated values.
+  r._pubYear = yearOf(val(r, "publication_date"));
   r._startYear = yearOf(val(r, "trial_start"));
-  r._n = (() => { const d = val(r, "n_total").replace(/[^0-9]/g, ""); return d ? +d : null; })();
+  const n = parseN(val(r, "n_total"));
+  r._n = n.value; r._nUnit = n.unit;
   r._hay = [val(r,"title"), val(r,"place"), val(r,"impact_summary"),
             val(r,"interventions_raw"), val(r,"intervention_class"),
             val(r,"primary_outcome"), val(r,"funder")].join("  ").toLowerCase();
+  r._sk = {};
+  SORT_STR_COLS.forEach(k => { r._sk[k] = val(r, k).toLowerCase(); });
 });
 
 /* ------------------------------------------------------------------ class colours (stable per class) */
-// Colourblind-aware palette (Okabe-Ito + a few Paul-Tol hues). A class always
-// gets the same colour, by its position in the sorted class list, so the chart
-// bars and the table pills stay colour-consistent. Labels always accompany the
-// colour, so a palette wrap (many classes) never makes two classes ambiguous.
+// Colourblind-aware palette (Okabe-Ito + Paul-Tol hues). A class always gets the
+// same colour, by its position in the sorted class list, so the chart bars and
+// the table pills stay colour-consistent.
+//
+// MUST stay >= the number of classes in .INTERVENTION_RULES (normalize.R). At 12
+// entries against 16 present classes it wrapped, and the two most prominent
+// collisions landed inside the default top-10 chart: vaccine (78) and IPTp (38)
+// drew as the same pink, chemoprevention (30) and SMC (26) as the same blue. And
+// because SMC *is* a chemoprevention, both labels co-occur in one cell, so the
+// table showed two adjacent identically-coloured pills.
 const PALETTE = ["#0072B2", "#E69F00", "#009E73", "#CC79A7", "#56B4E9", "#D55E00",
-                 "#8C6BAE", "#117733", "#882255", "#44AA99", "#999933", "#661100"];
+                 "#117733", "#882255", "#44AA99", "#999933", "#661100", "#332288",
+                 // #8C6BAE was rejected here: at 4.35:1 against white and 4.34:1
+                 // against black it clears AA with NEITHER label colour, and it
+                 // lands on treatment/ACT, which is 284 of the 568 rows.
+                 "#DDCC77", "#AA4499", "#6A3D9A", "#B15928", "#6E7B8B", "#4D4D4D"];
 const ALL_CLASSES = uniqSorted([].concat(...TRIALS.map(r => r._classes)));
 const CLASS_IDX = new Map(ALL_CLASSES.map((c, i) => [c, i]));
 const classColor = (c) => PALETTE[(CLASS_IDX.get(c) ?? 0) % PALETTE.length];
-function textOn(hex) {   // black or white, whichever reads on this background
-  const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.62 ? "#111" : "#fff";
+
+// Pick the label colour by real WCAG contrast, not by perceived brightness. The
+// old YIQ test at a 0.62 threshold chose white on 7 of the 12 swatches where
+// black wins outright - worst on treatment/ACT (2.8:1), which is half the table.
+function srgbToLin(c){ c /= 255; return c <= 0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); }
+function luminance(hex){
+  return 0.2126*srgbToLin(parseInt(hex.slice(1,3),16))
+       + 0.7152*srgbToLin(parseInt(hex.slice(3,5),16))
+       + 0.0722*srgbToLin(parseInt(hex.slice(5,7),16));
+}
+const ratio = (a, b) => (Math.max(a,b) + 0.05) / (Math.min(a,b) + 0.05);
+const L_INK = luminance("#111111"), L_PAPER = luminance("#ffffff");
+function textOn(hex) {   // black or white, whichever actually contrasts better
+  const L = luminance(hex);
+  return ratio(L, L_INK) >= ratio(L, L_PAPER) ? "#111" : "#fff";
 }
 
 /* ------------------------------------------------------------------ state */
-const state = { q:"", cls:"", phase:"", species:"", country:"", type:"", timeField:"pub",
-                sortKey:"_pubYear", sortDir:-1 };
+const state = { q:"", qTokens:[], cls:"", phase:"", species:"", country:"", type:"",
+                timeField:"pub", sortKey:"_pubYear", sortDir:-1 };
+
+// Region-level records ("Africa", "Southeast Asia") name no country. They get a
+// suffixed entry in the same dropdown rather than being silently unfilterable.
+const REGION_SUFFIX = " (region-level)";
 
 const COLS = [
   { key:"_pubYear", label:"Year",   type:"num",  render:r => r._pubYear || "" },
@@ -207,7 +295,7 @@ const COLS = [
   { key:"place",    label:"Place",  type:"str",  render:r => val(r,"place") },
   { key:"phase",    label:"Phase",  type:"str",  render:r => val(r,"phase") },
   { key:"intervention_class", label:"Class", type:"str", render:r => pillList(r._classes) },
-  { key:"_n",       label:"N",      type:"num",  render:r => r._n != null ? r._n.toLocaleString() : "" },
+  { key:"_n",       label:"N",      type:"num",  render:r => nCell(r) },
   { key:"species",  label:"Species",type:"str",  render:r => val(r,"species") },
   { key:"impact_summary", label:"Impact", type:"str", cls:"impact", render:r => val(r,"impact_summary") },
 ];
@@ -215,12 +303,16 @@ const TABLE_CAP = 500;
 
 /* ------------------------------------------------------------------ filtering */
 function applyFilters(){
+  const isRegion = state.country.endsWith(REGION_SUFFIX);
+  const wantPlace = isRegion ? state.country.slice(0, -REGION_SUFFIX.length) : state.country;
   return TRIALS.filter(r => {
-    if (state.q && !r._hay.includes(state.q)) return false;
+    // Every token must match, so "uganda ivermectin" narrows instead of - as it
+    // used to - matching the raw phrase and silently returning nothing.
+    if (state.qTokens.length && !state.qTokens.every(t => r._hay.includes(t))) return false;
     if (state.cls && !r._classes.includes(state.cls)) return false;
     if (state.phase && val(r,"phase") !== state.phase) return false;
     if (state.species && val(r,"species") !== state.species) return false;
-    if (state.country && !r._countries.includes(state.country)) return false;
+    if (state.country && !(isRegion ? r._regions : r._countries).includes(wantPlace)) return false;
     if (state.type && val(r,"record_type") !== state.type) return false;
     return true;
   });
@@ -229,19 +321,24 @@ function sortRows(rows){
   const col = COLS.find(c => c.key === state.sortKey) || COLS[0];
   const dir = state.sortDir;
   return rows.slice().sort((a,b) => {
-    let av, bv;
-    if (col.type === "num"){ av = a[col.key]; bv = b[col.key];
-      if (av == null && bv == null) return 0; if (av == null) return 1; if (bv == null) return -1;
-      return (av - bv) * dir; }
-    av = (col.key.startsWith("_") ? "" : val(a, col.key)).toString().toLowerCase();
-    bv = (col.key.startsWith("_") ? "" : val(b, col.key)).toString().toLowerCase();
-    return av.localeCompare(bv) * dir;
+    if (col.type === "num"){
+      const av = a[col.key], bv = b[col.key];
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return (av - bv) * dir;
+    }
+    return COLL.compare(a._sk[col.key] || "", b._sk[col.key] || "") * dir;
   });
 }
 
 /* ------------------------------------------------------------------ cells (DOM, injection-safe) */
 function titleCell(r){
-  const url = val(r,"url");
+  // Only http(s) becomes a link. Sources build `url` from PMIDs/NCTs today, but
+  // the guarantee is one refactor from being wrong and javascript: is free to
+  // exclude.
+  const raw = val(r,"url");
+  const url = /^https?:\/\//i.test(raw) ? raw : "";
   const a = document.createElement(url ? "a" : "span");
   a.textContent = val(r,"title") || "(untitled)";
   if (url){ a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer"; }
@@ -250,6 +347,16 @@ function titleCell(r){
   const src = [val(r,"source"), val(r,"source_id")].filter(Boolean).join(" · ");
   if (src){ const s = document.createElement("div"); s.className = "src"; s.textContent = src; wrap.appendChild(s); }
   return wrap;
+}
+function nCell(r){
+  if (r._n == null) return "";
+  const s = document.createElement("span");
+  // A cluster-denominated figure is labelled as one - the column header says N,
+  // which is a different quantity from "104 clusters".
+  s.textContent = r._n.toLocaleString() + (r._nUnit ? " " + r._nUnit : "");
+  const raw = val(r,"n_total");
+  if (raw && raw !== s.textContent) s.title = raw;   // full verbatim value on hover
+  return s;
 }
 function pillList(items){
   const wrap = document.createElement("div"); wrap.className = "pill-list";
@@ -327,7 +434,7 @@ function renderCards(rows){
   const cards = [
     { n: rows.length.toLocaleString(), l: "Trials (filtered)" },
     { n: classes.size, l: "Intervention classes" },
-    { n: countries.size, l: "Countries / places" },
+    { n: countries.size, l: "Countries" },
     { n: withResult.toLocaleString(), l: "With a stated result" },
   ];
   $("cards").innerHTML = "";
@@ -336,10 +443,19 @@ function renderCards(rows){
     d.querySelector(".n").textContent = c.n; d.querySelector(".l").textContent = c.l;
     $("cards").appendChild(d); });
 }
+// Every chart states how much of the current selection it actually plots.
+// Without it, switching to "Trial start" silently drops 59% of the dataset
+// (only 235 of 568 records carry trial_start) and the collapse reads as signal.
+function coverageNote(id, plotted, total, what){
+  $(id).textContent = total
+    ? `${plotted.toLocaleString()} of ${total.toLocaleString()} shown — ${(total - plotted).toLocaleString()} have no ${what}.`
+    : "";
+}
 function renderTimeChart(rows){
   const key = state.timeField === "pub" ? "_pubYear" : "_startYear";
   const counts = new Map();
-  rows.forEach(r => { const y = r[key]; if (y) counts.set(y, (counts.get(y)||0)+1); });
+  let plotted = 0;
+  rows.forEach(r => { const y = r[key]; if (y){ plotted++; counts.set(y, (counts.get(y)||0)+1); } });
   if (counts.size){
     const years = Array.from(counts.keys()).sort((a,b)=>a-b);
     const lo = years[0], hi = years[years.length-1];
@@ -349,30 +465,51 @@ function renderTimeChart(rows){
   } else {
     barChartVertical($("chartTime"), [], {});
   }
+  coverageNote("noteTime", plotted, rows.length,
+               state.timeField === "pub" ? "publication date" : "recorded trial start");
 }
 function renderClassChart(rows){
   const counts = new Map();
-  rows.forEach(r => r._classes.forEach(c => counts.set(c, (counts.get(c)||0)+1)));
-  const pairs = Array.from(counts, ([label,value]) => ({label,value}))
-                     .sort((a,b)=>b.value-a.value).slice(0, 10);
+  let plotted = 0;
+  rows.forEach(r => { if (r._classes.length) plotted++;
+                      r._classes.forEach(c => counts.set(c, (counts.get(c)||0)+1)); });
+  const all = Array.from(counts, ([label,value]) => ({label,value})).sort((a,b)=>b.value-a.value);
+  const pairs = all.slice(0, 10);
   barChartHorizontal($("chartClass"), pairs, {aria:"Trials per intervention class (top 10)"});
+  const extra = all.length > 10 ? ` Top 10 of ${all.length} classes.` : "";
+  $("noteClass").textContent = rows.length
+    ? `${plotted.toLocaleString()} of ${rows.length.toLocaleString()} classified.${extra}`
+    : "";
 }
-function renderHead(){
+// Built ONCE. The old version rebuilt every <th> on every render - including
+// renders triggered by a keystroke in the search box - which destroyed the
+// focused element, so a keyboard sort dumped focus back to <body>. Now only the
+// arrow and aria-sort change, and the header nodes (and focus) persist.
+function buildHead(){
   const tr = $("thead"); tr.innerHTML = "";
   COLS.forEach(c => {
-    const th = document.createElement("th"); th.className = "sortable"; th.tabIndex = 0;
-    th.setAttribute("role","button");
-    th.textContent = c.label;
-    if (state.sortKey === c.key){ const a = document.createElement("span"); a.className="arrow";
-      a.textContent = state.sortDir === 1 ? "▲" : "▼"; th.appendChild(a); }
-    const doSort = () => {
+    const th = document.createElement("th");
+    th.className = "sortable"; th.scope = "col";
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "th-btn";
+    btn.textContent = c.label;
+    const arrow = document.createElement("span"); arrow.className = "arrow";
+    btn.appendChild(arrow);
+    btn.addEventListener("click", () => {
       if (state.sortKey === c.key) state.sortDir *= -1;
       else { state.sortKey = c.key; state.sortDir = (c.type === "num") ? -1 : 1; }
       render();
-    };
-    th.addEventListener("click", doSort);
-    th.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); doSort(); } });
+    });
+    th.appendChild(btn);
+    th._col = c; th._arrow = arrow;
     tr.appendChild(th);
+  });
+}
+function updateHead(){
+  Array.from($("thead").children).forEach(th => {
+    const active = state.sortKey === th._col.key;
+    th.setAttribute("aria-sort", active ? (state.sortDir === 1 ? "ascending" : "descending") : "none");
+    th._arrow.textContent = active ? (state.sortDir === 1 ? "▲" : "▼") : "";
   });
 }
 function renderTable(rows){
@@ -389,6 +526,16 @@ function renderTable(rows){
     });
     frag.appendChild(tr);
   });
+  if (!shown.length){
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = COLS.length; td.className = "empty-cell";
+    td.textContent = "No trials match these filters.";
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = "Reset";
+    b.addEventListener("click", resetFilters);
+    td.appendChild(b); tr.appendChild(td); frag.appendChild(tr);
+  }
   tb.appendChild(frag);
   const note = $("cap-note");
   if (rows.length > TABLE_CAP){ note.hidden = false;
@@ -396,13 +543,20 @@ function renderTable(rows){
   else note.hidden = true;
 }
 function render(){
-  const rows = sortRows(applyFilters());
+  // Cards and charts are order-independent, so only the table pays for the sort.
+  const rows = applyFilters();
   renderCards(rows);
   renderTimeChart(rows);
   renderClassChart(rows);
-  renderHead();
-  renderTable(rows);
+  updateHead();
+  renderTable(sortRows(rows));
   $("count").textContent = `${rows.length.toLocaleString()} of ${TRIALS.length.toLocaleString()} trials match.`;
+}
+function resetFilters(){
+  state.q=""; state.qTokens=[]; state.cls=""; state.phase="";
+  state.species=""; state.country=""; state.type="";
+  ["q","fClass","fPhase","fSpecies","fCountry","fType"].forEach(id => $(id).value = "");
+  render();
 }
 
 /* ------------------------------------------------------------------ setup */
@@ -425,41 +579,51 @@ function init(){
   fillSelect("fClass",   uniqSorted([].concat(...TRIALS.map(r => r._classes))));
   fillSelect("fPhase",   uniqSorted(TRIALS.map(r => val(r,"phase")).filter(Boolean)));
   fillSelect("fSpecies", uniqSorted(TRIALS.map(r => val(r,"species")).filter(Boolean)));
-  fillSelect("fCountry", uniqSorted([].concat(...TRIALS.map(r => r._countries))));
+  // Countries first, then the region-level buckets ("Africa", "Southeast Asia")
+  // that name no country, suffixed so they read as what they are.
+  fillSelect("fCountry",
+    uniqSorted([].concat(...TRIALS.map(r => r._countries)))
+      .concat(uniqSorted([].concat(...TRIALS.map(r => r._regions))).map(x => x + REGION_SUFFIX)));
   fillSelect("fType",    uniqSorted(TRIALS.map(r => val(r,"record_type")).filter(Boolean)));
 
   let qt;
   $("q").addEventListener("input", e => { clearTimeout(qt);
-    qt = setTimeout(() => { state.q = e.target.value.trim().toLowerCase(); render(); }, 120); });
+    qt = setTimeout(() => {
+      state.q = e.target.value.trim().toLowerCase();
+      state.qTokens = state.q.split(/\s+/).filter(Boolean);
+      render();
+    }, 120); });
   $("fClass").addEventListener("change", e => { state.cls = e.target.value; render(); });
   $("fPhase").addEventListener("change", e => { state.phase = e.target.value; render(); });
   $("fSpecies").addEventListener("change", e => { state.species = e.target.value; render(); });
   $("fCountry").addEventListener("change", e => { state.country = e.target.value; render(); });
   $("fType").addEventListener("change", e => { state.type = e.target.value; render(); });
-  $("reset").addEventListener("click", () => {
-    state.q=""; state.cls=""; state.phase=""; state.species=""; state.country=""; state.type="";
-    ["q","fClass","fPhase","fSpecies","fCountry","fType"].forEach(id => $(id).value = "");
-    render();
-  });
+  $("reset").addEventListener("click", resetFilters);
   $("byPub").addEventListener("click", () => setTimeField("pub"));
   $("byStart").addEventListener("click", () => setTimeField("start"));
 
-  // theme toggle (respects OS default until the user overrides it)
+  // theme toggle (respects OS default until the user overrides it, then the
+  // choice persists - the head script re-applies it before first paint)
   $("themeBtn").addEventListener("click", () => {
     const cur = document.documentElement.getAttribute("data-theme");
     const dark = cur ? cur === "dark"
                      : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
-    render(); // re-draw SVG so var()-based colours refresh
+    const next = dark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("mrct-theme", next); } catch (e) {}
+    // Only the class chart hard-codes hex fills; everything else is var()-based
+    // and repaints itself, so redraw that one chart rather than 500 table rows.
+    renderClassChart(applyFilters());
   });
 
+  buildHead();
   render();
 }
 function setTimeField(f){
   state.timeField = f;
   $("byPub").setAttribute("aria-pressed", String(f === "pub"));
   $("byStart").setAttribute("aria-pressed", String(f === "start"));
-  renderTimeChart(sortRows(applyFilters()));
+  renderTimeChart(applyFilters());   // chart is order-independent; no sort needed
 }
 
 init();

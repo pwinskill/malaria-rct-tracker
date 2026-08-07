@@ -44,6 +44,185 @@
   c("P. vivax",      "\\bvivax\\b|\\bp\\.?\\s?v\\b")
 )
 
+# --- geography -------------------------------------------------------------
+# `place` is free text written by the extractor: "Uganda", but also
+# "India (Gujarat: Kheda, Vadodara, Panchmahal districts)" and "Africa (five
+# African countries)". Splitting it on commas - which is what the explorer used
+# to do - yields fragments like "Gourcy)" and "Kano State)", and splits real
+# countries across spellings ("Democratic Republic of Congo" vs "...of the
+# Congo", U+2019 vs U+0027 in "Cote d'Ivoire"). So we derive a controlled
+# `countries` field instead and keep `place` purely for display.
+#
+# Rules are applied IN ORDER and each match is consumed from the text before the
+# next rule is tried. That is what keeps the containment cases honest without a
+# thicket of lookarounds: "Papua New Guinea" is matched and removed before the
+# bare "Guinea" rule ever sees the string, likewise South Sudan before Sudan and
+# South Africa before the Africa region. Order here is therefore load-bearing:
+# most specific first.
+.COUNTRY_RULES <- list(
+  # --- names that contain another country name (must come first) ---
+  c("Papua New Guinea",   "\\bpapua new guinea\\b|\\bpng\\b"),
+  c("Equatorial Guinea",  "\\bequatorial guinea\\b|\\bbioko\\b"),
+  c("Guinea-Bissau",      "\\bguinea[- ]bissau\\b"),
+  c("Guinea",             "\\bguinea\\b"),
+  c("Democratic Republic of the Congo",
+                          "democratic republic of (the )?congo|\\bdr[c ]?congo\\b|\\bdrc\\b"),
+  c("Republic of the Congo", "republic of (the )?congo|\\bcongo[- ]brazzaville\\b"),
+  c("South Sudan",        "\\bsouth sudan\\b"),
+  c("Sudan",              "\\bsudan\\b"),
+  c("South Africa",       "\\bsouth african?\\b"),
+  c("Central African Republic", "central african republic"),
+  c("Dominican Republic", "dominican republic"),
+  # --- everything else, alphabetical ---
+  c("Afghanistan",        "\\bafghanistan\\b"),
+  c("Angola",             "\\bangola\\b"),
+  c("Bangladesh",         "\\bbangladesh\\b"),
+  c("Benin",              "\\bbenin\\b"),
+  c("Bhutan",             "\\bbhutan\\b"),
+  c("Bolivia",            "\\bbolivia\\b"),
+  c("Botswana",           "\\bbotswana\\b"),
+  c("Brazil",             "\\bbrazil\\b"),
+  c("Burkina Faso",       "\\bburkina( faso)?\\b"),
+  c("Burundi",            "\\bburundi\\b"),
+  c("Cambodia",           "\\bcambodia\\b"),
+  c("Cameroon",           "\\bcameroon\\b"),
+  c("Chad",               "\\bchad\\b"),
+  c("China",              "\\bchina\\b|\\bchinese\\b"),
+  c("Colombia",           "\\bcolombia\\b"),
+  c("Comoros",            "\\bcomoros\\b|\\banjouan\\b"),
+  c("Costa Rica",         "\\bcosta rica\\b"),
+  # both apostrophes (U+0027 / U+2019), accented or not, plus the English name
+  c("Cote d'Ivoire",      "c[o\u00f4]te ?d.?ivoire|ivory coast"),
+  c("Djibouti",           "\\bdjibouti\\b"),
+  c("Ecuador",            "\\becuador\\b"),
+  c("Eritrea",            "\\beritrea\\b"),
+  c("Eswatini",           "\\beswatini\\b|\\bswaziland\\b"),
+  c("Ethiopia",           "\\bethiopian?\\b"),
+  c("French Guiana",      "french guiana"),
+  c("Gabon",              "\\bgabon\\b|\\blambar[e\u00e9]n[e\u00e9]\\b"),
+  c("Gambia",             "\\b(the )?gambia\\b"),
+  c("Ghana",              "\\bghana\\b"),
+  c("Guatemala",          "\\bguatemala\\b"),
+  c("Guyana",             "\\bguyana\\b"),
+  c("Haiti",              "\\bhaiti\\b"),
+  c("Honduras",           "\\bhonduras\\b"),
+  c("India",              "\\bindia\\b"),   # not "Indian" - "Indian Ocean" is not India
+  c("Indonesia",          "\\bindonesian?\\b|\\bsumba\\b|\\bpapua\\b"),
+  c("Iran",               "\\biran\\b"),
+  c("Kenya",              "\\bkenyan?\\b"),
+  c("Laos",               "\\blaos\\b|\\blao pdr\\b|\\blao people"),
+  c("Liberia",            "\\bliberia\\b"),
+  c("Madagascar",         "\\bmadagascar\\b"),
+  c("Malawi",             "\\bmalawi(an)?\\b"),
+  c("Malaysia",           "\\bmalaysian?\\b|\\bsabah\\b|\\bsarawak\\b"),
+  c("Mali",               "\\bmali\\b|\\bmalian\\b"),
+  c("Mauritania",         "\\bmauritania\\b"),
+  c("Mexico",             "\\bmexico\\b"),
+  c("Mozambique",         "\\bmozambique\\b|\\bmozambican\\b"),
+  c("Myanmar",            "\\bmyanmar\\b|\\bburma\\b|\\bburmese\\b"),
+  c("Namibia",            "\\bnamibia\\b"),
+  c("Nepal",              "\\bnepal\\b"),
+  c("Nicaragua",          "\\bnicaragua\\b"),
+  c("Nigeria",            "\\bnigerian?\\b"),
+  c("Niger",              "\\bniger\\b"),
+  c("Pakistan",           "\\bpakistan\\b"),
+  c("Panama",             "\\bpanama\\b"),
+  c("Peru",               "\\bperu\\b|\\bperuvian\\b"),
+  c("Philippines",        "\\bphilippines\\b"),
+  c("Rwanda",             "\\brwanda\\b"),
+  c("Sao Tome and Principe", "s[a\u00e3]o tom[e\u00e9]"),
+  c("Saudi Arabia",       "saudi arabia"),
+  c("Senegal",            "\\bsenegal(ese)?\\b"),
+  c("Sierra Leone",       "sierra leone"),
+  c("Solomon Islands",    "solomon islands?"),
+  c("Somalia",            "\\bsomalia\\b"),
+  c("South Korea",        "south korea|republic of korea"),
+  c("Sri Lanka",          "sri lanka"),
+  c("Suriname",           "\\bsuriname\\b"),
+  c("Tanzania",           "\\btanzanian?\\b|\\bzanzibar\\b|\\bbagamoyo\\b|\\bifakara\\b"),
+  c("Thailand",           "\\bthailand\\b|\\bthai\\b"),
+  c("Timor-Leste",        "timor[- ]leste|east timor"),
+  c("Togo",               "\\btogo\\b"),
+  c("Uganda",             "\\bugandan?\\b|\\btororo\\b|\\bjinja\\b"),
+  c("Vanuatu",            "\\bvanuatu\\b"),
+  c("Venezuela",          "\\bvenezuela\\b"),
+  c("Vietnam",            "\\bvi[e\u00ea]t ?nam(ese)?\\b"),
+  c("Yemen",              "\\byemen\\b"),
+  c("Zambia",             "\\bzambian?\\b"),
+  c("Zimbabwe",           "\\bzimbabwe\\b"),
+  # non-endemic trial / challenge-study sites
+  c("Australia",          "\\baustralian?\\b"),
+  c("Belgium",            "\\bbelgium\\b"),
+  c("Canada",             "\\bcanada\\b"),
+  c("Denmark",            "\\bdenmark\\b"),
+  c("France",             "\\bfrance\\b"),   # not "French" - cf. "French-speaking Africa"
+  c("Germany",            "\\bgermany\\b|\\bgerman\\b|\\bt[u\u00fc]bingen\\b"),
+  c("Japan",              "\\bjapan\\b"),
+  c("Netherlands",        "\\bnetherlands\\b|\\bdutch\\b|\\bnijmegen\\b"),
+  c("Spain",              "\\bspain\\b|\\bbarcelona\\b"),
+  c("Sweden",             "\\bsweden\\b"),
+  c("Switzerland",        "\\bswitzerland\\b|\\bswiss\\b"),
+  c("United Kingdom",     "united kingdom|\\buk\\b|\\bengland\\b|\\bscotland\\b|\\boxford\\b|\\blondon\\b"),
+  # deliberately NOT "American": it would swallow "Latin American" before the
+  # region rules ever run, and "Pan American Health Organization" besides.
+  c("United States",      "united states|\\busa\\b|\\bu\\.s\\.\\b")
+)
+
+# Multi-country descriptions that are NOT a country. Applied after (and only to
+# the text left over by) the country rules, so "South Africa" never leaves a
+# stray "Africa" behind. Kept as a separate field so a region-level record is
+# visibly region-level rather than silently dropped from the country facet.
+.REGION_RULES <- list(
+  c("sub-Saharan Africa", "sub[- ]?saharan african?"),
+  c("West Africa",        "\\bwest(ern)? african?\\b"),
+  c("East Africa",        "\\beast(ern)? african?\\b"),
+  c("Central Africa",     "\\bcentral african?\\b"),
+  c("Southern Africa",    "\\bsouthern african?\\b"),
+  c("Africa",             "\\bafrican?\\b"),
+  c("Greater Mekong",     "greater mekong|mekong (sub)?region"),
+  c("Southeast Asia",     "south[- ]?east asian?\\b"),
+  c("South Asia",         "\\bsouth asian?\\b"),
+  c("Sahel",              "\\bsahel(ian)?\\b"),
+  c("Amazon",             "\\bamazon(ian)?\\b"),
+  c("Latin America",      "latin america|south america"),
+  c("Western Pacific",    "western pacific|asia[- ]pacific")
+)
+
+# Apply an ordered rule list, consuming each match so a later, more general rule
+# cannot re-match text a specific rule already claimed. Returns the labels hit
+# plus whatever text is left over.
+.match_consume <- function(t, rules) {
+  hits <- character(0)
+  for (rule in rules) {
+    if (grepl(rule[2], t, perl = TRUE)) {
+      hits <- c(hits, rule[1])
+      t <- gsub(rule[2], " ", t, perl = TRUE)
+    }
+  }
+  list(hits = unique(hits), rest = t)
+}
+
+# Derive controlled `countries` / `region` from the free-text place (falling back
+# to the title when place is empty or names nothing recognisable). Returns both
+# as "; "-joined strings, empty when nothing matched.
+normalize_place <- function(place, title = "") {
+  classify <- function(text) {
+    t <- tolower(text %||% "")
+    got <- .match_consume(t, .COUNTRY_RULES)
+    reg <- .match_consume(got$rest, .REGION_RULES)
+    list(countries = paste(got$hits, collapse = "; "),
+         region    = paste(reg$hits, collapse = "; "))
+  }
+  out <- classify(place)
+  if (!nzchar(out$countries)) {
+    from_title <- classify(title)
+    # Only take the title's countries; a title-derived region is too weak a
+    # signal to be worth recording ("malaria in Africa" says nothing).
+    if (nzchar(from_title$countries)) out$countries <- from_title$countries
+  }
+  out
+}
+
 # All normalised identity keys for a record, e.g. c("doi:10.1/x", "nct:nct01",
 # "pmid:123"). Non-numeric source ids (e.g. Europe PMC preprint ids) are NOT
 # labelled as pmids.
@@ -117,6 +296,20 @@ guess_species <- function(text) {
   if (length(hits) > 1) return("mixed")
   if (length(hits)) return(hits[1])
   ""
+}
+
+# Fields derived from text the EXTRACTOR fills in, so they cannot be computed at
+# normalise time (which runs before screening). Applied to each record just
+# before it is stored, and re-applied over the whole store by reclassify_store().
+# Purely local and free - no API calls - so it is always safe to re-run.
+derive_fields <- function(rec) {
+  blob <- paste(rec$title %||% "", rec$interventions_raw %||% "",
+                rec$abstract %||% "", rec$conditions %||% "", collapse = " ")
+  rec$intervention_class <- classify_intervention(blob)
+  geo <- normalize_place(rec$place %||% "", rec$title %||% "")
+  rec$countries <- geo$countries
+  rec$region    <- geo$region
+  rec
 }
 
 # Set id, intervention_class and species on a record (in place, returned).

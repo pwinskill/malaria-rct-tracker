@@ -37,8 +37,14 @@ jobs:
         run: |
           git config user.name  "malaria-rct-bot"
           git config user.email "actions@github.com"
+          # docs/index.html is derived entirely from data/, so never carry a
+          # locally-generated copy through the rebase (it would conflict on a
+          # 1 MB single-blob file). Drop it, pull, then rebuild from merged data
+          # so the committed explorer always matches the committed dataset.
+          git checkout -- docs 2>/dev/null || true
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
-          git add data outputs
+          Rscript -e 'malariarct::render_explorer()'
+          git add data outputs docs
           if git diff --staged --quiet; then
             echo "No changes this week."
           else

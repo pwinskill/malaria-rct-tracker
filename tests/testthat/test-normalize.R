@@ -67,3 +67,66 @@ test_that("guess_species detects single and mixed", {
   expect_equal(guess_species("both P. falciparum and P. vivax"), "mixed")
   expect_equal(guess_species("no species named"), "")
 })
+
+# --- geography -------------------------------------------------------------
+
+test_that("normalize_place ignores the parenthesised site lists in `place`", {
+  # These are the strings that made comma-splitting produce "Gourcy)" and
+  # "Kano State)" as country-filter options.
+  expect_equal(normalize_place("India (Gujarat: Kheda, Vadodara, Panchmahal districts)")$countries, "India")
+  expect_equal(normalize_place("Burkina Faso (Niangoloko, Gourcy)")$countries, "Burkina Faso")
+  expect_equal(normalize_place("Nigeria (Madobi, Kano State)")$countries, "Nigeria")
+})
+
+test_that("normalize_place collapses spelling variants onto one country", {
+  drc <- "Democratic Republic of the Congo"
+  expect_equal(normalize_place("Democratic Republic of Congo")$countries, drc)
+  expect_equal(normalize_place(drc)$countries, drc)
+  expect_equal(normalize_place("DRC")$countries, drc)
+  # straight vs curly apostrophe, accented or not, plus the English name
+  expect_equal(normalize_place("Cote d'Ivoire")$countries, "Cote d'Ivoire")
+  expect_equal(normalize_place("C\u00f4te d\u2019Ivoire")$countries, "Cote d'Ivoire")
+  expect_equal(normalize_place("Ivory Coast")$countries, "Cote d'Ivoire")
+  expect_equal(normalize_place("The Gambia")$countries, "Gambia")
+})
+
+test_that("a country name containing another country name wins", {
+  # match-and-consume ordering: the specific rule fires and removes the text
+  # before the general rule is ever tried
+  expect_equal(normalize_place("Papua New Guinea")$countries, "Papua New Guinea")
+  expect_equal(normalize_place("Equatorial Guinea")$countries, "Equatorial Guinea")
+  expect_equal(normalize_place("Guinea-Bissau")$countries, "Guinea-Bissau")
+  expect_equal(normalize_place("Guinea")$countries, "Guinea")
+  expect_equal(normalize_place("South Sudan")$countries, "South Sudan")
+  expect_equal(normalize_place("Sudan")$countries, "Sudan")
+  # "Nigeria" must not also register as "Niger", nor South Africa as a region
+  expect_equal(normalize_place("Nigeria")$countries, "Nigeria")
+  expect_equal(normalize_place("Niger")$countries, "Niger")
+  expect_equal(normalize_place("South Africa")$countries, "South Africa")
+  expect_equal(normalize_place("South Africa")$region, "")
+})
+
+test_that("multi-country places yield every country", {
+  expect_equal(normalize_place("Burkina Faso, Mali")$countries, "Burkina Faso; Mali")
+})
+
+test_that("region-level places are recorded as a region, not dropped", {
+  a <- normalize_place("Africa (five African countries)")
+  expect_equal(a$countries, "")
+  expect_equal(a$region, "Africa")
+  expect_equal(normalize_place("Southeast Asia (11 sites)")$region, "Southeast Asia")
+  expect_equal(normalize_place("sub-Saharan Africa")$region, "sub-Saharan Africa")
+})
+
+test_that("normalize_place falls back to the title only when place names nothing", {
+  expect_equal(normalize_place("", "A bed net trial in Uganda")$countries, "Uganda")
+  # an explicit place is authoritative; the title must not add to it
+  expect_equal(normalize_place("Kenya", "A trial in Uganda")$countries, "Kenya")
+  expect_equal(normalize_place("", "")$countries, "")
+})
+
+test_that("derive_fields fills countries/region on a record", {
+  rec <- derive_fields(new_record(title = "t", place = "Uganda and Kenya"))
+  expect_equal(rec$countries, "Kenya; Uganda")
+  expect_equal(rec$region, "")
+})
