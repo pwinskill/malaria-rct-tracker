@@ -123,6 +123,27 @@
   footer{max-width:1180px;margin:0 auto;padding:0 24px 40px;color:var(--muted);font-size:12px}
   .note{background:var(--grid);border:1px dashed var(--border);border-radius:8px;padding:8px 12px;color:var(--muted);font-size:12.5px;margin-top:10px}
 
+  /* gap matrix */
+  .matrix-wrap{overflow-x:auto;margin-top:4px}
+  table.matrix{border-collapse:separate;border-spacing:2px;font-size:12px}
+  table.matrix th{font-weight:600;color:var(--muted);text-align:left;padding:3px 6px;white-space:nowrap}
+  table.matrix thead th{
+    font-size:11px;text-align:center;vertical-align:bottom;max-width:74px;
+    white-space:normal;line-height:1.2;padding-bottom:6px
+  }
+  table.matrix tbody th{position:sticky;left:0;background:var(--panel);z-index:1;padding-right:10px}
+  table.matrix td{padding:0}
+  .cell{
+    width:100%;min-width:46px;height:28px;border:0;border-radius:4px;cursor:pointer;
+    font:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;line-height:28px;text-align:center
+  }
+  /* A zero is a finding, so it is drawn as an explicit hatched blank rather than
+     as white space the eye skips over. */
+  .cell.zero{background:transparent;border:1px dashed var(--border);color:var(--muted);cursor:default}
+  .cell.sel{outline:2px solid var(--ink);outline-offset:1px}
+  .matrix-legend{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11.5px;color:var(--muted)}
+  .matrix-legend i{display:inline-block;width:22px;height:10px;border-radius:3px}
+
   /* extraction-coverage panel */
   .cov{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
   .cov summary{cursor:pointer;font-size:12.5px;color:var(--muted);user-select:none}
@@ -207,6 +228,51 @@
     </div>
   </section>
 
+  <section class="charts">
+    <div class="chart-card">
+      <div class="chart-head">
+        <h2>Where trials happen</h2>
+        <div class="seg" role="group" aria-label="Geography measure">
+          <button id="geoCount" aria-pressed="true">Trials</button>
+          <button id="geoRate" aria-pressed="false">Per million cases</button>
+        </div>
+      </div>
+      <div id="chartGeo"></div>
+      <div class="chart-note" id="noteGeo"></div>
+    </div>
+    <div class="chart-card">
+      <h2>Trial start to publication</h2>
+      <div id="chartLag"></div>
+      <div class="chart-note" id="noteLag"></div>
+    </div>
+  </section>
+
+  <section class="chart-card">
+    <div class="chart-head">
+      <h2>Evidence gap matrix</h2>
+      <div class="seg" role="group" aria-label="Gap matrix columns">
+        <button id="mxCountry"    aria-pressed="false">Country</button>
+        <button id="mxOutcome"    aria-pressed="true">Outcome</button>
+        <button id="mxPopulation" aria-pressed="false">Population</button>
+        <button id="mxEra"        aria-pressed="false">Era</button>
+      </div>
+    </div>
+    <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+    <div class="matrix-legend">
+      <span>fewer</span><i id="lgLo"></i><i id="lgMid"></i><i id="lgHi"></i><span>more</span>
+      <span style="margin-left:10px">·</span>
+      <span><span class="cell zero" style="display:inline-block;width:22px;height:12px;line-height:10px;min-width:0"></span>
+        no trials</span>
+    </div>
+    <div class="chart-note" id="noteMatrix"></div>
+    <div class="note">
+      Counts are <strong>trials, not evidence quality</strong>, and a trial with several classes or
+      outcomes is counted in each of its cells, so cells do not sum to the total. An empty cell
+      means “nothing found”, which is not the same as “nothing tried” — it can also mean the
+      field wasn’t extracted. Click a cell to filter the table to it.
+    </div>
+  </section>
+
   <section class="controls" aria-label="Filters">
     <div class="row">
       <div class="field"><label for="q">Search (title, place, impact, outcome, funder)</label><input id="q" type="search" placeholder="e.g. RTS,S, bed net, Uganda…"></div>
@@ -214,6 +280,8 @@
       <div class="field"><label for="fPhase">Phase</label><select id="fPhase"><option value="">All</option></select></div>
       <div class="field"><label for="fSpecies">Species</label><select id="fSpecies"><option value="">All</option></select></div>
       <div class="field"><label for="fCountry">Country / place</label><select id="fCountry"><option value="">All</option></select></div>
+      <div class="field"><label for="fOutcome">Outcome family</label><select id="fOutcome"><option value="">All</option></select></div>
+      <div class="field"><label for="fPop">Population</label><select id="fPop"><option value="">All</option></select></div>
       <div class="field"><label for="fType">Record type</label><select id="fType"><option value="">All</option></select></div>
       <button class="reset" id="reset">Reset</button>
       <button class="reset" id="expBib" title="Download the filtered set as BibTeX">↓ BibTeX</button>
@@ -255,6 +323,9 @@
 "use strict";
 const TRIALS = __DATA__;
 const META = __META__;
+// Optional burden denominators from data/burden.csv. Deliberately incomplete;
+// countries absent from it are EXCLUDED from the normalised view, never zero.
+const BURDEN = __BURDEN__;
 
 /* ------------------------------------------------------------------ helpers */
 const $ = (id) => document.getElementById(id);
@@ -306,8 +377,27 @@ TRIALS.forEach(r => {
   r._hay = [val(r,"title"), val(r,"place"), val(r,"impact_summary"),
             val(r,"interventions_raw"), val(r,"intervention_class"),
             val(r,"primary_outcome"), val(r,"funder")].join("  ").toLowerCase();
+  r._outcomes    = splitList(val(r, "outcome_family"), ";");
+  r._populations = splitList(val(r, "population_band"), ";");
   r._sk = {};
   SORT_STR_COLS.forEach(k => { r._sk[k] = val(r, k).toLowerCase(); });
+});
+
+/* Publication-era buckets, derived from the dataset's own range rather than
+   hard-coded, so they stay sensible as the back catalogue grows. */
+const ERA_SPAN = 4;
+const _pubYears = TRIALS.map(r => r._pubYear).filter(Boolean);
+const ERA_LO = _pubYears.length ? Math.floor(Math.min(..._pubYears) / ERA_SPAN) * ERA_SPAN : 0;
+function eraOf(y){
+  if (!y) return "";
+  const s = ERA_LO + Math.floor((y - ERA_LO) / ERA_SPAN) * ERA_SPAN;
+  return `${s}–${s + ERA_SPAN - 1}`;
+}
+TRIALS.forEach(r => {
+  r._era = eraOf(r._pubYear);
+  // Years from trial start to publication. Needs both dates, so it covers the
+  // ~40% of records that carry trial_start - the chart says so.
+  r._lag = (r._pubYear && r._startYear) ? r._pubYear - r._startYear : null;
 });
 
 /* ------------------------------------------------------------------ class colours (stable per class) */
@@ -349,7 +439,21 @@ function textOn(hex) {   // black or white, whichever actually contrasts better
 
 /* ------------------------------------------------------------------ state */
 const state = { q:"", qTokens:[], cls:"", phase:"", species:"", country:"", type:"",
-                flag:"", timeField:"pub", sortKey:"_pubYear", sortDir:-1, openId:"" };
+                outcome:"", population:"", era:"", flag:"",
+                timeField:"pub", geoMode:"count", matrixCol:"outcome",
+                sortKey:"_pubYear", sortDir:-1, openId:"" };
+
+// Gap-matrix column dimensions. Rows are always intervention class - that is the
+// controlled vocabulary with the best coverage (91.5%) and the axis a funder or
+// a modeller actually asks about.
+const MATRIX_COLS = {
+  country:    { label:"Country",         vals: r => r._countries,   max:14 },
+  outcome:    { label:"Outcome family",  vals: r => r._outcomes,    max:12 },
+  population: { label:"Population",      vals: r => r._populations, max:12 },
+  era:        { label:"Publication era", vals: r => r._era ? [r._era] : [], max:12, byLabel:true },
+};
+// Which state key a matrix cell click drives, per column dimension.
+const MATRIX_FILTER_KEY = { country:"country", outcome:"outcome", population:"population", era:"era" };
 
 // Data-quality predicates. Each is both a counted diagnostic in the coverage
 // panel and a one-click filter, so "which of these did the extractor struggle
@@ -432,6 +536,9 @@ function applyFilters(ignoreFlag){
     if (state.species && val(r,"species") !== state.species) return false;
     if (state.country && !(isRegion ? r._regions : r._countries).includes(wantPlace)) return false;
     if (state.type && val(r,"record_type") !== state.type) return false;
+    if (state.outcome && !r._outcomes.includes(state.outcome)) return false;
+    if (state.population && !r._populations.includes(state.population)) return false;
+    if (state.era && r._era !== state.era) return false;
     if (flag && !flag.test(r)) return false;
     return true;
   });
@@ -532,14 +639,16 @@ function barChartHorizontal(container, pairs, opts){
   const max = Math.max(1, ...pairs.map(p => p.value));
   const svg = svgEl("svg", {viewBox:`0 0 ${W} ${H}`, class:"chart-svg", role:"img",
                             "aria-label":opts.aria || "horizontal bar chart"});
+  const colorOf = opts.color || classColor;      // countries aren't classes
+  const fmt = opts.fmt || String;
   pairs.forEach((p, i) => {
     const y = i*rowH + 4;
     const w = (p.value/max) * plotW;
     svg.appendChild(svgText(labelW-6, y+rowH/2+3.5, p.label, {"text-anchor":"end", fill:"var(--ink)", "font-size":11.5}));
     const g = svgEl("g", {class:"bar"});
-    g.appendChild(svgEl("rect", {x:labelW, y:y+3, width:Math.max(1,w), height:rowH-10, rx:3, fill:classColor(p.label)}));
-    g.appendChild(svgText(labelW + w + 6, y+rowH/2+3.5, String(p.value), {fill:"var(--muted)", "font-size":11}));
-    const tt = svgEl("title"); tt.textContent = `${p.label}: ${p.value}`; g.appendChild(tt);
+    g.appendChild(svgEl("rect", {x:labelW, y:y+3, width:Math.max(1,w), height:rowH-10, rx:3, fill:colorOf(p.label)}));
+    g.appendChild(svgText(labelW + w + 6, y+rowH/2+3.5, fmt(p.value), {fill:"var(--muted)", "font-size":11}));
+    const tt = svgEl("title"); tt.textContent = `${p.label}: ${p.tip || fmt(p.value)}`; g.appendChild(tt);
     svg.appendChild(g);
   });
   container.appendChild(svg);
@@ -669,6 +778,160 @@ function renderTable(rows){
     note.textContent = `Showing the first ${TABLE_CAP} of ${rows.length.toLocaleString()} matching trials — refine the filters to narrow the list.`; }
   else note.hidden = true;
 }
+/* ------------------------------------------------------------------ geography */
+const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+function renderGeoChart(rows){
+  const counts = new Map();
+  let withCountry = 0;
+  rows.forEach(r => {
+    if (r._countries.length) withCountry++;
+    r._countries.forEach(c => counts.set(c, (counts.get(c) || 0) + 1));
+  });
+  const rate = state.geoMode === "rate" && BURDEN.n > 0;
+  let pairs, note;
+  if (rate){
+    // Countries with no burden figure are omitted, not shown as zero-burden.
+    pairs = [];
+    counts.forEach((v, c) => {
+      const cases = BURDEN.cases[c];
+      if (cases) pairs.push({ label:c, value: v / (cases / 1e6),
+                              tip: `${v} trial(s) / ${(cases/1e6).toFixed(1)}M est. cases` });
+    });
+    pairs.sort((a,b) => b.value - a.value);
+    note = `${pairs.length} of ${counts.size} countries in this selection have a burden figure in `
+         + `data/burden.csv — the rest are omitted here, not shown as zero. Source: ${BURDEN.source || "unset"}.`;
+  } else {
+    pairs = Array.from(counts, ([label, value]) => ({label, value})).sort((a,b) => b.value - a.value);
+    note = `${withCountry.toLocaleString()} of ${rows.length.toLocaleString()} have an identified country`
+         + (counts.size > 12 ? `. Top 12 of ${counts.size}.` : ".");
+  }
+  barChartHorizontal($("chartGeo"), pairs.slice(0, 12), {
+    aria: rate ? "Trials per million estimated malaria cases, by country"
+               : "Trials per country",
+    color: () => "var(--c1)",
+    fmt: rate ? (v => v.toFixed(1)) : String
+  });
+  $("noteGeo").textContent = rows.length ? note : "";
+}
+
+function renderLagChart(rows){
+  const MAXY = 15;
+  const lags = [];
+  rows.forEach(r => { if (r._lag != null && r._lag >= 0 && r._lag <= 40) lags.push(r._lag); });
+  const pairs = [];
+  for (let y = 0; y <= MAXY; y++) pairs.push({ label: y === MAXY ? MAXY + "+" : String(y), value: 0 });
+  lags.forEach(l => { pairs[Math.min(l, MAXY)].value++; });
+  barChartVertical($("chartLag"), lags.length ? pairs : [], {aria:"Years from trial start to publication"});
+  if (!rows.length){ $("noteLag").textContent = ""; return; }
+  const sorted = lags.slice().sort((a,b) => a - b);
+  const median = sorted.length ? sorted[Math.floor(sorted.length / 2)] : null;
+  $("noteLag").textContent = lags.length
+    ? `${lags.length.toLocaleString()} of ${rows.length.toLocaleString()} have both dates — median ${median} year(s).`
+    : `No record in this selection has both a trial start and a publication date.`;
+}
+
+/* ------------------------------------------------------------------ gap matrix */
+const hexToRgb = (h) => [1,3,5].map(i => parseInt(h.slice(i, i+2), 16));
+// Blend the accent over the panel at render time rather than with color-mix(),
+// which keeps this working in older engines and lets textOn() see the real
+// resulting colour so the label contrast is correct at every intensity.
+function cellPaint(t){
+  const acc = hexToRgb(cssVar("--accent") || "#0072B2");
+  const panel = hexToRgb(cssVar("--panel") || "#ffffff");
+  const a = 0.16 + 0.84 * t;
+  const blended = "#" + [0,1,2]
+    .map(i => Math.round(a * acc[i] + (1 - a) * panel[i]).toString(16).padStart(2, "0")).join("");
+  return { bg: blended, fg: textOn(blended) };
+}
+function matrixFilterValue(){ return state[MATRIX_FILTER_KEY[state.matrixCol]] || ""; }
+function selectCell(rowKey, colKey){
+  const key = MATRIX_FILTER_KEY[state.matrixCol];
+  const already = state.cls === rowKey && state[key] === colKey;
+  state.cls = already ? "" : rowKey;
+  state[key] = already ? "" : colKey;
+  writeHash(false); syncControls(); render();
+  if (!already) $("count").scrollIntoView({block:"nearest"});
+}
+function renderMatrix(rows){
+  const spec = MATRIX_COLS[state.matrixCol] || MATRIX_COLS.outcome;
+  const tbl = $("matrix"); tbl.innerHTML = "";
+  if (!rows.length){ $("noteMatrix").textContent = ""; return; }
+
+  const rowTot = new Map(), colTot = new Map(), cells = new Map();
+  const SEP = "\u0000";   // cannot occur in a class or column label
+  rows.forEach(r => {
+    const cs = r._classes, vs = spec.vals(r);
+    cs.forEach(c => rowTot.set(c, (rowTot.get(c) || 0) + 1));
+    vs.forEach(v => colTot.set(v, (colTot.get(v) || 0) + 1));
+    cs.forEach(c => vs.forEach(v => {
+      const k = c + SEP + v; cells.set(k, (cells.get(k) || 0) + 1);
+    }));
+  });
+  const rowKeys = Array.from(rowTot.keys()).sort((a,b) => rowTot.get(b) - rowTot.get(a));
+  let colKeys = Array.from(colTot.keys());
+  colKeys.sort(spec.byLabel ? (a,b) => a.localeCompare(b) : (a,b) => colTot.get(b) - colTot.get(a));
+  const dropped = Math.max(0, colKeys.length - spec.max);
+  colKeys = colKeys.slice(0, spec.max);
+  if (!rowKeys.length || !colKeys.length){
+    $("noteMatrix").textContent = "Nothing classified on both axes for this selection.";
+    return;
+  }
+  const max = Math.max(1, ...Array.from(cells.values()));
+
+  const thead = document.createElement("thead");
+  const hr = document.createElement("tr");
+  const corner = document.createElement("th");
+  corner.scope = "col"; corner.textContent = spec.label;
+  hr.appendChild(corner);
+  colKeys.forEach(c => {
+    const th = document.createElement("th"); th.scope = "col"; th.textContent = c; hr.appendChild(th);
+  });
+  thead.appendChild(hr); tbl.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  const selCol = matrixFilterValue();
+  rowKeys.forEach(rk => {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th"); th.scope = "row"; th.textContent = rk;
+    tr.appendChild(th);
+    colKeys.forEach(ck => {
+      const td = document.createElement("td");
+      const n = cells.get(rk + SEP + ck) || 0;
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "cell" + (n ? "" : " zero");
+      if (n){
+        const paint = cellPaint(n / max);
+        b.style.background = paint.bg; b.style.color = paint.fg;
+        b.textContent = String(n);
+        b.setAttribute("aria-label", `${rk}, ${ck}: ${n} trial(s). Filter to these.`);
+        if (state.cls === rk && selCol === ck) b.classList.add("sel");
+        b.addEventListener("click", () => selectCell(rk, ck));
+      } else {
+        b.disabled = true;
+        b.setAttribute("aria-label", `${rk}, ${ck}: no trials`);
+      }
+      td.appendChild(b); tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+
+  [["lgLo",0.05], ["lgMid",0.5], ["lgHi",1]].forEach(([id, t]) => {
+    $(id).style.background = cellPaint(t).bg;
+  });
+  // Count over the DISPLAYED grid only. Counting every entry in `cells` includes
+  // the columns truncated away by spec.max, which produced "226 of 224 (101%)".
+  let filled = 0;
+  rowKeys.forEach(rk => colKeys.forEach(ck => { if (cells.get(rk + SEP + ck)) filled++; }));
+  const total = rowKeys.length * colKeys.length;
+  $("noteMatrix").textContent =
+    `${rowKeys.length} classes x ${colKeys.length} ${spec.label.toLowerCase()} values — `
+    + `${filled} of ${total} cells populated (${Math.round(100*filled/total)}%). `
+    + (dropped ? `${dropped} further ${spec.label.toLowerCase()} value(s) not shown. ` : "")
+    + `Densest cell: ${max} trials.`;
+}
+
 /* ------------------------------------------------------------------ coverage panel */
 function renderCoverage(rows, preFlag){
   const n = rows.length;
@@ -832,8 +1095,11 @@ function syncDrawer(){
 // the history entry (typing must not flood it); opening a trial PUSHES one.
 const HASH_KEYS = [["q","q"], ["cls","cls"], ["phase","phase"], ["species","species"],
                    ["country","country"], ["type","type"], ["flag","flag"],
-                   ["time","timeField"], ["sort","sortKey"], ["dir","sortDir"], ["id","openId"]];
-const HASH_DEFAULTS = { timeField:"pub", sortKey:"_pubYear", sortDir:-1 };
+                   ["outcome","outcome"], ["pop","population"], ["era","era"],
+                   ["time","timeField"], ["geo","geoMode"], ["mx","matrixCol"],
+                   ["sort","sortKey"], ["dir","sortDir"], ["id","openId"]];
+const HASH_DEFAULTS = { timeField:"pub", geoMode:"count", matrixCol:"outcome",
+                        sortKey:"_pubYear", sortDir:-1 };
 let suppressHash = false;
 function writeHash(push){
   const p = new URLSearchParams();
@@ -857,6 +1123,8 @@ function readHash(){
   });
   // Anything unrecognised falls back to the default rather than filtering to zero.
   if (state.timeField !== "start") state.timeField = "pub";
+  if (state.geoMode !== "rate" || !BURDEN.n) state.geoMode = "count";
+  if (!MATRIX_COLS[state.matrixCol]) state.matrixCol = "outcome";
   if (!COLS.some(c => c.key === state.sortKey)) state.sortKey = "_pubYear";
   if (state.flag && !FLAG_BY_KEY.has(state.flag)) state.flag = "";
   state.q = state.q.toLowerCase();
@@ -868,9 +1136,16 @@ function syncControls(){
   // so an old link degrades to "All" instead of silently matching nothing.
   const setSel = (id, key) => { $(id).value = state[key]; state[key] = $(id).value; };
   setSel("fClass","cls"); setSel("fPhase","phase"); setSel("fSpecies","species");
-  setSel("fCountry","country"); setSel("fType","type");
+  setSel("fCountry","country"); setSel("fOutcome","outcome"); setSel("fPop","population");
+  setSel("fType","type");
   $("byPub").setAttribute("aria-pressed", String(state.timeField === "pub"));
   $("byStart").setAttribute("aria-pressed", String(state.timeField === "start"));
+  $("geoCount").setAttribute("aria-pressed", String(state.geoMode === "count"));
+  $("geoRate").setAttribute("aria-pressed", String(state.geoMode === "rate"));
+  Object.keys(MATRIX_COLS).forEach(k => {
+    const b = $("mx" + k.charAt(0).toUpperCase() + k.slice(1));
+    if (b) b.setAttribute("aria-pressed", String(state.matrixCol === k));
+  });
 }
 
 let lastRows = [];
@@ -885,6 +1160,9 @@ function render(){
   renderCards(rows);
   renderTimeChart(rows);
   renderClassChart(rows);
+  renderGeoChart(rows);
+  renderLagChart(rows);
+  renderMatrix(rows);
   renderCoverage(rows, preFlag);
   updateHead();
   renderTable(lastRows);
@@ -893,7 +1171,8 @@ function render(){
 function resetFilters(){
   state.q=""; state.qTokens=[]; state.cls=""; state.phase="";
   state.species=""; state.country=""; state.type=""; state.flag="";
-  ["q","fClass","fPhase","fSpecies","fCountry","fType"].forEach(id => $(id).value = "");
+  state.outcome=""; state.population=""; state.era="";
+  ["q","fClass","fPhase","fSpecies","fCountry","fOutcome","fPop","fType"].forEach(id => $(id).value = "");
   writeHash(false);
   render();
 }
@@ -923,6 +1202,8 @@ function init(){
   fillSelect("fCountry",
     uniqSorted([].concat(...TRIALS.map(r => r._countries)))
       .concat(uniqSorted([].concat(...TRIALS.map(r => r._regions))).map(x => x + REGION_SUFFIX)));
+  fillSelect("fOutcome", uniqSorted([].concat(...TRIALS.map(r => r._outcomes))));
+  fillSelect("fPop",     uniqSorted([].concat(...TRIALS.map(r => r._populations))));
   fillSelect("fType",    uniqSorted(TRIALS.map(r => val(r,"record_type")).filter(Boolean)));
 
   let qt;
@@ -935,8 +1216,19 @@ function init(){
   const onSelect = (id, key) =>
     $(id).addEventListener("change", e => { state[key] = e.target.value; writeHash(false); render(); });
   onSelect("fClass","cls"); onSelect("fPhase","phase"); onSelect("fSpecies","species");
-  onSelect("fCountry","country"); onSelect("fType","type");
+  onSelect("fCountry","country"); onSelect("fOutcome","outcome"); onSelect("fPop","population");
+  onSelect("fType","type");
   $("reset").addEventListener("click", resetFilters);
+
+  // The "per million cases" view only exists if data/burden.csv has content;
+  // with no denominators there is nothing honest to show, so hide the control.
+  if (!BURDEN.n) $("geoRate").hidden = true;
+  $("geoCount").addEventListener("click", () => setGeoMode("count"));
+  $("geoRate").addEventListener("click", () => setGeoMode("rate"));
+  Object.keys(MATRIX_COLS).forEach(k => {
+    const b = $("mx" + k.charAt(0).toUpperCase() + k.slice(1));
+    if (b) b.addEventListener("click", () => setMatrixCol(k));
+  });
 
   $("expBib").addEventListener("click", () => download("malaria-rcts.bib", toBibtex(lastRows), "application/x-bibtex"));
   $("expRis").addEventListener("click", () => download("malaria-rcts.ris", toRis(lastRows), "application/x-research-info-systems"));
@@ -970,9 +1262,12 @@ function init(){
     const next = dark ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     try { localStorage.setItem("mrct-theme", next); } catch (e) {}
-    // Only the class chart hard-codes hex fills; everything else is var()-based
-    // and repaints itself, so redraw that one chart rather than 500 table rows.
-    renderClassChart(applyFilters());
+    // The class chart and the matrix resolve colours to hex at render time, so
+    // they need a repaint; everything else is var()-based and updates itself.
+    // Still cheaper than re-rendering 500 table rows.
+    const rows = applyFilters();
+    renderClassChart(rows);
+    renderMatrix(rows);
   });
 
   buildHead();
@@ -987,6 +1282,21 @@ function setTimeField(f){
   $("byStart").setAttribute("aria-pressed", String(f === "start"));
   writeHash(false);
   renderTimeChart(applyFilters());   // chart is order-independent; no sort needed
+}
+function setGeoMode(m){
+  state.geoMode = m;
+  $("geoCount").setAttribute("aria-pressed", String(m === "count"));
+  $("geoRate").setAttribute("aria-pressed", String(m === "rate"));
+  writeHash(false);
+  renderGeoChart(applyFilters());
+}
+function setMatrixCol(k){
+  state.matrixCol = k;
+  // Country / outcome / population each have a visible dropdown, so a cell
+  // selection on those axes can safely persist. `era` does not, so leaving the
+  // matrix's era view would strand an invisible filter - drop it.
+  if (k !== "era") state.era = "";
+  syncControls(); writeHash(false); render();
 }
 
 init();

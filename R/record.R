@@ -43,7 +43,9 @@ TIER1 <- c(
   "interventions_raw",  # free-text intervention description
   "intervention_class", # normalised vocab (see normalize.R)
   "comparator",
-  "population",         # e.g. children <5, pregnant women, all ages
+  "population",         # e.g. children <5, pregnant women, all ages (free text)
+  "population_band",    # controlled population vocab (see normalize.R)
+  "outcome_family",     # controlled outcome vocab, from primary_outcome
   "n_total",            # total enrolled (participants or clusters)
   "primary_outcome",
   "impact_summary"      # human-readable 1-2 sentence headline result

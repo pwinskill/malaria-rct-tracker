@@ -104,6 +104,33 @@ test_that("the written file is LF on every platform", {
   expect_false(any(raw == as.raw(13)))
 })
 
+test_that("burden denominators are read, and a missing file is not an error", {
+  cfg <- mk_expl_cfg()
+  ensure_dir(cfg$output$data_dir)
+  expect_equal(.read_burden(cfg)$n, 0L)          # absent file -> empty, no error
+
+  writeLines(c("# a comment line", "country,cases,year,source",
+               "Nigeria,66800000,2022,WMR", "Uganda,12700000,2022,WMR",
+               "Badrow,,2022,WMR", ",5,2022,WMR", "Zeroland,0,2022,WMR"),
+             file.path(cfg$output$data_dir, "burden.csv"))
+  b <- .read_burden(cfg)
+  # rows with no country, no number, or a non-positive count are dropped rather
+  # than becoming a zero denominator (which would divide to Infinity)
+  expect_equal(b$n, 2L)
+  expect_equal(b$cases[["Nigeria"]], 66800000)
+  expect_equal(b$source, "WMR")
+})
+
+test_that("a malformed burden file degrades to no burden view", {
+  cfg <- mk_expl_cfg()
+  ensure_dir(cfg$output$data_dir)
+  writeLines(c("not,a,burden,table", "1,2,3,4"),
+             file.path(cfg$output$data_dir, "burden.csv"))
+  expect_equal(.read_burden(cfg)$n, 0L)
+  # and rendering still succeeds
+  expect_true(file.exists(render_explorer(cfg, records = list())))
+})
+
 test_that("every CSV field is surfaced somewhere in the explorer", {
   # The page embeds all 39 fields; the table shows 8 and the drawer the rest. This
   # is the guard that adding a schema column doesn't silently leave it unreachable
@@ -123,6 +150,9 @@ test_that("the interactive scaffolding is present in the rendered page", {
   expect_true(grepl('id="covGrid"', html, fixed = TRUE))          # coverage panel
   expect_true(grepl('id="expBib"', html, fixed = TRUE))           # exports
   expect_true(grepl('id="expRis"', html, fixed = TRUE))
+  expect_true(grepl('id="matrix"', html, fixed = TRUE))           # gap matrix
+  expect_true(grepl('id="chartGeo"', html, fixed = TRUE))         # geography
+  expect_true(grepl('id="chartLag"', html, fixed = TRUE))         # start-to-publication
 })
 
 test_that("the geography fields reach the page (the country facet reads them)", {

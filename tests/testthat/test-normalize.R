@@ -130,3 +130,50 @@ test_that("derive_fields fills countries/region on a record", {
   expect_equal(rec$countries, "Kenya; Uganda")
   expect_equal(rec$region, "")
 })
+
+# --- outcome families ------------------------------------------------------
+
+test_that("classify_outcome recognises the main endpoint families", {
+  expect_equal(classify_outcome("Adequate clinical and parasitological response at day 28"),
+               "therapeutic efficacy")
+  expect_equal(classify_outcome("Incidence of clinical malaria"), "clinical incidence")
+  expect_equal(classify_outcome("Prevalence of P. falciparum parasitaemia"), "infection prevalence")
+  expect_equal(classify_outcome("Low birth weight"), "pregnancy/birth")
+  expect_equal(classify_outcome("Seroconversion and antibody titres"), "immunogenicity")
+})
+
+test_that("mosquito mortality is entomological, not human mortality", {
+  # The compound alternative has to be matched before the bare "mosquito" one,
+  # or "mosquito" is consumed and " mortality" is left for the mortality rule.
+  expect_equal(classify_outcome("Mosquito mortality in experimental huts"), "entomological")
+  expect_equal(classify_outcome("All-cause child mortality"), "mortality")
+  # a trial measuring both still gets both
+  expect_equal(classify_outcome("Mosquito mortality and child mortality"),
+               "entomological; mortality")
+})
+
+test_that("classify_outcome falls back only when the primary outcome names nothing", {
+  expect_equal(classify_outcome("", "vaccine efficacy against clinical malaria"),
+               "clinical incidence")
+  # a usable primary outcome wins; the fallback must not add to it
+  expect_equal(classify_outcome("Mortality", "entomological inoculation rate"), "mortality")
+})
+
+# --- population bands ------------------------------------------------------
+
+test_that("a specific population band suppresses the general one", {
+  # consuming the match leaves the rest of the phrase behind, so "children aged
+  # 6-59 months" would otherwise register as under-5 AND generic children
+  expect_equal(classify_population("children aged 6-59 months"), "children <5")
+  expect_equal(classify_population("school-age children 5-15 years"), "school-age children")
+  expect_equal(classify_population("infants under 1 year"), "infants (<1y)")
+  expect_equal(classify_population("children"), "children (age unspecified)")
+  # "pregnant women" must not also count as "adults" on the strength of "women"
+  expect_equal(classify_population("pregnant women"), "pregnant women")
+})
+
+test_that("genuinely mixed populations keep every band", {
+  expect_equal(classify_population("adults and children"), "children (age unspecified); adults")
+  expect_equal(classify_population("all ages, community-wide"), "all ages")
+  expect_equal(classify_population("no population stated"), "")
+})

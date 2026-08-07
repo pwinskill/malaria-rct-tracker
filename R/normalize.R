@@ -44,6 +44,76 @@
   c("P. vivax",      "\\bvivax\\b|\\bp\\.?\\s?v\\b")
 )
 
+# --- outcome families ------------------------------------------------------
+# What the trial actually measured, as a controlled multi-label vocabulary.
+# Derived from `primary_outcome` first - that is the pre-specified endpoint and
+# the only rigorous source - falling back to effect_metric/impact_summary only
+# when the primary outcome names nothing recognisable.
+#
+# This exists so the gap matrix can cross intervention against outcome. It is
+# NOT a licence to compare effect sizes across trials: two trials in the same
+# cell can still have different endpoints, comparators and follow-up.
+.OUTCOME_RULES <- list(
+  c("therapeutic efficacy", paste0("\\bacpr\\b|adequate clinical and parasitolog|cure rate|",
+                                   "treatment failure|recrudescen|parasite clearance|",
+                                   "\\bpcr[- ]corrected|reinfection|recurrence")),
+  # The compound forms come FIRST inside the alternation: PCRE is leftmost-first,
+  # so a bare "mosquito" alternative would match and leave " mortality" behind for
+  # the mortality rule to claim - reading vector mortality as human mortality.
+  c("entomological",        paste0("(mosquito|vector|knock[- ]?down) mortalit|",
+                                   "mosquito|anophel|biting rate|\\beir\\b|entomolog|",
+                                   "vector densit|blood[- ]?feed|insecticide resistance|",
+                                   "sporozoite rate|knock[- ]?down|landing catch")),
+  c("pregnancy/birth",      paste0("birth ?weight|low birthweight|\\blbw\\b|placental|preterm|",
+                                   "stillbirth|gestational|pregnancy outcome|maternal an")),
+  c("mortality",            "mortalit|\\bdeath|survival|case fatality"),
+  c("clinical incidence",   paste0("clinical malaria|malaria incidence|incidence of malaria|",
+                                   "uncomplicated malaria|malaria episode|febrile episode|",
+                                   "severe malaria|incidence rate of")),
+  c("infection prevalence", paste0("parasit(a?emia|e prevalence)|infection prevalence|",
+                                   "prevalence of.{0,20}(infection|parasit)|positivit|",
+                                   "\\bpcr prevalence|parasite densit|gametocyt")),
+  c("anaemia",              "an[ae]mia|h[ae]moglobin|\\bhb\\b"),
+  c("immunogenicity",       "antibod|seroconver|immunogenic|\\bigg\\b|titre|titer|seroprevalen"),
+  c("safety",               "adverse event|\\bsafety\\b|tolerabilit|\\bsae\\b|toxicit"),
+  c("coverage/cost",        paste0("net use|coverage|adherence|uptake|cost[- ]effectiv|cost per|",
+                                   "\\bicer\\b|acceptab|knowledge, attitude"))
+)
+
+classify_outcome <- function(primary, fallback = "") {
+  hits <- .match_consume(tolower(primary %||% ""), .OUTCOME_RULES)$hits
+  if (!length(hits)) hits <- .match_consume(tolower(fallback %||% ""), .OUTCOME_RULES)$hits
+  paste(unique(hits), collapse = "; ")
+}
+
+# --- population bands ------------------------------------------------------
+# Ordered most-specific-first and match-and-consume, so "children under 5" is
+# claimed by the under-5 rule and never also counted as generic "children".
+.POPULATION_RULES <- list(
+  c("pregnant women",       "pregnan|\\biptp\\b|antenatal|primigrav|multigrav"),
+  c("infants (<1y)",        "\\binfant|neonat|\\bnewborn|under (one|1) year|0[-\u2013]11 months|<1 ?year"),
+  c("children <5",          paste0("under[- ]?fives?|under[- ]?5\\b|<5 ?year|under 5 year|",
+                                   "6[-\u2013]59 months|preschool|pre-school|",
+                                   "children (aged )?(under|<) ?5")),
+  c("school-age children",  paste0("school[- ]?age|schoolchild|school children|",
+                                   "5[-\u2013]1[0-9] ?year|6[-\u2013]1[0-9] ?year|adolescen")),
+  c("children (age unspecified)", "child|p(a)?ediatric|\\bkids\\b"),
+  c("adults",               "\\badults?\\b|\\bmen\\b|\\bwomen\\b|18 ?years and"),
+  c("all ages",             "all ages|general population|community[- ]wide|whole population|entire population")
+)
+
+# Consuming a match removes only the text it matched, not the concept - so
+# "children aged 6-59 months" leaves a bare "children" behind, and "pregnant
+# women" leaves "women". Suppress the general band whenever a specific one of the
+# same kind fired, exactly as classify_intervention() does for chemoprevention.
+.POP_SPECIFIC_CHILD <- c("infants (<1y)", "children <5", "school-age children")
+classify_population <- function(text) {
+  hits <- .match_consume(tolower(text %||% ""), .POPULATION_RULES)$hits
+  if (any(.POP_SPECIFIC_CHILD %in% hits)) hits <- setdiff(hits, "children (age unspecified)")
+  if ("pregnant women" %in% hits) hits <- setdiff(hits, "adults")
+  paste(hits, collapse = "; ")
+}
+
 # --- geography -------------------------------------------------------------
 # `place` is free text written by the extractor: "Uganda", but also
 # "India (Gujarat: Kheda, Vadodara, Panchmahal districts)" and "Africa (five
@@ -309,6 +379,11 @@ derive_fields <- function(rec) {
   geo <- normalize_place(rec$place %||% "", rec$title %||% "")
   rec$countries <- geo$countries
   rec$region    <- geo$region
+  rec$outcome_family <- classify_outcome(
+    rec$primary_outcome %||% "",
+    paste(rec$effect_metric %||% "", rec$impact_summary %||% ""))
+  rec$population_band <- classify_population(
+    paste(rec$population %||% "", rec$age_range %||% "", rec$title %||% ""))
   rec
 }
 

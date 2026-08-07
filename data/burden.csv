@@ -1,0 +1,23 @@
+# Estimated malaria cases per year, by country. Used ONLY to burden-normalise the
+# geography view in the explorer ("trials per million estimated cases"), which
+# answers a different question from a raw trial count: raw counts mostly restate
+# where research infrastructure is, burden-normalised counts show where the
+# evidence base is thin RELATIVE TO WHERE MALARIA ACTUALLY IS.
+#
+# ---------------------------------------------------------------------------
+# THIS FILE IS DELIBERATELY INCOMPLETE. It ships with only the countries whose
+# share of global cases WHO reports explicitly each year. Complete it from the
+# World Malaria Report country annex before citing anything derived from it.
+# Countries absent here are simply omitted from the normalised view (and the
+# explorer says how many are covered) - they are never treated as zero burden.
+# ---------------------------------------------------------------------------
+#
+# `country` must match the controlled names produced by normalize_place() in
+# R/normalize.R - i.e. what appears in the `countries` column of trials.csv.
+# Re-run render_explorer() after editing; no re-screening or extraction needed.
+#
+country,cases,year,source,note
+Nigeria,66800000,2022,WHO World Malaria Report 2023,26.8% of 249M global cases
+Democratic Republic of the Congo,30600000,2022,WHO World Malaria Report 2023,12.3% of global
+Uganda,12700000,2022,WHO World Malaria Report 2023,5.1% of global
+Mozambique,10500000,2022,WHO World Malaria Report 2023,4.2% of global

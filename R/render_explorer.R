@@ -64,6 +64,25 @@
   x
 }
 
+# Optional burden denominators for the geography view (data/burden.csv).
+# Absent or malformed -> an empty table, and the explorer simply omits the
+# "per million cases" toggle rather than inventing numbers. A country missing
+# from the file is EXCLUDED from the normalised view, never treated as zero.
+.read_burden <- function(cfg) {
+  p <- file.path(cfg$output$data_dir %||% "data", cfg$output$burden_file %||% "burden.csv")
+  empty <- list(cases = stats::setNames(list(), character(0)), source = "", n = 0L)
+  if (!file.exists(p)) return(empty)
+  df <- tryCatch(utils::read.csv(p, stringsAsFactors = FALSE, comment.char = "#"),
+                 error = function(e) NULL)
+  if (is.null(df) || !all(c("country", "cases") %in% names(df))) return(empty)
+  cases <- suppressWarnings(as.numeric(df$cases))
+  keep <- nzchar(trimws(as.character(df$country))) & !is.na(cases) & cases > 0
+  if (!any(keep)) return(empty)
+  list(cases  = as.list(stats::setNames(cases[keep], trimws(as.character(df$country))[keep])),
+       source = if ("source" %in% names(df)) as.character(df$source[keep][1]) else "",
+       n      = sum(keep))
+}
+
 #' Build the interactive HTML explorer
 #'
 #' Writes a single self-contained `index.html` (default `docs/index.html`) that
@@ -89,9 +108,12 @@ render_explorer <- function(cfg = load_config(), records = NULL, generated = Sys
   meta_json <- as.character(toJSON(
     list(generated = as.character(generated), count = length(rows)), auto_unbox = TRUE))
 
+  burden_json <- as.character(toJSON(.read_burden(cfg), auto_unbox = TRUE))
+
   tmpl <- paste(readLines(.explorer_template(), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
-  html <- .assemble(tmpl, list("__DATA__" = .js_safe(data_json),
-                               "__META__" = .js_safe(meta_json)))
+  html <- .assemble(tmpl, list("__DATA__"   = .js_safe(data_json),
+                               "__META__"   = .js_safe(meta_json),
+                               "__BURDEN__" = .js_safe(burden_json)))
 
   dir   <- cfg$output$explorer_dir %||% "docs"
   fname <- cfg$output$explorer_filename %||% "index.html"

@@ -180,8 +180,20 @@ What's in it:
   *by-intervention-class* chart. Each chart states how much of the current selection it actually
   plots — the trial-start view covers well under half the dataset, and that should be visible
   rather than read as a real decline.
+- **Evidence gap matrix** — intervention class against **country / outcome family / population
+  band / publication era**. The point of it is the *empty* cells, which are drawn as explicit
+  hatched blanks rather than white space. Click any cell to filter the table to it. Counts are
+  trials, not evidence quality, and a trial with several classes or outcomes appears in each of
+  its cells, so cells don't sum to the total.
+- **Where trials happen** — countries ranked by trial count, with an optional
+  **per-million-estimated-cases** view (see [Burden denominators](#burden-denominators)). Raw
+  counts largely restate where research infrastructure is; the normalised view shows where the
+  evidence base is thin relative to where malaria actually is.
+- **Trial start to publication** — the lag distribution, with a median. Covers the ~40% of
+  records carrying both dates.
 - **Filters**: free-text search (multi-word narrows, it doesn't match the raw phrase), plus
-  intervention class / phase / species / country / record type, over a sortable table.
+  intervention class / phase / species / country / outcome family / population / record type,
+  over a sortable table.
   The country facet is built from the normalised `countries` column, not from splitting the
   free-text `place` — see [Geography](#geography).
 - **Click any row for the full record.** The table shows 8 columns; the drawer shows all 39
@@ -203,6 +215,29 @@ Because it's a plain static file, it works offline and could later be served wit
 GitHub Pages is **public** unless you're on a paid plan — so publishing it would expose the
 embedded dataset. It's left unpublished by default; keep it local, or enable Pages deliberately.
 
+## Burden denominators
+
+**`data/burden.csv` ships deliberately incomplete and you should complete it before citing
+anything derived from it.** It holds estimated malaria cases per country, used only to
+normalise the geography view ("trials per million estimated cases"). It arrives with the four
+countries whose share of global cases WHO reports explicitly each year — Nigeria, DR Congo,
+Uganda, Mozambique — because those are the figures that can be stated without guessing. Fill in
+the rest from the **WHO World Malaria Report** country annex.
+
+```
+country,cases,year,source,note
+Nigeria,66800000,2022,WHO World Malaria Report 2023,26.8% of 249M global cases
+```
+
+`country` must match the controlled names in the `countries` column (see [Geography](#geography)).
+Countries **absent from the file are omitted** from the normalised view — never treated as zero
+burden — and the chart says how many of the selection it could cover. Delete the file and the
+toggle simply disappears. Re-run `render_explorer()` after editing; no re-screening, no
+extraction, no cost.
+
+Even at four countries the point is visible: **Uganda has 68 trials against 12.7M estimated
+cases; Nigeria has 30 against 66.8M.**
+
 ## Geography
 
 `place` is whatever the extractor read off the abstract — `"Uganda"`, but also
@@ -213,6 +248,18 @@ alongside it for slicing:
 - **`countries`** — controlled country names, `"; "`-joined (`"Burkina Faso; Mali"`).
 - **`region`** — a multi-country region (`"Africa"`, `"Southeast Asia"`) when no country is
   named, so region-level records stay visible instead of vanishing from a country facet.
+
+Two further controlled columns are derived the same way, and drive the gap matrix:
+
+- **`outcome_family`** — what the trial measured (`therapeutic efficacy`, `clinical incidence`,
+  `infection prevalence`, `entomological`, `mortality`, `pregnancy/birth`, `anaemia`,
+  `immunogenicity`, `safety`, `coverage/cost`). Taken from `primary_outcome` — the pre-specified
+  endpoint — falling back to `effect_metric`/`impact_summary` only when that names nothing
+  recognisable. **84% coverage.** It exists so intervention can be crossed against outcome; it is
+  *not* a licence to compare effect sizes, since two trials in one cell can still differ in
+  endpoint definition, comparator and follow-up.
+- **`population_band`** — `pregnant women`, `infants (<1y)`, `children <5`, `school-age children`,
+  `children (age unspecified)`, `adults`, `all ages`. **67% coverage.**
 
 Both come from an ordered gazetteer in `R/normalize.R`. Rules are applied in order and each
 match is **consumed** before the next rule is tried, which is what keeps the containment cases
