@@ -199,6 +199,11 @@ What's in it:
   recently usually hasn't published, so it isn't in the dataset at all, and the fall-off on the
   right is an artefact. A **Published** toggle switches to publication year (98.6% filled) —
   near-complete, but it shows when evidence landed, not when the work was done.
+  Shading uses five discrete levels with **quantile** thresholds, not a linear ramp: the counts
+  are heavily skewed (median 3, max 35, 91% of cells ≤ 10) so a linear scale renders most of the
+  grid as near-identical faint squares. **Shared scale** keeps rows comparable to each other;
+  **Per class** rescales each row to its own range, so a small class shows its own shape at the
+  cost of cross-row comparability.
 - **Filters**: free-text search (multi-word narrows, it doesn't match the raw phrase), plus
   intervention class / phase / species / country / outcome family / population / record type,
   over a sortable table.

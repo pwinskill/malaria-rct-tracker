@@ -145,7 +145,7 @@
   .matrix-legend i{display:inline-block;width:22px;height:10px;border-radius:3px}
 
   /* activity density timeline (GitHub-contribution style) */
-  table.density{border-collapse:separate;border-spacing:3px;font-size:11px}
+  table.density{border-collapse:separate;border-spacing:2px;font-size:11px}
   table.density thead th{
     font-size:10px;color:var(--muted);font-weight:500;padding:0 0 3px;text-align:center;
     white-space:nowrap
@@ -156,11 +156,15 @@
   }
   table.density td{padding:0}
   .dcell{
-    display:block;width:15px;height:15px;min-width:15px;padding:0;border:0;border-radius:3px;
+    display:block;width:16px;height:16px;min-width:16px;padding:0;border:0;border-radius:3px;
     cursor:pointer
   }
-  .dcell.zero{background:var(--grid);cursor:default}
+  /* background is set in JS: an explicit neutral, so "no trials" is a different
+     HUE from the blue ramp rather than just a fainter blue */
+  .dcell.zero{cursor:default}
   .dcell.sel{outline:2px solid var(--ink);outline-offset:1px}
+  .legend-steps{display:inline-flex;gap:2px;align-items:center}
+  .legend-steps i{display:inline-block;width:16px;height:16px;border-radius:3px}
   .cov-frac{color:var(--muted);font-weight:400;font-size:10.5px;margin-left:7px}
 
   /* extraction-coverage panel */
@@ -273,11 +277,13 @@
         <button id="actRunning" aria-pressed="true">Running</button>
         <button id="actPublished" aria-pressed="false">Published</button>
       </div>
+      <div class="seg" role="group" aria-label="Colour scale">
+        <button id="scaleShared" aria-pressed="true">Shared scale</button>
+        <button id="scaleRow" aria-pressed="false">Per class</button>
+      </div>
     </div>
     <div class="matrix-wrap"><table class="matrix density" id="density"></table></div>
-    <div class="matrix-legend">
-      <span>fewer</span><i id="dlLo"></i><i id="dlMid"></i><i id="dlHi"></i><span>more</span>
-    </div>
+    <div class="matrix-legend" id="densityLegend"></div>
     <div class="chart-note" id="noteDensity"></div>
     <div class="note" id="densityCaveat"></div>
   </section>
@@ -477,7 +483,7 @@ function textOn(hex) {   // black or white, whichever actually contrasts better
 const state = { q:"", qTokens:[], cls:"", phase:"", species:"", country:"", type:"",
                 outcome:"", population:"", era:"", flag:"", activeYear:"",
                 timeField:"pub", geoMode:"count", matrixCol:"outcome", actMode:"running",
-                sortKey:"_pubYear", sortDir:-1, openId:"" };
+                scaleMode:"shared", sortKey:"_pubYear", sortDir:-1, openId:"" };
 
 // The years a trial occupies on the activity timeline.
 //
@@ -892,6 +898,51 @@ function renderLagChart(rows){
 }
 
 /* ------------------------------------------------------------------ activity timeline */
+// Discrete levels with thresholds taken from the QUANTILES of the non-zero cells,
+// not a linear ramp to the maximum. These counts are heavily skewed - median 3,
+// max 35, and 91% of cells at or below 10 - so a linear scale rendered a count of
+// 1 at alpha 0.18 and a count of 3 at 0.23, putting most of the grid inside a
+// five-point alpha band. It read as a wash of near-identical faint squares.
+// Five steps, GitHub-style, with a floor well clear of the empty-cell grey.
+const LEVEL_ALPHA = [0, 0.28, 0.46, 0.64, 0.82, 1];
+// Empty cells are painted a faint NEUTRAL rather than a paler blue. On the old
+// ramp an empty cell sat closer to a count of 1 than a count of 1 sat to a count
+// of 2, so "no trials" and "one trial" were not reliably tellable apart.
+function paintEmpty(){
+  const muted = hexToRgb(cssVar("--muted") || "#5a6675");
+  const panel = hexToRgb(cssVar("--panel") || "#ffffff");
+  return "#" + [0,1,2]
+    .map(i => Math.round(0.12 * muted[i] + 0.88 * panel[i]).toString(16).padStart(2, "0")).join("");
+}
+function levelThresholds(values){
+  const v = values.filter(x => x > 0).sort((a,b) => a - b);
+  if (!v.length) return [1,2,3,4];
+  const q = (p) => v[Math.min(v.length - 1, Math.floor(p * v.length))];
+  const t = [q(0.2), q(0.4), q(0.6), q(0.8)];
+  // Force strictly increasing, or a skewed row collapses several levels onto the
+  // same count and the top steps become unreachable.
+  for (let i = 1; i < t.length; i++) if (t[i] <= t[i-1]) t[i] = t[i-1] + 1;
+  return t;
+}
+const levelOf = (n, t) =>
+  n <= 0 ? 0 : n <= t[0] ? 1 : n <= t[1] ? 2 : n <= t[2] ? 3 : n <= t[3] ? 4 : 5;
+
+function renderDensityLegend(t, perRow){
+  const el = $("densityLegend"); el.innerHTML = "";
+  const add = (txt) => { const s = document.createElement("span"); s.textContent = txt; el.appendChild(s); };
+  add(perRow ? "fewer" : "1");
+  const steps = document.createElement("span"); steps.className = "legend-steps";
+  const ranges = [`1–${t[0]}`, `${t[0]+1}–${t[1]}`, `${t[1]+1}–${t[2]}`, `${t[2]+1}–${t[3]}`, `${t[3]+1}+`];
+  for (let i = 1; i <= 5; i++){
+    const sw = document.createElement("i");
+    sw.style.background = paintAt(LEVEL_ALPHA[i]).bg;
+    sw.title = perRow ? `level ${i} of 5 within each class` : `${ranges[i-1]} trials`;
+    steps.appendChild(sw);
+  }
+  el.appendChild(steps);
+  add(perRow ? "more (scaled within each class)" : `${t[3]+1}+ trials`);
+}
+
 function selectActivity(cls, year){
   const already = state.cls === cls && state.activeYear === String(year);
   state.cls = already ? "" : cls;
@@ -929,8 +980,12 @@ function renderActivity(rows){
   for (let y = lo; y <= hi; y++) years.push(y);
   const classes = Array.from(perClass.keys())
     .sort((a,b) => (covered.get(b) || 0) - (covered.get(a) || 0));
-  const max = Math.max(1, ...Array.from(perClass.values())
-    .flatMap(m => Array.from(m.values())));
+  const allVals = [];
+  perClass.forEach(m => m.forEach(v => allVals.push(v)));
+  const max = Math.max(1, ...allVals);
+  const perRow = state.scaleMode === "row";
+  const sharedT = levelThresholds(allVals);
+  const emptyBg = paintEmpty();
 
   const thead = document.createElement("thead");
   const hr = document.createElement("tr");
@@ -956,13 +1011,16 @@ function renderActivity(rows){
     th.appendChild(frac);
     tr.appendChild(th);
     const m = perClass.get(c);
+    // Per-class scaling lets a small class show its own shape; on the shared
+    // scale treatment/ACT (max 35) flattens everything else against it.
+    const t = perRow ? levelThresholds(Array.from(m.values())) : sharedT;
     years.forEach(y => {
       const td = document.createElement("td");
       const n = m.get(y) || 0;
       const b = document.createElement("button");
       b.type = "button"; b.className = "dcell" + (n ? "" : " zero");
       if (n){
-        const paint = cellPaint(n / max);
+        const paint = paintAt(LEVEL_ALPHA[levelOf(n, t)]);
         b.style.background = paint.bg;
         b.setAttribute("aria-label", `${c}, ${y}: ${n} trial(s) ${state.actMode}`);
         if (state.cls === c && state.activeYear === String(y)) b.classList.add("sel");
@@ -970,6 +1028,7 @@ function renderActivity(rows){
         b.addEventListener("click", () => selectActivity(c, y));
       } else {
         b.disabled = true;
+        b.style.background = emptyBg;
         b.setAttribute("aria-label", `${c}, ${y}: none`);
       }
       td.appendChild(b); tr.appendChild(td);
@@ -978,14 +1037,15 @@ function renderActivity(rows){
   });
   tbl.appendChild(tbody);
 
-  [["dlLo",0.05], ["dlMid",0.5], ["dlHi",1]].forEach(([id, t]) => {
-    $(id).style.background = cellPaint(t).bg;
-  });
+  renderDensityLegend(sharedT, perRow);
 
   $("noteDensity").textContent =
     `${classes.length} classes, ${years[0]}–${years[years.length-1]}. `
     + `Busiest cell: ${max} trials. `
-    + `${nSpan.toLocaleString()} of ${rows.length.toLocaleString()} placed.`;
+    + `${nSpan.toLocaleString()} of ${rows.length.toLocaleString()} placed. `
+    + (perRow ? "Shading is scaled within each class, so rows show their own shape but "
+              + "are NOT comparable to each other."
+              : "Shading is on one scale across all classes, so rows are comparable.");
   caveat.textContent = state.actMode === "running"
     ? "A trial is counted in every year between its start and its completion, so one trial "
       + "occupies several cells and a column is a snapshot of concurrent activity, not new trials. "
@@ -1007,14 +1067,15 @@ const hexToRgb = (h) => [1,3,5].map(i => parseInt(h.slice(i, i+2), 16));
 // Blend the accent over the panel at render time rather than with color-mix(),
 // which keeps this working in older engines and lets textOn() see the real
 // resulting colour so the label contrast is correct at every intensity.
-function cellPaint(t){
+function paintAt(a){
   const acc = hexToRgb(cssVar("--accent") || "#0072B2");
   const panel = hexToRgb(cssVar("--panel") || "#ffffff");
-  const a = 0.16 + 0.84 * t;
   const blended = "#" + [0,1,2]
     .map(i => Math.round(a * acc[i] + (1 - a) * panel[i]).toString(16).padStart(2, "0")).join("");
   return { bg: blended, fg: textOn(blended) };
 }
+// The gap matrix prints the number in the cell, so its ramp can stay linear.
+const cellPaint = (t) => paintAt(0.16 + 0.84 * t);
 function matrixFilterValue(){ return state[MATRIX_FILTER_KEY[state.matrixCol]] || ""; }
 function selectCell(rowKey, colKey){
   const key = MATRIX_FILTER_KEY[state.matrixCol];
@@ -1269,9 +1330,10 @@ const HASH_KEYS = [["q","q"], ["cls","cls"], ["phase","phase"], ["species","spec
                    ["outcome","outcome"], ["pop","population"], ["era","era"],
                    ["ayear","activeYear"],
                    ["time","timeField"], ["geo","geoMode"], ["mx","matrixCol"],
-                   ["act","actMode"], ["sort","sortKey"], ["dir","sortDir"], ["id","openId"]];
+                   ["act","actMode"], ["scale","scaleMode"],
+                   ["sort","sortKey"], ["dir","sortDir"], ["id","openId"]];
 const HASH_DEFAULTS = { timeField:"pub", geoMode:"count", matrixCol:"outcome",
-                        actMode:"running", sortKey:"_pubYear", sortDir:-1 };
+                        actMode:"running", scaleMode:"shared", sortKey:"_pubYear", sortDir:-1 };
 let suppressHash = false;
 function writeHash(push){
   const p = new URLSearchParams();
@@ -1298,6 +1360,7 @@ function readHash(){
   if (state.geoMode !== "rate" || !BURDEN.n) state.geoMode = "count";
   if (!MATRIX_COLS[state.matrixCol]) state.matrixCol = "outcome";
   if (state.actMode !== "published") state.actMode = "running";
+  if (state.scaleMode !== "row") state.scaleMode = "shared";
   if (state.activeYear && !/^\d{4}$/.test(state.activeYear)) state.activeYear = "";
   if (!COLS.some(c => c.key === state.sortKey)) state.sortKey = "_pubYear";
   if (state.flag && !FLAG_BY_KEY.has(state.flag)) state.flag = "";
@@ -1318,6 +1381,8 @@ function syncControls(){
   $("geoRate").setAttribute("aria-pressed", String(state.geoMode === "rate"));
   $("actRunning").setAttribute("aria-pressed", String(state.actMode === "running"));
   $("actPublished").setAttribute("aria-pressed", String(state.actMode === "published"));
+  $("scaleShared").setAttribute("aria-pressed", String(state.scaleMode === "shared"));
+  $("scaleRow").setAttribute("aria-pressed", String(state.scaleMode === "row"));
   Object.keys(MATRIX_COLS).forEach(k => {
     const b = $("mx" + k.charAt(0).toUpperCase() + k.slice(1));
     if (b) b.setAttribute("aria-pressed", String(state.matrixCol === k));
@@ -1404,6 +1469,8 @@ function init(){
   $("geoRate").addEventListener("click", () => setGeoMode("rate"));
   $("actRunning").addEventListener("click", () => setActMode("running"));
   $("actPublished").addEventListener("click", () => setActMode("published"));
+  $("scaleShared").addEventListener("click", () => setScaleMode("shared"));
+  $("scaleRow").addEventListener("click", () => setScaleMode("row"));
   Object.keys(MATRIX_COLS).forEach(k => {
     const b = $("mx" + k.charAt(0).toUpperCase() + k.slice(1));
     if (b) b.addEventListener("click", () => setMatrixCol(k));
@@ -1476,6 +1543,11 @@ function setActMode(m){
   // was running vs the year it was published), so a selection doesn't carry over.
   state.activeYear = "";
   syncControls(); writeHash(false); render();
+}
+function setScaleMode(m){
+  state.scaleMode = m;
+  syncControls(); writeHash(false);
+  renderActivity(applyFilters());   // only the density grid is affected
 }
 function setMatrixCol(k){
   state.matrixCol = k;
