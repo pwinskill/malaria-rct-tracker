@@ -189,6 +189,16 @@ What's in it:
   but is **off by default**; see [Burden denominators](#burden-denominators-optional-off-by-default).
 - **Trial start to publication** — the lag distribution, with a median. Covers the ~40% of
   records carrying both dates.
+- **Activity timeline** — a GitHub-contribution-style density grid, intervention class down,
+  year across, shaded by how many trials were **running** that year (a trial occupies every
+  year between its start and completion, so a column is concurrent activity, not new trials).
+  Click a cell to filter to it. Two honest caveats are shown on the chart and matter:
+  `trial_start` is only ~41% filled **and its coverage is uneven by class** — 50% for ITN/LLIN,
+  29% for vaccine — so each row carries its own `n/N`, and a sparse row may mean missing dates
+  rather than no research. The recent years are also **right-censored**: a trial that started
+  recently usually hasn't published, so it isn't in the dataset at all, and the fall-off on the
+  right is an artefact. A **Published** toggle switches to publication year (98.6% filled) —
+  near-complete, but it shows when evidence landed, not when the work was done.
 - **Filters**: free-text search (multi-word narrows, it doesn't match the raw phrase), plus
   intervention class / phase / species / country / outcome family / population / record type,
   over a sortable table.

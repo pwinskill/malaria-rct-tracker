@@ -153,6 +153,21 @@ test_that("the interactive scaffolding is present in the rendered page", {
   expect_true(grepl('id="matrix"', html, fixed = TRUE))           # gap matrix
   expect_true(grepl('id="chartGeo"', html, fixed = TRUE))         # geography
   expect_true(grepl('id="chartLag"', html, fixed = TRUE))         # start-to-publication
+  expect_true(grepl('id="density"', html, fixed = TRUE))          # activity timeline
+})
+
+test_that("the activity timeline has the dates it needs", {
+  # The "running" view spans trial_start..trial_completion. Both must survive the
+  # trip to the page, or every row silently falls back to the published view.
+  cfg <- mk_expl_cfg()
+  rec <- derive_fields(normalize_record(new_record(
+    source = "pubmed", source_id = "1", title = "T", place = "Kenya",
+    trial_start = "2015-03-01", trial_completion = "2018-06-30",
+    publication_date = "2020-01-15")))
+  p <- render_explorer(cfg, records = list(rec))
+  html <- paste(readLines(p, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  expect_true(grepl('"trial_start":"2015-03-01"', html, fixed = TRUE))
+  expect_true(grepl('"trial_completion":"2018-06-30"', html, fixed = TRUE))
 })
 
 test_that("the geography fields reach the page (the country facet reads them)", {

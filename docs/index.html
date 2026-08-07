@@ -144,6 +144,25 @@
   .matrix-legend{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11.5px;color:var(--muted)}
   .matrix-legend i{display:inline-block;width:22px;height:10px;border-radius:3px}
 
+  /* activity density timeline (GitHub-contribution style) */
+  table.density{border-collapse:separate;border-spacing:3px;font-size:11px}
+  table.density thead th{
+    font-size:10px;color:var(--muted);font-weight:500;padding:0 0 3px;text-align:center;
+    white-space:nowrap
+  }
+  table.density tbody th{
+    position:sticky;left:0;background:var(--panel);z-index:1;padding-right:12px;
+    font-size:11.5px;font-weight:600;color:var(--ink);white-space:nowrap;text-align:left
+  }
+  table.density td{padding:0}
+  .dcell{
+    display:block;width:15px;height:15px;min-width:15px;padding:0;border:0;border-radius:3px;
+    cursor:pointer
+  }
+  .dcell.zero{background:var(--grid);cursor:default}
+  .dcell.sel{outline:2px solid var(--ink);outline-offset:1px}
+  .cov-frac{color:var(--muted);font-weight:400;font-size:10.5px;margin-left:7px}
+
   /* extraction-coverage panel */
   .cov{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
   .cov summary{cursor:pointer;font-size:12.5px;color:var(--muted);user-select:none}
@@ -245,6 +264,22 @@
       <div id="chartLag"></div>
       <div class="chart-note" id="noteLag"></div>
     </div>
+  </section>
+
+  <section class="chart-card">
+    <div class="chart-head">
+      <h2>Activity timeline</h2>
+      <div class="seg" role="group" aria-label="What counts as active">
+        <button id="actRunning" aria-pressed="true">Running</button>
+        <button id="actPublished" aria-pressed="false">Published</button>
+      </div>
+    </div>
+    <div class="matrix-wrap"><table class="matrix density" id="density"></table></div>
+    <div class="matrix-legend">
+      <span>fewer</span><i id="dlLo"></i><i id="dlMid"></i><i id="dlHi"></i><span>more</span>
+    </div>
+    <div class="chart-note" id="noteDensity"></div>
+    <div class="note" id="densityCaveat"></div>
   </section>
 
   <section class="chart-card">
@@ -372,6 +407,7 @@ TRIALS.forEach(r => {
   // were scraped, inflating the current-year bar with fabricated values.
   r._pubYear = yearOf(val(r, "publication_date"));
   r._startYear = yearOf(val(r, "trial_start"));
+  r._endYear   = yearOf(val(r, "trial_completion"));
   const n = parseN(val(r, "n_total"));
   r._n = n.value; r._nUnit = n.unit;
   r._hay = [val(r,"title"), val(r,"place"), val(r,"impact_summary"),
@@ -439,9 +475,29 @@ function textOn(hex) {   // black or white, whichever actually contrasts better
 
 /* ------------------------------------------------------------------ state */
 const state = { q:"", qTokens:[], cls:"", phase:"", species:"", country:"", type:"",
-                outcome:"", population:"", era:"", flag:"",
-                timeField:"pub", geoMode:"count", matrixCol:"outcome",
+                outcome:"", population:"", era:"", flag:"", activeYear:"",
+                timeField:"pub", geoMode:"count", matrixCol:"outcome", actMode:"running",
                 sortKey:"_pubYear", sortDir:-1, openId:"" };
+
+// The years a trial occupies on the activity timeline.
+//
+//   running   - trial_start .. trial_completion, falling back to the publication
+//               year when completion is missing (publication implies it finished).
+//   published - the publication year alone.
+//
+// "Running" is the more interesting view and the one that answers "what was going
+// on in 2018", but trial_start is only ~41% filled AND its coverage is uneven by
+// class, so a class can look quiet purely because its start dates were never
+// extracted. Every row therefore shows its own coverage, and "Published" (98.6%
+// filled) is one click away.
+const MAX_SPAN = 15;   // years; a longer "trial" is a bad date pair, not a trial
+function activitySpan(r){
+  if (state.actMode === "published") return r._pubYear ? [r._pubYear, r._pubYear] : null;
+  if (!r._startYear) return null;
+  const end = r._endYear || r._pubYear;
+  if (!end || end < r._startYear || end - r._startYear > MAX_SPAN) return null;
+  return [r._startYear, end];
+}
 
 // Gap-matrix column dimensions. Rows are always intervention class - that is the
 // controlled vocabulary with the best coverage (91.5%) and the axis a funder or
@@ -539,6 +595,10 @@ function applyFilters(ignoreFlag){
     if (state.outcome && !r._outcomes.includes(state.outcome)) return false;
     if (state.population && !r._populations.includes(state.population)) return false;
     if (state.era && r._era !== state.era) return false;
+    if (state.activeYear){
+      const sp = activitySpan(r), y = +state.activeYear;
+      if (!sp || y < sp[0] || y > sp[1]) return false;
+    }
     if (flag && !flag.test(r)) return false;
     return true;
   });
@@ -831,6 +891,117 @@ function renderLagChart(rows){
     : `No record in this selection has both a trial start and a publication date.`;
 }
 
+/* ------------------------------------------------------------------ activity timeline */
+function selectActivity(cls, year){
+  const already = state.cls === cls && state.activeYear === String(year);
+  state.cls = already ? "" : cls;
+  state.activeYear = already ? "" : String(year);
+  writeHash(false); syncControls(); render();
+}
+function renderActivity(rows){
+  const tbl = $("density"); tbl.innerHTML = "";
+  const perClass = new Map();                 // class -> Map(year -> active count)
+  const covered = new Map(), total = new Map();
+  let lo = Infinity, hi = -Infinity, nSpan = 0, nDropped = 0;
+
+  rows.forEach(r => {
+    r._classes.forEach(c => total.set(c, (total.get(c) || 0) + 1));
+    const sp = activitySpan(r);
+    // A record with a start but no usable end is counted as dropped, so the
+    // caveat line can say how much of the selection the grid cannot place.
+    if (!sp){ if (state.actMode === "running" && r._startYear) nDropped++; return; }
+    nSpan++;
+    lo = Math.min(lo, sp[0]); hi = Math.max(hi, sp[1]);
+    r._classes.forEach(c => {
+      covered.set(c, (covered.get(c) || 0) + 1);
+      let m = perClass.get(c); if (!m){ m = new Map(); perClass.set(c, m); }
+      for (let y = sp[0]; y <= sp[1]; y++) m.set(y, (m.get(y) || 0) + 1);
+    });
+  });
+
+  const caveat = $("densityCaveat");
+  if (!nSpan || !perClass.size){
+    $("noteDensity").textContent = "";
+    caveat.textContent = "Nothing in this selection has the dates needed to place it on a timeline.";
+    return;
+  }
+  const years = [];
+  for (let y = lo; y <= hi; y++) years.push(y);
+  const classes = Array.from(perClass.keys())
+    .sort((a,b) => (covered.get(b) || 0) - (covered.get(a) || 0));
+  const max = Math.max(1, ...Array.from(perClass.values())
+    .flatMap(m => Array.from(m.values())));
+
+  const thead = document.createElement("thead");
+  const hr = document.createElement("tr");
+  hr.appendChild(document.createElement("th"));            // row-label corner
+  years.forEach(y => {
+    const th = document.createElement("th"); th.scope = "col";
+    // Label every 5th year: a 4-digit year needs more room than an 18px column.
+    th.textContent = (y % 5 === 0) ? String(y) : "";
+    th.setAttribute("aria-label", String(y));
+    hr.appendChild(th);
+  });
+  thead.appendChild(hr); tbl.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  classes.forEach(c => {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th"); th.scope = "row";
+    th.textContent = c;
+    const frac = document.createElement("span");
+    frac.className = "cov-frac";
+    frac.textContent = `${covered.get(c) || 0}/${total.get(c) || 0}`;
+    frac.title = `${covered.get(c) || 0} of ${total.get(c) || 0} ${c} trials can be placed on the timeline`;
+    th.appendChild(frac);
+    tr.appendChild(th);
+    const m = perClass.get(c);
+    years.forEach(y => {
+      const td = document.createElement("td");
+      const n = m.get(y) || 0;
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "dcell" + (n ? "" : " zero");
+      if (n){
+        const paint = cellPaint(n / max);
+        b.style.background = paint.bg;
+        b.setAttribute("aria-label", `${c}, ${y}: ${n} trial(s) ${state.actMode}`);
+        if (state.cls === c && state.activeYear === String(y)) b.classList.add("sel");
+        b.title = `${c} · ${y} · ${n} ${state.actMode === "running" ? "running" : "published"}`;
+        b.addEventListener("click", () => selectActivity(c, y));
+      } else {
+        b.disabled = true;
+        b.setAttribute("aria-label", `${c}, ${y}: none`);
+      }
+      td.appendChild(b); tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+
+  [["dlLo",0.05], ["dlMid",0.5], ["dlHi",1]].forEach(([id, t]) => {
+    $(id).style.background = cellPaint(t).bg;
+  });
+
+  $("noteDensity").textContent =
+    `${classes.length} classes, ${years[0]}–${years[years.length-1]}. `
+    + `Busiest cell: ${max} trials. `
+    + `${nSpan.toLocaleString()} of ${rows.length.toLocaleString()} placed.`;
+  caveat.textContent = state.actMode === "running"
+    ? "A trial is counted in every year between its start and its completion, so one trial "
+      + "occupies several cells and a column is a snapshot of concurrent activity, not new trials. "
+      + "Only trials with a recorded start date can be placed — the n/N beside each class is its "
+      + "own coverage, and it varies a lot by class, so a sparse row may mean missing dates rather "
+      + "than no research. "
+      + (nDropped ? `${nDropped} record(s) have a start but no usable end and are omitted. ` : "")
+      + "The most recent years are under-counted for a second reason: a trial that started "
+      + "recently has usually not published yet, so it is not in this dataset at all. The "
+      + "fall-off on the right is censoring, not a decline in research. "
+      + "Switch to Published for near-complete coverage."
+    : "Each trial occupies a single cell, at its publication year. Near-complete coverage "
+      + "(publication date is 98.6% filled), but this shows when evidence landed, not when the "
+      + "work was being done — the median trial here took 5 years from start to publication.";
+}
+
 /* ------------------------------------------------------------------ gap matrix */
 const hexToRgb = (h) => [1,3,5].map(i => parseInt(h.slice(i, i+2), 16));
 // Blend the accent over the panel at render time rather than with color-mix(),
@@ -1096,10 +1267,11 @@ function syncDrawer(){
 const HASH_KEYS = [["q","q"], ["cls","cls"], ["phase","phase"], ["species","species"],
                    ["country","country"], ["type","type"], ["flag","flag"],
                    ["outcome","outcome"], ["pop","population"], ["era","era"],
+                   ["ayear","activeYear"],
                    ["time","timeField"], ["geo","geoMode"], ["mx","matrixCol"],
-                   ["sort","sortKey"], ["dir","sortDir"], ["id","openId"]];
+                   ["act","actMode"], ["sort","sortKey"], ["dir","sortDir"], ["id","openId"]];
 const HASH_DEFAULTS = { timeField:"pub", geoMode:"count", matrixCol:"outcome",
-                        sortKey:"_pubYear", sortDir:-1 };
+                        actMode:"running", sortKey:"_pubYear", sortDir:-1 };
 let suppressHash = false;
 function writeHash(push){
   const p = new URLSearchParams();
@@ -1125,6 +1297,8 @@ function readHash(){
   if (state.timeField !== "start") state.timeField = "pub";
   if (state.geoMode !== "rate" || !BURDEN.n) state.geoMode = "count";
   if (!MATRIX_COLS[state.matrixCol]) state.matrixCol = "outcome";
+  if (state.actMode !== "published") state.actMode = "running";
+  if (state.activeYear && !/^\d{4}$/.test(state.activeYear)) state.activeYear = "";
   if (!COLS.some(c => c.key === state.sortKey)) state.sortKey = "_pubYear";
   if (state.flag && !FLAG_BY_KEY.has(state.flag)) state.flag = "";
   state.q = state.q.toLowerCase();
@@ -1142,6 +1316,8 @@ function syncControls(){
   $("byStart").setAttribute("aria-pressed", String(state.timeField === "start"));
   $("geoCount").setAttribute("aria-pressed", String(state.geoMode === "count"));
   $("geoRate").setAttribute("aria-pressed", String(state.geoMode === "rate"));
+  $("actRunning").setAttribute("aria-pressed", String(state.actMode === "running"));
+  $("actPublished").setAttribute("aria-pressed", String(state.actMode === "published"));
   Object.keys(MATRIX_COLS).forEach(k => {
     const b = $("mx" + k.charAt(0).toUpperCase() + k.slice(1));
     if (b) b.setAttribute("aria-pressed", String(state.matrixCol === k));
@@ -1162,6 +1338,7 @@ function render(){
   renderClassChart(rows);
   renderGeoChart(rows);
   renderLagChart(rows);
+  renderActivity(rows);
   renderMatrix(rows);
   renderCoverage(rows, preFlag);
   updateHead();
@@ -1171,7 +1348,7 @@ function render(){
 function resetFilters(){
   state.q=""; state.qTokens=[]; state.cls=""; state.phase="";
   state.species=""; state.country=""; state.type=""; state.flag="";
-  state.outcome=""; state.population=""; state.era="";
+  state.outcome=""; state.population=""; state.era=""; state.activeYear="";
   ["q","fClass","fPhase","fSpecies","fCountry","fOutcome","fPop","fType"].forEach(id => $(id).value = "");
   writeHash(false);
   render();
@@ -1225,6 +1402,8 @@ function init(){
   if (!BURDEN.n) $("geoRate").hidden = true;
   $("geoCount").addEventListener("click", () => setGeoMode("count"));
   $("geoRate").addEventListener("click", () => setGeoMode("rate"));
+  $("actRunning").addEventListener("click", () => setActMode("running"));
+  $("actPublished").addEventListener("click", () => setActMode("published"));
   Object.keys(MATRIX_COLS).forEach(k => {
     const b = $("mx" + k.charAt(0).toUpperCase() + k.slice(1));
     if (b) b.addEventListener("click", () => setMatrixCol(k));
@@ -1268,6 +1447,7 @@ function init(){
     const rows = applyFilters();
     renderClassChart(rows);
     renderMatrix(rows);
+    renderActivity(rows);
   });
 
   buildHead();
@@ -1289,6 +1469,13 @@ function setGeoMode(m){
   $("geoRate").setAttribute("aria-pressed", String(m === "rate"));
   writeHash(false);
   renderGeoChart(applyFilters());
+}
+function setActMode(m){
+  state.actMode = m;
+  // activeYear means something different under each definition (a year the trial
+  // was running vs the year it was published), so a selection doesn't carry over.
+  state.activeYear = "";
+  syncControls(); writeHash(false); render();
 }
 function setMatrixCol(k){
   state.matrixCol = k;
