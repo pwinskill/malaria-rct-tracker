@@ -9,6 +9,61 @@ in data/trials.csv.
 
 <!-- New weekly entries are inserted directly below this line -->
 
+## Week of 2026-09-21
+
+### Protective efficacy and user acceptability of DEET and Vetiver essential oil repellents against Anopheles dirus (Diptera: Culicidae): semi-field and community-based evaluations.
+- **Source / ID:** pubmed (42762484)
+- **Journal:** Journal of medical entomology
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** Thailand, Khun Han District, Sisaket Province
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2026-09-01
+- **Class:** spatial repellent
+- **Population:** community residents
+- **N:** 457
+- **Impact:** DEET substantially reduced mosquito landing (95.75%) in semi-field trials while Vetiver essential oil showed only moderate protection (51.9%), and in the community trial Vetiver E.O.'s reported efficacy and acceptability were comparable to placebo, indicating insufficient real-world biological activity.
+- **Effect:** percentage reduction in mosquito landing DEET 95.75%, Vetiver E.O. 51.9%
+- **Follow-up:** 9 months
+- **Link:** https://pubmed.ncbi.nlm.nih.gov/42762484/
+
+### Impact of mass distribution on insecticide-treated net coverage and usage in three high burden malaria provinces of Papua New Guinea.
+- **Source / ID:** pubmed (42736560)
+- **Journal:** Infectious diseases of poverty
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** Papua New Guinea
+- **Design:** cross-sectional surveys, before-after, generalised linear mixed effects models
+- **Status:** published
+- **Published:** 2026-09-14
+- **Trial period:** 2023 to 2024
+- **Class:** ITN/LLIN
+- **Population:** individuals and households in East Sepik, West Sepik and Madang provinces
+- **N:** 5671
+- **Impact:** Mass ITN distribution increased household net ownership from 94.8% to 99.4% and universal coverage from 60.0% to 69.9%, with usage driven primarily by net availability.
+- **Effect:** change in universal coverage (%) 60.0% to 69.9%
+- **Follow-up:** 5-7 months post-distribution
+- **Link:** https://pubmed.ncbi.nlm.nih.gov/42736560/
+
+### Baseline Treg frequency, Treg-associated immune checkpoint responses, and plasma IL-10 responses during controlled human malaria infection in semi-immune Kenyan adults: a secondary analysis of the CHMI-SIKA Study.
+- **Source / ID:** pubmed (42398508)
+- **Journal:** The Lancet. Microbe
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** Kenya
+- **Design:** controlled human malaria infection, secondary analysis
+- **Status:** published
+- **Published:** 2026-07-03
+- **Class:** vaccine
+- **Population:** semi-immune Kenyan adults from three regions with differing P falciparum exposure
+- **N:** 105
+- **Impact:** High baseline Treg frequencies were associated with upregulation of TNFRSF18, LRRC32, and KLRG1 in Tregs, increased P falciparum parasite growth, and higher IL-10 concentrations in treated compared with untreated semi-immune Kenyan adults.
+- **Effect:** Number of differentially expressed genes between treated and untreated participants 15 differentially expressed genes at day 8
+- **Species:** P. falciparum
+- **Follow-up:** 35 days
+- **Link:** https://pubmed.ncbi.nlm.nih.gov/42398508/
+
 ## Week of 2026-08-10
 
 ### Comparing Sulfadoxine-Pyrimethamine+Chloroquine and Dihydroartemisinin-Piperaquine to Control for Malaria Prevention in Malawian School Children: Results from a Randomized Controlled Trial
