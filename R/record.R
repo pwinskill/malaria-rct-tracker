@@ -61,7 +61,7 @@ TIER2 <- c(
 META <- c(
   "extracted_by",  # llm:<model> | rules | off
   "conditions",    # ClinicalTrials.gov condition list (kept separate from abstract)
-  "abstract",      # source abstract; used for screening/extraction, dropped from CSV
+  "abstract",      # source abstract; in-memory only - never written to disk
   "first_seen",    # ISO date this record first entered the dataset
   "run_type"       # weekly | backfill
 )
@@ -70,6 +70,19 @@ FIELDS <- c(IDENTITY, SCREENING, TIER1, TIER2, META)
 
 # Columns written to the human-facing CSV (abstract omitted for readability).
 CSV_FIELDS <- setdiff(FIELDS, "abstract")
+
+# Fields written to trials.jsonl. The abstract is deliberately NOT among them.
+#
+# Abstracts are publisher copyright: fetching one to reason over is fine,
+# redistributing ~2k of them in a public repo is a different question. So the
+# abstract lives only in memory, for the length of a single run - fetched,
+# screened on, extracted from, then dropped. What persists is our own derived
+# judgement plus `url`/`id`, which point a reader back to the real source.
+#
+# Consequence worth knowing: derive_fields() classifies from a blob that
+# includes the abstract, so reclassify_store() over stored records sees less
+# text than the original pass did. See the note on reclassify_store().
+JSONL_FIELDS <- setdiff(FIELDS, "abstract")
 
 # Return a record (named list) with every field present (empty string default).
 new_record <- function(...) {

@@ -371,7 +371,12 @@ guess_species <- function(text) {
 # Fields derived from text the EXTRACTOR fills in, so they cannot be computed at
 # normalise time (which runs before screening). Applied to each record just
 # before it is stored, and re-applied over the whole store by reclassify_store().
-# Purely local and free - no API calls - so it is always safe to re-run.
+# Purely local and free - no API calls.
+#
+# NOT idempotent across a store round-trip, though: the blob below includes the
+# abstract, and abstracts are never persisted. Re-running this over records read
+# back from disk therefore classifies on strictly less text than the first pass
+# had. reclassify_store() warns about exactly this.
 derive_fields <- function(rec) {
   blob <- paste(rec$title %||% "", rec$interventions_raw %||% "",
                 rec$abstract %||% "", rec$conditions %||% "", collapse = " ")

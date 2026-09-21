@@ -2,7 +2,7 @@ name: Weekly malaria RCT scan
 
 on:
   schedule:
-    - cron: "0 1 * * 1"      # Mondays 01:00 UTC  (= 01:00 UK in winter / 02:00 UK in summer)
+    - cron: "0 1 * * 0"      # Sundays 01:00 UTC  (= 01:00 UK in winter / 02:00 UK in summer)
   workflow_dispatch:          # allows a manual "Run workflow" click
 
 permissions:

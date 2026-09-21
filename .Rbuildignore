@@ -8,6 +8,8 @@
 ^\.env.*
 ^README\.md$
 ^LICENSE\.md$
+^DATA_LICENSE\.md$
 ^\.gitignore$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.claude$

@@ -80,13 +80,13 @@ save_state <- function(cfg, state) {
 }
 .write_jsonl <- function(con, records) {
   for (r in records) {
-    obj <- stats::setNames(lapply(FIELDS, function(k) as.character(r[[k]] %||% "")), FIELDS)
+    obj <- stats::setNames(lapply(JSONL_FIELDS, function(k) as.character(r[[k]] %||% "")), JSONL_FIELDS)
     writeLines(toJSON(obj, auto_unbox = TRUE), con)
   }
 }
 
 # --- append / rewrite the dataset -----------------------------------------
-# Append included records to CSV + JSONL. Abstract is kept in JSONL, dropped from CSV.
+# Append included records to CSV + JSONL. The abstract is written to neither.
 append_records <- function(cfg, records) {
   if (!length(records)) return(invisible())
   ensure_dir(cfg$output$data_dir)
@@ -210,12 +210,34 @@ exclude_records <- function(ids, reason = NULL, cfg = load_config()) {
 #' rows pick up the new vocabulary, and after any schema change that adds a
 #' derived column (it rewrites the CSV header, which a plain append cannot do).
 #'
+#' @section Abstracts are not stored:
+#' [derive_fields] classifies from a blob that includes the abstract, but
+#' abstracts are never written to disk (see `JSONL_FIELDS` in `record.R`). So a
+#' re-classification sees *less* text than the original pass did, and can
+#' produce a **worse** `intervention_class` than the row already holds — the
+#' original was derived with the abstract in hand. This is a lossy operation,
+#' not the idempotent one it looks like.
+#'
+#' To re-classify properly, re-fetch the abstracts first (you hold every PMID,
+#' DOI and NCT id) and pass the rehydrated records in via `records`.
+#'
 #' @param cfg Config list; defaults to [load_config()].
+#' @param records Optional list of records to re-classify instead of reading the
+#'   store — the hook for passing in abstract-rehydrated records.
 #' @return Number of records re-classified (invisibly).
 #' @export
-reclassify_store <- function(cfg = load_config()) {
-  recs <- .read_store(cfg)
+reclassify_store <- function(cfg = load_config(), records = NULL) {
+  recs <- records %||% .read_store(cfg)
   if (!length(recs)) { message("[reclassify] store is empty; nothing to do"); return(invisible(0L)) }
+  # Loud, because the damage is silent otherwise: classification quietly gets
+  # worse and the only trace is a column that used to be right.
+  n_bare <- sum(!vapply(recs, function(r) has_text(r$abstract), logical(1)))
+  if (n_bare)
+    warning(sprintf(paste0(
+      "[reclassify] %d of %d record(s) have no abstract, so they will be re-classified ",
+      "from title/conditions alone - this can be WORSE than the stored value. ",
+      "Re-fetch abstracts and pass them via `records` for a faithful re-classification."),
+      n_bare, length(recs)), call. = FALSE)
   recs <- lapply(recs, derive_fields)
   .rewrite_store(cfg, recs)
   message(sprintf("[reclassify] re-classified %d record(s)", length(recs)))

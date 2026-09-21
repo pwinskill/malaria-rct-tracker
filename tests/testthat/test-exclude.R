@@ -65,7 +65,24 @@ test_that("reclassify_store re-derives intervention_class from the current vocab
   append_records(cfg, list(r))
   expect_equal(.read_store(cfg)[[1]]$intervention_class, "Chemoprophylaxis")   # stale
 
-  n <- reclassify_store(cfg)
+  # Stored records never carry an abstract, so reclassify warns that it is
+  # working from less text than the original pass had. Asserted, not silenced:
+  # that warning is the only signal the operation is lossy.
+  expect_warning(n <- reclassify_store(cfg), "no abstract")
   expect_equal(n, 1L)
   expect_equal(.read_store(cfg)[[1]]$intervention_class, "SMC")                # re-derived
+})
+
+test_that("reclassify_store does not warn when given rehydrated records", {
+  cfg <- mk_excl_cfg()
+  cfg$output$explorer_dir <- file.path(cfg$output$data_dir, "docs")
+  r <- normalize_record(new_record(source = "pubmed", source_id = "1",
+         title = "A malaria trial", intervention_class = "Chemoprophylaxis"))
+  append_records(cfg, list(r))
+
+  r$abstract <- "Children received seasonal malaria chemoprevention or placebo."
+  expect_no_warning(n <- reclassify_store(cfg, records = list(r)))
+  expect_equal(n, 1L)
+  # The abstract carried the signal the title lacked.
+  expect_equal(.read_store(cfg)[[1]]$intervention_class, "SMC")
 })

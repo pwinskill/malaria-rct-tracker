@@ -1,5 +1,19 @@
 # Malaria RCT Tracker
 
+> ## ⚠️ Everything in this dataset is machine-generated and unverified
+>
+> An LLM decides which trials are eligible, and an LLM extracts every field.
+> **No human has reviewed any of those decisions**, and there has been **no accuracy
+> audit against a reference set** — so the error rate is not merely small, it is
+> *unmeasured*. Assume false inclusions, false exclusions and misread fields are
+> present throughout.
+>
+> Use it to **find** trials fast. Do not cite it, and do not treat it as an evidence
+> base without checking each record you rely on. Every record links back to PubMed,
+> the DOI or ClinicalTrials.gov — that source is the authority; this is not.
+>
+> See [DATA_LICENSE.md](DATA_LICENSE.md) for the full provenance statement.
+
 An **R package** that scans for **new randomized controlled trials (RCTs) relating to
 malaria**, screens them for eligibility the way a systematic review would, extracts a
 structured record for each, and keeps a growing dataset plus a human-readable brief.
@@ -39,7 +53,7 @@ or a regex fallback), including pulling `place` from the title.
 Outputs:
 
 - `data/trials.csv` — one row per included trial (the database you'll use).
-- `data/trials.jsonl` — full records incl. abstracts (your extraction-review surface).
+- `data/trials.jsonl` — full records, one JSON object per line (abstracts are not stored).
 - `data/screened_out.jsonl` — excluded candidates + the reason (audit trail).
 - `data/state.json` — dedupe memory, so nothing is screened or reported twice.
 - `outputs/Malaria_RCT_Brief.md` — readable digest, newest week on top.
@@ -147,18 +161,27 @@ with auto-reload off, or a workspace spend limit) — that's the hard ceiling.
 
 ## Reviewing extraction quality
 
-`data/trials.jsonl` has the source abstract next to every extracted field:
+Since nothing here is validated, this is the part that matters most.
+
+**Abstracts are not stored.** They are fetched, used in memory to screen and extract,
+then dropped — publisher copyright is not ours to redistribute in bulk. So reviewing an
+extraction means following the record back to its source:
 
 ```r
 library(jsonlite)
 d <- stream_in(file("data/trials.jsonl"))
-d[, c("title", "phase", "place", "abstract", "impact_summary", "effect_estimate", "extracted_by")]
+d[, c("id", "url", "phase", "place", "impact_summary", "effect_estimate", "extracted_by")]
 ```
 
-`data/screened_out.jsonl` lets you audit what was *excluded* and why — spot-check for
-false exclusions.
+Every `id` is prefixed (`doi:`, `pmid:`, `nct:`) and every record carries `url`, so each
+one resolves to the publisher or registry page. The explorer's detail drawer turns these
+into one-click links.
 
-**Encoding.** The files are UTF-8 (abstracts contain `≥`, `–`, accented place names, etc.).
+`data/screened_out.jsonl` lets you audit what was *excluded* and why — spot-check for
+false exclusions. This matters as much as checking inclusions: a systematically
+over-eager screen is invisible if you only look at what made it in.
+
+**Encoding.** The files are UTF-8 (titles contain `≥`, `–`, accented place names, etc.).
 In R they read correctly with `readr::read_csv()` or `jsonlite::stream_in()`. **Excel** ignores
 UTF-8 on a plain double-click and shows mojibake like `â‰¥` — open via *Data → From Text/CSV*
 and pick **65001: Unicode (UTF-8)**, or read in R and export with `writexl::write_xlsx()`.
@@ -287,8 +310,8 @@ right: *Papua New Guinea* is claimed and removed before the bare *Guinea* rule s
 likewise *South Sudan* before *Sudan* and *South Africa* before the *Africa* region. Spelling
 variants collapse (both DRC forms, both apostrophes in *Côte d'Ivoire*, *The Gambia*/*Gambia*).
 
-This is regex over text you already have — **no LLM, no API calls, no cost** — so it's always
-safe to re-run. After editing the rules:
+This is regex over text you already have — **no LLM, no API calls, no cost**. After editing
+the rules:
 
 ```r
 reclassify_store()   # re-derive intervention_class + countries/region for every stored record
@@ -297,6 +320,16 @@ reclassify_store()   # re-derive intervention_class + countries/region for every
 which rewrites `trials.csv` / `trials.jsonl` and regenerates the brief and explorer. Run it
 after **any** schema change that adds a derived column, too — a plain append can't rewrite the
 CSV header.
+
+> **This is lossy, despite appearances.** `intervention_class` is derived from a blob that
+> includes the abstract — and abstracts aren't stored. So re-classifying a stored record
+> works from title and conditions alone, and can produce a *worse* value than the row
+> already holds, because the original pass had the abstract in hand. `reclassify_store()`
+> warns when it sees records with no abstract.
+>
+> To re-classify faithfully, re-fetch the abstracts first (you hold every PMID, DOI and NCT
+> id — about 15 minutes with an `NCBI_API_KEY`) and pass the rehydrated records in:
+> `reclassify_store(records = my_rehydrated_records)`.
 
 ## Deleting a record after manual review
 
@@ -397,4 +430,15 @@ legacy_python/                         # the old Python version (safe to delete)
 - One source failing (timeout etc.) is logged and skipped; the run completes with the others.
 - Extraction never overwrites a value a source already provided; it only fills gaps.
 - Keep this repo **outside** cloud-synced folders (OneDrive/Dropbox); git + file-sync fight over `.git`.
-```
+
+## Licence
+
+- **Code** — MIT, see [LICENSE.md](LICENSE.md).
+- **Data** (`data/`, `outputs/`, `docs/index.html`) — CC BY 4.0, see
+  [DATA_LICENSE.md](DATA_LICENSE.md), which also carries the full provenance statement.
+
+Source abstracts are deliberately not stored or redistributed: they are fetched, used in
+memory to screen and extract, then dropped. Each record links back to the source instead.
+
+If you reuse the data, please carry the limitation with it — that it is LLM-screened,
+LLM-extracted and unvalidated is the most important thing about it.
