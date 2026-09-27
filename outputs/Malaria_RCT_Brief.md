@@ -9,6 +9,45 @@ in data/trials.csv.
 
 <!-- New weekly entries are inserted directly below this line -->
 
+## Week of 2026-09-27
+
+### Examining the spatial effect ranges of new classes of long-lasting insecticidal nets (LLINs) on malaria infection and vector abundance: An anisotropic semivariance analysis in the context of a phase-III cluster-randomised malaria vector control trial of dual active-ingredient LLINs
+- **Source / ID:** europepmc (PPR1325566)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Phase 3
+- **Place:** Tanzania
+- **Design:** cluster-randomised, phase-III, spatial variogram analysis nested within trial
+- **Status:** preprint
+- **Published:** 2026-09-23
+- **Trial period:** 2020 to 2020
+- **Class:** ITN/LLIN
+- **Population:** children (malaria infection survey) and households (vector abundance survey)
+- **N:** 5955
+- **Impact:** Spatial semivariance analysis showed that dual active-ingredient LLINs had varying spatial ranges of community effect on malaria infection and vector abundance, with modelled range estimates uniformly exceeding common trial buffer distances.
+- **Effect:** spatial range of model residuals (semivariance range, metres) 1139m to 7833m depending on LLIN type and outcome (95% CI e.g. 1360-1545 (Py-Pyriproxyfen infection); 4413-11250 (Pyrethroid-only infection); 1100-1178 (Py-Pyriproxyfen vector); 1216-6954 (Py-Chlorfenapyr vector))
+- **Species:** mixed
+- **Follow-up:** 18 months post-intervention (cross-sectional survey July 2020); vector data September-December 2020
+- **Link:** https://doi.org/10.21203/rs.3.rs-7762367/v1
+
+### Single-dose sulfadoxine–pyrimethamine plus artesunate–pyronaridine for malaria: a multicentre, randomized, controlled, assessor-blinded clinical trial
+- **Source / ID:** europepmc (PPR1325496)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Phase 3
+- **Place:** Gabon
+- **Design:** pragmatic, non-inferiority, multi-centre, randomized, controlled, assessor-blinded, phase 3
+- **Status:** preprint
+- **Published:** 2026-09-23
+- **Class:** treatment/ACT
+- **Population:** patients with uncomplicated malaria
+- **N:** 1021
+- **Impact:** Single-dose sulfadoxine-pyrimethamine plus artesunate-pyronaridine (SPAP) was non-inferior to three-day artemether-lumefantrine (AL) for treating uncomplicated malaria.
+- **Effect:** Odds ratio for PCR-uncorrected day 28 ACPR OR 1.35 (95% CI 95% CI: 0.85-2.15)
+- **Species:** P. falciparum
+- **Follow-up:** 28 days
+- **Link:** https://doi.org/10.21203/rs.3.rs-10976524/v1
+
 ## Week of 2026-09-21
 
 ### Protective efficacy and user acceptability of DEET and Vetiver essential oil repellents against Anopheles dirus (Diptera: Culicidae): semi-field and community-based evaluations.
