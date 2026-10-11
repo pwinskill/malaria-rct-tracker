@@ -9,6 +9,25 @@ in data/trials.csv.
 
 <!-- New weekly entries are inserted directly below this line -->
 
+## Week of 2026-10-11
+
+### Outdoor attractive targeted sugar bait Phase III trials for malaria control in Kenya, Mali, and Zambia: An individual participant data meta-analysis.
+- **Source / ID:** pubmed (42853851)
+- **Journal:** PLOS global public health
+- **Type:** trial
+- **Phase:** Phase 3
+- **Place:** Kenya, Mali, Zambia
+- **Design:** individual participant data meta-analysis, cluster-randomized, phase 3
+- **Status:** published
+- **Published:** 2026-10-09
+- **Class:** treatment/ACT
+- **Population:** children, with entomological outcomes assessed in Anopheles mosquitoes in trial clusters
+- **Impact:** There were no statistically significant differences between arms in any epidemiological or entomological outcome, though a dose-response analysis found a 19% reduction in clinical malaria incidence for every 10 bait stations per hectare increase in spatial density.
+- **Effect:** incidence rate ratio per 10 bait stations/hectare increase in spatial density IRR 0.81 (19% reduction) (95% CI 0.74-0.89)
+- **Species:** P. falciparum
+- **Follow-up:** 6981 person-years
+- **Link:** https://pubmed.ncbi.nlm.nih.gov/42853851/
+
 ## Week of 2026-09-27
 
 ### Examining the spatial effect ranges of new classes of long-lasting insecticidal nets (LLINs) on malaria infection and vector abundance: An anisotropic semivariance analysis in the context of a phase-III cluster-randomised malaria vector control trial of dual active-ingredient LLINs
