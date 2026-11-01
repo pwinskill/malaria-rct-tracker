@@ -9,6 +9,60 @@ in data/trials.csv.
 
 <!-- New weekly entries are inserted directly below this line -->
 
+## Week of 2026-11-01
+
+### Next-Generation Bed Nets to Control Malaria in Côte d'Ivoire.
+- **Source / ID:** pubmed (42937427)
+- **Journal:** NEJM evidence
+- **Type:** trial
+- **Phase:** Not applicable
+- **Place:** Côte d'Ivoire
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2026-10-27
+- **Class:** ITN/LLIN
+- **Population:** children aged 6 months to 9 years residing in villages
+- **N:** 33
+- **Impact:** Malaria incidence over 12 months was significantly reduced in villages using chlorfenapyr-pyrethroid or piperonyl butoxide-pyrethroid LLINs compared with pyrethroid-only LLINs.
+- **Effect:** incidence rate ratio PBO-py vs py-only: 0.72; CFP-py vs py-only: 0.57 (95% CI PBO-py: 0.52 to 0.99; CFP-py: 0.43 to 0.75)
+- **Follow-up:** 12 months
+- **Link:** https://pubmed.ncbi.nlm.nih.gov/42937427/
+
+### Impact of Intermittent Preventive Treatment for Malaria in Pregnancy With Sulfadoxine-Pyrimethamine, Dihydroartemisinin-Piperaquine, and Their Combination on Infant Outcomes: A Randomized Controlled Trial.
+- **Source / ID:** pubmed (42007686)
+- **Journal:** Clinical infectious diseases : an official publication of the Infectious Diseases Society of America
+- **Type:** trial
+- **Phase:** Phase 3
+- **Place:** Uganda
+- **Design:** randomized controlled trial
+- **Status:** published
+- **Published:** 2026-10-01
+- **Class:** IPTp; treatment/ACT
+- **Population:** infants born to pregnant women receiving IPTp
+- **N:** 871
+- **Impact:** There were no significant differences in malaria incidence or parasite prevalence among infants whose mothers received IPTp-DP, IPTp-DP+SP, or IPTp-SP, though DP-containing regimens were associated with transiently increased wasting at birth.
+- **Effect:** incidence rate ratio IRR 1.04 (IPTp-DP vs IPTp-SP); IRR 0.93 (IPTp-DP+SP vs IPTp-SP) (95% CI 0.78-1.38; 0.68-1.26)
+- **Species:** P. falciparum
+- **Follow-up:** 12 months
+- **Link:** https://pubmed.ncbi.nlm.nih.gov/42007686/
+
+### Effects of a clinical decision support algorithm on malaria testing and treatment among febrile children in Tanzania: Findings from a mixed-methods cluster-randomized trial (DYNAMIC study)
+- **Source / ID:** europepmc (PPR1350964)
+- **Journal:** Research Square
+- **Type:** preprint
+- **Phase:** Not applicable
+- **Place:** Tanzania
+- **Design:** mixed-methods, cluster-randomized trial
+- **Status:** preprint
+- **Published:** 2026-10-27
+- **Class:** diagnostic
+- **Population:** febrile children aged 2 months to 14 years
+- **N:** 19468
+- **Impact:** Implementation of the ePOCT+ clinical decision support algorithm significantly increased malaria testing among febrile children compared to routine care, especially in low-transmission settings, but did not significantly change treatment appropriateness.
+- **Effect:** adjusted risk ratio 1.33 (95% CI 1.06–1.67)
+- **Species:** P. falciparum
+- **Link:** https://doi.org/10.21203/rs.3.rs-11107216/v1
+
 ## Week of 2026-10-11
 
 ### Outdoor attractive targeted sugar bait Phase III trials for malaria control in Kenya, Mali, and Zambia: An individual participant data meta-analysis.
