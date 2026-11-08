@@ -9,6 +9,28 @@ in data/trials.csv.
 
 <!-- New weekly entries are inserted directly below this line -->
 
+## Week of 2026-11-08
+
+### Efficacy, Safety and Tolerability of KLU156 in Adults and Children With Uncomplicated P. Falciparum Malaria
+- **Source / ID:** clinicaltrials (NCT05842954)
+- **Journal:** The Lancet. Infectious diseases
+- **Type:** registration
+- **Phase:** Phase 3
+- **Place:** Burkina Faso, Côte d’Ivoire, Democratic Republic of the Congo, Gabon, Ghana, Kenya, Mali, Niger, Rwanda, Tanzania, Uganda, Zambia
+- **Design:** RANDOMIZED, PARALLEL, PHASE3
+- **Status:** results posted
+- **Published:** 2026-11-06
+- **Trial period:** 2024-03-07 to 2025-06-27
+- **Intervention(s):** KLU156; Coartem
+- **Class:** treatment/ACT
+- **Population:** adults and children (6 months to <18 years) with uncomplicated P. falciparum malaria
+- **N:** 1720
+- **Impact:** Ganaplacide plus lumefantrine SDF given once per day for 3 days with a light meal was non-inferior to artemether-lumefantrine for uncomplicated P. falciparum malaria.
+- **Effect:** treatment difference in day 29 PCR-corrected ACPR rate -0.0% (95% CI -2.9 to 2.8)
+- **Species:** P. falciparum
+- **Follow-up:** 29 days
+- **Link:** https://clinicaltrials.gov/study/NCT05842954
+
 ## Week of 2026-11-01
 
 ### Next-Generation Bed Nets to Control Malaria in Côte d'Ivoire.
