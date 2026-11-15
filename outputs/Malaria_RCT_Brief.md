@@ -9,6 +9,25 @@ in data/trials.csv.
 
 <!-- New weekly entries are inserted directly below this line -->
 
+## Week of 2026-11-15
+
+### Antifolate resistance markers and complexity of infection in children with sickle cell anaemia receiving malaria chemoprevention in Uganda: a molecular sub-study of the CHEMCHA randomised trial
+- **Source / ID:** europepmc (PPR1366198)
+- **Journal:** medRxiv
+- **Type:** preprint
+- **Phase:** Phase 3
+- **Place:** Uganda
+- **Design:** prospective molecular sub-study nested within a randomised controlled trial
+- **Status:** preprint
+- **Published:** 2026-11-12
+- **Class:** monoclonal antibody; chemoprevention; treatment/ACT
+- **Population:** children with sickle cell anaemia aged 6 months to 15 years
+- **N:** 67
+- **Impact:** Quintuple antifolate-resistant haplotypes were highly prevalent and emerging sextuple mutants (with Pfdhfr I164L and Pfdhps A581G) were detected, raising concerns about continued use of SP for chemoprevention in children with SCA in Uganda.
+- **Effect:** proportion of quintuple mutant haplotypes 85.7-100%
+- **Species:** P. falciparum
+- **Link:** https://doi.org/10.64898/2026.11.08.26367568
+
 ## Week of 2026-11-08
 
 ### Efficacy, Safety and Tolerability of KLU156 in Adults and Children With Uncomplicated P. Falciparum Malaria
